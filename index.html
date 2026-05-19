@@ -1,0 +1,2633 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Zostel Compass</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --primary:        #F4B400;
+      --primary-light:  #FFF8E1;
+      --primary-dark:   #D9A000;
+      --text:           #1F1F1F;
+      --text-muted:     #5C5B56;
+      --bg:             #FAF8F3;
+      --neutral:        #D9D2C3;
+      --green:          #4C6A3D;
+      --green-light:    #EBF2E6;
+      --surface:        #FFFFFF;
+      --border:         #E8E3D8;
+      --danger:         #A82A1F;
+      --danger-light:   #FDECEA;
+      --warning:        #9C5400;
+      --warning-light:  #FFF3E0;
+      --radius:         18px;
+      --radius-sm:      10px;
+      --shadow-sm:      0 1px 4px rgba(0,0,0,0.07);
+      --shadow-md:      0 4px 14px rgba(0,0,0,0.10);
+      --shadow-lg:      0 10px 40px rgba(0,0,0,0.14);
+      --sidebar-w:      272px;
+      --header-h:       58px;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      font-size: 15px;
+      line-height: 1.55;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+    h1,h2,h3,h4,h5 { font-family: 'Poppins', sans-serif; }
+
+    /* ── HEADER ── */
+    .header {
+      position: sticky; top: 0; z-index: 100;
+      height: var(--header-h);
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 20px;
+      box-shadow: var(--shadow-sm);
+    }
+    .header-left { display: flex; align-items: center; gap: 10px; min-width: 0; }
+    .header-logo { display: flex; align-items: center; gap: 9px; min-width: 0; }
+    .logo-mark {
+      width: 30px; height: 30px; border-radius: 8px;
+      background: var(--primary); flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Poppins', sans-serif; font-weight: 700; font-size: 14px; color: #fff;
+    }
+    .logo-name {
+      font-family: 'Poppins', sans-serif; font-weight: 700; font-size: 17px;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .logo-name em { color: var(--primary); font-style: normal; }
+    .header-right { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+
+    .menu-btn {
+      display: none;
+      width: 40px; height: 40px; padding: 0;
+      align-items: center; justify-content: center;
+      background: transparent; border: none; cursor: pointer;
+      color: var(--text); border-radius: 10px;
+      transition: background .18s, color .18s;
+    }
+    .menu-btn:hover { background: var(--bg); }
+    .menu-btn:active { background: var(--neutral); }
+    .menu-btn:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+    .menu-btn svg line {
+      transition: transform .25s ease, opacity .2s ease;
+      transform-origin: center;
+    }
+    .menu-btn.is-open .mi-l1 { transform: translateY(6px) rotate(45deg); }
+    .menu-btn.is-open .mi-l2 { opacity: 0; }
+    .menu-btn.is-open .mi-l3 { transform: translateY(-6px) rotate(-45deg); }
+
+    @media (max-width: 768px) {
+      .menu-btn { display: inline-flex; }
+      .header { padding: 0 12px 0 6px; }
+      .logo-name { font-size: 16px; }
+    }
+
+    /* ── LAYOUT ── */
+    .app-shell { display: flex; height: calc(100vh - var(--header-h)); overflow: hidden; }
+
+    /* ── SIDEBAR ── */
+    .sidebar {
+      width: var(--sidebar-w); flex-shrink: 0;
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      overflow-y: auto; overflow-x: hidden;
+      padding: 18px 14px 24px;
+      display: flex; flex-direction: column; gap: 6px;
+    }
+    .sidebar-label {
+      font-size: 12px; font-weight: 700; letter-spacing: 1.2px;
+      text-transform: uppercase; color: var(--text-muted);
+      padding: 2px 8px 8px; margin-top: 4px;
+    }
+    .goal-nav-item {
+      padding: 11px 12px; border-radius: var(--radius-sm);
+      cursor: pointer; border: 1.5px solid transparent;
+      transition: background .15s, border-color .15s;
+    }
+    .goal-nav-item:hover { background: var(--bg); }
+    .goal-nav-item.active { background: var(--primary-light); border-color: var(--primary); }
+    .goal-nav-title {
+      font-family: 'Poppins', sans-serif; font-weight: 600; font-size: 14px;
+      line-height: 1.4; margin-bottom: 5px;
+    }
+    .goal-nav-chips { display: flex; gap: 8px; font-size: 12px; color: var(--text-muted); }
+    .mini-bar { height: 3px; background: var(--neutral); border-radius: 2px; margin-top: 6px; overflow: hidden; }
+    .mini-bar-fill { height: 100%; background: var(--primary); border-radius: 2px; transition: width .4s; }
+    .sidebar-add-btn {
+      margin-top: 10px; padding: 10px; border-radius: var(--radius-sm);
+      border: 1.5px dashed var(--neutral); background: transparent;
+      color: var(--text-muted); font-family: 'Inter', sans-serif; font-size: 13px;
+      font-weight: 500; cursor: pointer; transition: all .2s;
+      width: 100%; text-align: center;
+    }
+    .sidebar-add-btn:hover { border-color: var(--primary); color: var(--primary); background: var(--primary-light); }
+
+    /* ── IDEAS NAV ── */
+    .sidebar-divider {
+      border-top: 1px solid var(--border);
+      margin: 14px 4px 10px;
+    }
+    .nav-ideas-btn {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 12px; border-radius: var(--radius-sm);
+      border: 1.5px solid transparent; background: transparent;
+      cursor: pointer; transition: background .15s, border-color .15s;
+      font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 600;
+      color: var(--text); width: 100%; text-align: left;
+    }
+    .nav-ideas-btn:hover { background: var(--bg); }
+    .nav-ideas-btn.active { background: var(--primary-light); border-color: var(--primary); }
+    .nav-ideas-icon { font-size: 17px; }
+    .nav-ideas-count {
+      margin-left: auto;
+      background: var(--neutral); color: var(--text);
+      padding: 2px 9px; border-radius: 12px;
+      font-size: 12px; font-weight: 700;
+      font-family: 'IBM Plex Sans', sans-serif;
+    }
+    .nav-ideas-btn.active .nav-ideas-count { background: var(--primary); color: var(--text); }
+
+    .sidebar-footer {
+      margin-top: auto;
+      padding-top: 14px;
+      border-top: 1px solid var(--border);
+      display: flex; flex-direction: column; gap: 4px;
+    }
+
+    /* ── HELP PAGE ── */
+    .help-hero {
+      border-radius: var(--radius);
+      background: linear-gradient(130deg, #FFF8E1 0%, #FFE6B0 100%);
+      padding: 26px 30px; margin-bottom: 22px;
+      position: relative; overflow: hidden;
+    }
+    .help-hero::after {
+      content: '🧭'; position: absolute;
+      right: 26px; top: 50%; transform: translateY(-50%);
+      font-size: 86px; opacity: .18; pointer-events: none;
+    }
+    .help-hero h2 { font-size: 24px; margin-bottom: 6px; color: var(--text); }
+    .help-hero p {
+      font-size: 15px; color: var(--text); opacity: .82;
+      line-height: 1.65; max-width: 620px;
+    }
+
+    .help-section {
+      background: var(--surface); border: 1.5px solid var(--border);
+      border-radius: var(--radius); padding: 22px 24px;
+      margin-bottom: 16px; box-shadow: var(--shadow-sm);
+    }
+    .help-section-title {
+      font-family: 'Poppins', sans-serif; font-weight: 600;
+      font-size: 17px; color: var(--text); margin-bottom: 6px;
+    }
+    .help-section-sub {
+      font-size: 13.5px; color: var(--text-muted); margin-bottom: 16px;
+      line-height: 1.55;
+    }
+
+    .help-pillars {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 12px;
+    }
+    .help-pillar {
+      background: var(--bg); border: 1px solid var(--border);
+      border-radius: var(--radius-sm); padding: 16px;
+    }
+    .help-pillar-icon { font-size: 26px; line-height: 1; margin-bottom: 10px; }
+    .help-pillar-name {
+      font-family: 'Poppins', sans-serif; font-weight: 600;
+      font-size: 15px; margin-bottom: 6px; color: var(--text);
+    }
+    .help-pillar-desc {
+      font-size: 13.5px; line-height: 1.6; color: var(--text-muted);
+    }
+    .help-pillar-desc em {
+      color: var(--text); font-style: italic; font-weight: 500;
+      display: block; margin-top: 6px;
+    }
+
+    .help-list {
+      margin: 0; padding-left: 0; list-style: none;
+      display: flex; flex-direction: column; gap: 12px;
+    }
+    .help-list li {
+      font-size: 14px; line-height: 1.6; color: var(--text-muted);
+      padding-left: 24px; position: relative;
+    }
+    .help-list li::before {
+      content: '↪'; position: absolute; left: 4px; top: 0;
+      color: var(--primary); font-weight: 700; font-size: 14px;
+    }
+    .help-list li strong { color: var(--text); font-weight: 600; }
+
+    .help-principles { margin: 0; padding: 0; list-style: none; display: grid; gap: 10px; }
+    .help-principles li {
+      font-size: 14px; line-height: 1.6; color: var(--text-muted);
+      padding: 12px 14px; background: var(--bg);
+      border-left: 3px solid var(--primary); border-radius: 6px;
+    }
+    .help-principles li strong { color: var(--text); font-weight: 600; }
+
+    .help-steps {
+      margin: 0; padding-left: 0; counter-reset: helpsteps;
+      list-style: none; display: flex; flex-direction: column; gap: 12px;
+    }
+    .help-steps li {
+      counter-increment: helpsteps;
+      padding-left: 38px; position: relative;
+      font-size: 14px; line-height: 1.6; color: var(--text-muted);
+      min-height: 26px;
+    }
+    .help-steps li::before {
+      content: counter(helpsteps);
+      position: absolute; left: 0; top: 0;
+      width: 26px; height: 26px; border-radius: 50%;
+      background: var(--primary); color: var(--text);
+      font-family: 'IBM Plex Sans', sans-serif; font-weight: 600;
+      font-size: 13px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .help-steps li strong { color: var(--text); font-weight: 600; }
+
+    .help-credit {
+      text-align: center; padding: 28px 14px 6px;
+      font-size: 13.5px; color: var(--text-muted);
+      font-style: italic;
+    }
+    .help-credit a {
+      color: var(--text); font-weight: 600; font-style: normal;
+      text-decoration: none;
+      border-bottom: 1.5px solid var(--primary);
+      padding-bottom: 1px; transition: all .15s;
+    }
+    .help-credit a:hover { color: var(--primary-dark); border-bottom-color: var(--primary-dark); }
+
+    /* ── IDEAS PAGE ── */
+    .ideas-hero {
+      border-radius: var(--radius);
+      background: linear-gradient(130deg, #FFF8E1 0%, #FFE6B0 100%);
+      padding: 22px 26px; margin-bottom: 22px;
+      position: relative; overflow: hidden;
+    }
+    .ideas-hero::after {
+      content: '💡'; position: absolute;
+      right: 24px; top: 50%; transform: translateY(-50%);
+      font-size: 80px; opacity: .18; pointer-events: none;
+    }
+    .ideas-hero h2 { font-size: 22px; margin-bottom: 4px; color: var(--text); }
+    .ideas-hero p { font-size: 15px; color: var(--text-muted); max-width: 560px; }
+
+    .idea-capture {
+      background: var(--surface); border: 1.5px solid var(--border);
+      border-radius: var(--radius); padding: 16px;
+      box-shadow: var(--shadow-sm); margin-bottom: 22px;
+    }
+    .idea-capture textarea {
+      width: 100%; padding: 11px 13px;
+      border: 1.5px solid var(--border); border-radius: var(--radius-sm);
+      font-family: 'Inter', sans-serif; font-size: 15px;
+      background: var(--bg); color: var(--text);
+      resize: vertical; min-height: 52px; outline: none;
+      transition: border-color .15s; line-height: 1.5;
+    }
+    .idea-capture textarea:focus { border-color: var(--primary); }
+    .idea-capture textarea::placeholder { color: var(--neutral); }
+    .idea-capture-foot {
+      display: flex; gap: 10px; margin-top: 12px;
+      align-items: center; flex-wrap: wrap; justify-content: space-between;
+    }
+    .idea-capture-tags { display: flex; gap: 8px; flex-wrap: wrap; }
+    .idea-capture-select {
+      padding: 7px 11px; border: 1.5px solid var(--border);
+      border-radius: 8px; background: var(--bg);
+      font-family: 'Inter', sans-serif; font-size: 13px;
+      color: var(--text); cursor: pointer; outline: none;
+      min-width: 170px; max-width: 220px;
+      transition: border-color .15s;
+    }
+    .idea-capture-select:focus { border-color: var(--primary); }
+    .idea-capture-select:disabled { opacity: .55; cursor: not-allowed; }
+    .idea-capture-hint {
+      font-size: 12px; color: var(--text-muted);
+      margin-top: 6px; display: block;
+    }
+
+    .idea-filters {
+      display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 18px;
+    }
+    .idea-filter {
+      display: inline-flex; align-items: center; gap: 7px;
+      padding: 6px 12px; border-radius: 20px;
+      border: 1.5px solid var(--border); background: var(--surface);
+      font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 500;
+      color: var(--text-muted); cursor: pointer; transition: all .15s;
+      max-width: 240px;
+    }
+    .idea-filter:hover { border-color: var(--neutral); color: var(--text); }
+    .idea-filter.active {
+      background: var(--primary-light); border-color: var(--primary);
+      color: var(--text); font-weight: 600;
+    }
+    .idea-filter-label {
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    .idea-filter-count {
+      background: var(--bg); padding: 1px 8px; border-radius: 10px;
+      font-size: 11px; font-weight: 700; flex-shrink: 0;
+      font-family: 'IBM Plex Sans', sans-serif;
+    }
+    .idea-filter.active .idea-filter-count { background: var(--primary); color: var(--text); }
+
+    .ideas-grid {
+      display: grid; gap: 12px;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    }
+    .idea-card {
+      background: var(--surface); border: 1.5px solid var(--border);
+      border-radius: var(--radius); padding: 16px;
+      box-shadow: var(--shadow-sm);
+      display: flex; flex-direction: column; gap: 12px;
+      transition: all .18s;
+    }
+    .idea-card:hover {
+      border-color: var(--neutral); transform: translateY(-1px);
+      box-shadow: var(--shadow-md);
+    }
+    .idea-text {
+      font-size: 14.5px; font-weight: 500; line-height: 1.5;
+      color: var(--text);
+    }
+    .idea-meta {
+      display: flex; justify-content: space-between; align-items: center;
+      gap: 10px; flex-wrap: wrap;
+    }
+    .idea-link-chip {
+      display: inline-flex; align-items: center; gap: 5px;
+      background: var(--bg); border: 1px solid var(--border);
+      padding: 4px 10px; border-radius: 12px;
+      font-size: 12px; color: var(--text-muted); font-weight: 500;
+      max-width: 100%; overflow: hidden;
+      text-overflow: ellipsis; white-space: nowrap;
+    }
+    .idea-loose-chip {
+      display: inline-flex; align-items: center; gap: 5px;
+      font-size: 12px; color: var(--text-muted); font-style: italic;
+      padding: 4px 8px;
+    }
+    .idea-date { font-size: 12px; color: var(--text-muted); flex-shrink: 0; }
+    .idea-actions {
+      display: flex; gap: 6px; align-items: center;
+      padding-top: 10px; border-top: 1px solid var(--border);
+    }
+    .idea-actions > .btn { flex: 1; justify-content: center; }
+
+    .btn-icon-only {
+      width: 30px; height: 30px; padding: 0;
+      display: inline-flex; align-items: center; justify-content: center;
+      background: transparent; border: 1.5px solid var(--border);
+      cursor: pointer; color: var(--text-muted); border-radius: 8px;
+      transition: all .15s; font-size: 13px; flex-shrink: 0;
+    }
+    .btn-icon-only:hover { background: var(--danger-light); color: var(--danger); border-color: var(--danger-light); }
+
+    /* ── IDEAS IN GOAL DETAIL ── */
+    .goal-ideas-card {
+      background: var(--surface); border: 1.5px solid var(--border);
+      border-radius: var(--radius); padding: 18px 20px;
+      margin-top: 22px; box-shadow: var(--shadow-sm);
+    }
+    .goal-ideas-header {
+      display: flex; justify-content: space-between; align-items: flex-start;
+      gap: 12px; margin-bottom: 14px;
+    }
+    .goal-ideas-title {
+      font-family: 'Poppins', sans-serif; font-weight: 600;
+      font-size: 15px; display: flex; align-items: center; gap: 7px;
+    }
+    .goal-ideas-sub { font-size: 13px; color: var(--text-muted); margin-top: 2px; }
+    .goal-ideas-quick {
+      display: flex; gap: 8px; margin-bottom: 14px;
+      flex-wrap: wrap;
+    }
+    .goal-ideas-quick input {
+      flex: 1; min-width: 220px; padding: 10px 13px;
+      border: 1.5px solid var(--border); border-radius: var(--radius-sm);
+      font-family: 'Inter', sans-serif; font-size: 14px;
+      background: var(--bg); outline: none; transition: border-color .15s;
+      color: var(--text);
+    }
+    .goal-ideas-quick input:focus { border-color: var(--primary); }
+    .goal-ideas-list {
+      display: flex; flex-direction: column; gap: 6px;
+      container-type: inline-size;
+      container-name: goalIdeasList;
+    }
+    .goal-idea-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto auto;
+      grid-template-areas: "text kr acts";
+      column-gap: 10px; row-gap: 6px; align-items: center;
+      padding: 10px 12px; border-radius: var(--radius-sm);
+      background: var(--bg); border: 1px solid transparent;
+      transition: all .15s;
+    }
+    .goal-idea-row:hover { background: var(--primary-light); border-color: var(--primary); }
+    .goal-idea-row .gi-text { grid-area: text; font-size: 13.5px; line-height: 1.45; min-width: 0; }
+    .goal-idea-row .gi-kr {
+      grid-area: kr;
+      font-size: 11.5px; color: var(--text-muted);
+      background: var(--surface); border: 1px solid var(--border);
+      padding: 2px 8px; border-radius: 10px;
+      max-width: 220px; overflow: hidden;
+      text-overflow: ellipsis; white-space: nowrap;
+    }
+    .goal-idea-row .gi-acts { grid-area: acts; display: flex; gap: 3px; opacity: 0; transition: opacity .15s; }
+    .goal-idea-row:hover .gi-acts { opacity: 1; }
+
+    /* When the goal-ideas list is narrow, drop the measure chip to its own line */
+    @container goalIdeasList (max-width: 520px) {
+      .goal-idea-row {
+        grid-template-columns: minmax(0, 1fr) auto;
+        grid-template-areas:
+          "text acts"
+          "kr   kr";
+      }
+      .goal-idea-row .gi-kr { justify-self: flex-start; max-width: 100%; }
+      .goal-idea-row .gi-acts { opacity: 1; } /* touch-friendly */
+    }
+    .gi-mini-btn {
+      width: 26px; height: 26px; padding: 0;
+      display: inline-flex; align-items: center; justify-content: center;
+      background: transparent; border: none; cursor: pointer;
+      color: var(--text-muted); border-radius: 6px; font-size: 13px;
+    }
+    .gi-mini-btn:hover { background: var(--surface); color: var(--text); }
+    .gi-mini-btn.gi-danger:hover { background: var(--danger-light); color: var(--danger); }
+    .goal-ideas-more {
+      margin-top: 10px; font-size: 13px; color: var(--primary);
+      font-weight: 600; cursor: pointer; background: none; border: none;
+      padding: 4px 0;
+    }
+    .goal-ideas-more:hover { text-decoration: underline; }
+    .goal-ideas-empty {
+      padding: 14px 4px; font-size: 13.5px; color: var(--text-muted);
+      text-align: center; font-style: italic;
+    }
+
+    /* ── SETTINGS PAGE ── */
+    .settings-hero {
+      border-radius: var(--radius);
+      background: var(--surface); border: 1.5px solid var(--border);
+      padding: 22px 26px; margin-bottom: 22px;
+      box-shadow: var(--shadow-sm); position: relative; overflow: hidden;
+    }
+    .settings-hero::after {
+      content: '⚙️'; position: absolute;
+      right: 26px; top: 50%; transform: translateY(-50%);
+      font-size: 70px; opacity: .10; pointer-events: none;
+    }
+    .settings-hero h2 { font-size: 22px; margin-bottom: 4px; color: var(--text); }
+    .settings-hero p { font-size: 15px; color: var(--text-muted); max-width: 560px; }
+
+    .settings-section {
+      background: var(--surface); border: 1.5px solid var(--border);
+      border-radius: var(--radius); padding: 22px;
+      margin-bottom: 18px; box-shadow: var(--shadow-sm);
+    }
+    .settings-section-header { margin-bottom: 16px; }
+    .settings-section-title {
+      font-family: 'Poppins', sans-serif; font-weight: 600;
+      font-size: 16px; color: var(--text); margin-bottom: 4px;
+    }
+    .settings-section-sub {
+      font-size: 13.5px; color: var(--text-muted); line-height: 1.55;
+    }
+    .member-add {
+      display: flex; gap: 8px; margin-bottom: 18px; flex-wrap: wrap;
+    }
+    .member-add input {
+      flex: 1; min-width: 200px; padding: 10px 13px;
+      border: 1.5px solid var(--border); border-radius: var(--radius-sm);
+      font-family: 'Inter', sans-serif; font-size: 14px;
+      background: var(--bg); outline: none;
+      color: var(--text); transition: border-color .15s;
+    }
+    .member-add input:focus { border-color: var(--primary); }
+    .member-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 8px;
+    }
+    .member-row {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 12px; border-radius: var(--radius-sm);
+      background: var(--bg); border: 1px solid transparent;
+      transition: all .15s;
+    }
+    .member-row:hover { background: var(--primary-light); border-color: var(--primary); }
+    .member-row .mr-remove {
+      width: 28px; height: 28px; padding: 0;
+      display: inline-flex; align-items: center; justify-content: center;
+      background: transparent; border: none; cursor: pointer;
+      color: var(--text-muted); border-radius: 6px;
+      font-size: 13px; opacity: 0; transition: all .15s;
+    }
+    .member-row:hover .mr-remove { opacity: 1; }
+    .member-row .mr-remove:hover { background: var(--danger-light); color: var(--danger); }
+    .member-avatar {
+      width: 32px; height: 32px; border-radius: 50%;
+      background: var(--primary); color: var(--text);
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Poppins', sans-serif; font-weight: 700; font-size: 13px;
+      flex-shrink: 0;
+    }
+    .member-name {
+      flex: 1; font-size: 14px; font-weight: 500;
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    .member-empty {
+      font-size: 13.5px; color: var(--text-muted);
+      text-align: center; padding: 18px 14px;
+      font-style: italic;
+      background: var(--bg); border-radius: var(--radius-sm);
+      border: 1px dashed var(--neutral);
+    }
+    @media (max-width: 480px) {
+      .member-row .mr-remove { opacity: 1; }
+    }
+
+    /* ── DELIGHT: idea-capture micro-celebrations ── */
+    .idea-spark {
+      position: fixed; width: 8px; height: 8px;
+      background: var(--primary); border-radius: 50%;
+      pointer-events: none; z-index: 9999;
+      transform: translate(-50%, -50%);
+      animation: sparkFly 820ms cubic-bezier(.2,.7,.3,1) forwards;
+      box-shadow: 0 0 6px rgba(244,180,0,.55);
+    }
+    .idea-spark.s-sm  { width: 5px; height: 5px; }
+    .idea-spark.s-green { background: var(--green); box-shadow: 0 0 6px rgba(76,106,61,.45); }
+    @keyframes sparkFly {
+      0%   { opacity: 0; transform: translate(-50%, -50%) scale(0.4); }
+      18%  { opacity: 1; }
+      100% { opacity: 0; transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(0.55); }
+    }
+
+    .nav-ideas-count.bump { animation: countBump 520ms ease; }
+    @keyframes countBump {
+      0%   { transform: scale(1); }
+      35%  { transform: scale(1.35); background: var(--primary); color: var(--text); }
+      100% { transform: scale(1); }
+    }
+
+    .idea-huzzah {
+      position: fixed; left: 50%; bottom: 36px;
+      transform: translateX(-50%) translateY(20px);
+      background: var(--text); color: #fff;
+      padding: 10px 20px; border-radius: 100px;
+      font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 600;
+      box-shadow: 0 10px 32px rgba(0,0,0,0.18);
+      opacity: 0; pointer-events: none; z-index: 9999;
+      max-width: 92vw; text-align: center;
+      transition: opacity .28s ease, transform .32s cubic-bezier(.2,.8,.3,1);
+      letter-spacing: 0.1px;
+    }
+    .idea-huzzah.show {
+      opacity: 1; transform: translateX(-50%) translateY(0);
+    }
+    .idea-huzzah.big {
+      background: linear-gradient(135deg, var(--primary) 0%, #E5A800 100%);
+      color: var(--text);
+      padding: 13px 24px; font-size: 14.5px;
+      box-shadow: 0 12px 36px rgba(244,180,0,.45);
+    }
+
+    .idea-card.fresh { animation: cardGlow 1.6s ease; }
+    @keyframes cardGlow {
+      0%   { background: var(--primary-light); border-color: var(--primary); transform: scale(.985); }
+      18%  { background: var(--primary-light); border-color: var(--primary); transform: scale(1.015); }
+      100% { background: var(--surface); border-color: var(--border); transform: scale(1); }
+    }
+    .goal-idea-row.fresh { animation: rowGlow 1.6s ease; }
+    @keyframes rowGlow {
+      0%   { background: var(--primary-light); border-color: var(--primary); }
+      100% { background: var(--bg); border-color: transparent; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .idea-spark { display: none; }
+      .nav-ideas-count.bump { animation: none; }
+      .idea-card.fresh, .goal-idea-row.fresh { animation: none; }
+      .idea-huzzah { transition: opacity .14s ease; transform: translateX(-50%); }
+      .idea-huzzah.show { transform: translateX(-50%); }
+    }
+
+    /* ── CONTENT ── */
+    .content {
+      flex: 1; overflow-y: auto; overflow-x: hidden;
+      padding: 28px 32px;
+    }
+    @media (max-width: 900px) { .content { padding: 20px 18px; } }
+
+    /* ── MOBILE SIDEBAR ── */
+    @media (max-width: 768px) {
+      .sidebar {
+        position: fixed; left: 0; top: var(--header-h); bottom: 0;
+        z-index: 200; transform: translateX(-100%);
+        transition: transform .28s ease; box-shadow: var(--shadow-lg);
+      }
+      .sidebar.open { transform: translateX(0); }
+      .content { padding: 16px 14px; }
+    }
+    .mob-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,.28); z-index: 190;
+    }
+    .mob-overlay.show { display: block; }
+
+    /* ── BUTTONS ── */
+    .btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 9px 18px; border-radius: 10px; border: none;
+      font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 600;
+      cursor: pointer; transition: all .18s; white-space: nowrap;
+    }
+    .btn-primary { background: var(--primary); color: var(--text); }
+    .btn-primary:hover { background: var(--primary-dark); }
+    .btn-outline {
+      background: transparent; border: 1.5px solid var(--border); color: var(--text);
+    }
+    .btn-outline:hover { border-color: var(--neutral); background: var(--bg); }
+    .btn-ghost { background: transparent; color: var(--text-muted); }
+    .btn-ghost:hover { background: var(--bg); color: var(--text); }
+    .btn-sm { padding: 6px 13px; font-size: 13px; border-radius: 8px; }
+    .btn-danger { background: var(--danger-light); color: var(--danger); border: none; }
+    .btn-danger:hover { background: var(--danger); color: #fff; }
+    .btn-icon {
+      width: 30px; height: 30px; padding: 0;
+      display: inline-flex; align-items: center; justify-content: center;
+      border-radius: 8px; font-size: 16px;
+    }
+
+    /* ── WELCOME BANNER ── */
+    .banner {
+      border-radius: var(--radius);
+      background: linear-gradient(130deg, #F4B400 0%, #E09000 100%);
+      padding: 24px 28px; margin-bottom: 26px; color: #fff;
+      position: relative; overflow: hidden;
+    }
+    .banner::after {
+      content: '✦'; position: absolute;
+      right: 28px; top: 50%; transform: translateY(-50%);
+      font-size: 90px; opacity: .12; pointer-events: none;
+    }
+    .banner h2 { font-size: 22px; margin-bottom: 4px; }
+    .banner p { font-size: 15px; opacity: .92; }
+
+    /* ── SECTION HEADER ── */
+    .sec-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 18px; gap: 12px;
+    }
+    .sec-title { font-size: 19px; font-weight: 700; }
+    .sec-sub { font-size: 13px; color: var(--text-muted); margin-top: 2px; }
+
+    /* ── GOAL CARDS (dashboard) ── */
+    .goals-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 14px;
+    }
+    .goal-card {
+      background: var(--surface); border-radius: var(--radius);
+      border: 1.5px solid var(--border); padding: 20px;
+      cursor: pointer; transition: all .2s; box-shadow: var(--shadow-sm);
+    }
+    .goal-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); border-color: var(--primary); }
+    .goal-card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
+    .goal-card-title { font-family: 'Poppins', sans-serif; font-weight: 600; font-size: 15.5px; line-height: 1.4; flex: 1; }
+    .q-chip {
+      font-size: 12px; font-weight: 700; padding: 4px 10px; border-radius: 20px;
+      background: var(--primary-light); color: var(--warning); margin-left: 8px; white-space: nowrap;
+    }
+    .goal-card-nums { display: flex; gap: 16px; margin-bottom: 12px; }
+    .num-stat strong {
+      display: block; font-family: 'IBM Plex Sans', sans-serif;
+      font-weight: 500; font-size: 22px; line-height: 1.2;
+    }
+    .num-stat span { font-size: 12.5px; color: var(--text-muted); }
+    .prog-bar { height: 7px; background: var(--neutral); border-radius: 3px; overflow: hidden; margin-bottom: 6px; }
+    .prog-fill { height: 100%; border-radius: 3px; transition: width .5s; }
+    .prog-fill.g { background: var(--green); }
+    .prog-fill.y { background: var(--primary); }
+    .prog-fill.r { background: var(--danger); }
+    .prog-note { font-size: 12.5px; color: var(--text-muted); }
+
+    /* ── GOAL DETAIL HEADER ── */
+    .goal-detail-box {
+      background: var(--surface); border-radius: var(--radius);
+      border: 1.5px solid var(--border); padding: 22px 24px;
+      margin-bottom: 22px; box-shadow: var(--shadow-sm);
+    }
+    .breadcrumb {
+      display: flex; align-items: center; gap: 6px;
+      font-size: 13.5px; color: var(--text-muted); margin-bottom: 18px;
+    }
+    .breadcrumb a { color: var(--text-muted); text-decoration: none; cursor: pointer; }
+    .breadcrumb a:hover { color: var(--primary); }
+    .breadcrumb-sep { color: var(--neutral); }
+    .gd-title { font-size: 22px; font-weight: 700; margin-bottom: 6px; }
+    .gd-desc { font-size: 15px; color: var(--text-muted); line-height: 1.65; margin-bottom: 16px; }
+    .gd-stats { display: flex; gap: 26px; flex-wrap: wrap; }
+    .gd-stat-val {
+      font-family: 'IBM Plex Sans', sans-serif; font-size: 28px;
+      font-weight: 500; line-height: 1.1;
+    }
+    .gd-stat-lab { font-size: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: .5px; }
+
+    /* ── KR CARD ── */
+    .kr-card {
+      background: var(--surface); border-radius: var(--radius);
+      border: 1.5px solid var(--border); margin-bottom: 14px;
+      overflow: hidden; box-shadow: var(--shadow-sm);
+    }
+    .kr-header {
+      padding: 16px 20px; display: flex; align-items: flex-start;
+      gap: 12px; cursor: pointer; transition: background .15s;
+    }
+    .kr-header:hover { background: var(--bg); }
+    .kr-title-wrap { flex: 1; min-width: 0; }
+    .kr-title { font-family: 'Poppins', sans-serif; font-weight: 600; font-size: 15px; line-height: 1.4; }
+    .kr-meta { font-size: 13px; color: var(--text-muted); margin-top: 4px; display: flex; gap: 12px; flex-wrap: wrap; }
+    .kr-progress-block { display: flex; align-items: center; gap: 10px; flex-shrink: 0; min-width: 150px; }
+    .kr-prog-val { font-family: 'IBM Plex Sans', sans-serif; font-size: 13px; font-weight: 500; color: var(--text-muted); white-space: nowrap; }
+    .kr-prog-bar { flex: 1; height: 6px; background: var(--neutral); border-radius: 3px; overflow: hidden; }
+    .kr-chevron { font-size: 16px; color: var(--text-muted); transition: transform .2s; flex-shrink: 0; }
+    .kr-chevron.open { transform: rotate(180deg); }
+    @media (max-width: 560px) { .kr-progress-block { display: none; } }
+
+    /* ── INITIATIVES ── */
+    .inits-wrap {
+      border-top: 1px solid var(--border);
+      container-type: inline-size;
+      container-name: initsList;
+    }
+    .inits-toolbar {
+      padding: 9px 20px; display: flex; align-items: center;
+      justify-content: space-between; background: var(--bg);
+    }
+    .inits-toolbar-label {
+      font-size: 12px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: .9px; color: var(--text-muted);
+    }
+    .init-row {
+      padding: 13px 20px; border-top: 1px solid var(--border);
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr) auto auto;
+      grid-template-areas: "dot name attrs del";
+      align-items: center; column-gap: 12px; row-gap: 8px;
+      cursor: pointer; transition: background .13s;
+    }
+    .init-row:hover { background: #FAF8F3; }
+    .init-dot { grid-area: dot; width: 10px; height: 10px; border-radius: 50%; }
+    .init-name {
+      grid-area: name; font-size: 14px; font-weight: 500;
+      min-width: 0; overflow: hidden;
+      text-overflow: ellipsis; white-space: nowrap;
+    }
+    .init-attrs {
+      grid-area: attrs; display: flex; align-items: center;
+      gap: 10px; flex-wrap: wrap; justify-content: flex-end;
+    }
+    .init-owner { font-size: 13px; color: var(--text-muted); white-space: nowrap; }
+    .init-due { font-size: 12.5px; color: var(--text-muted); white-space: nowrap; }
+    .init-comments { font-size: 12.5px; color: var(--text-muted); display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; }
+    .del-btn {
+      grid-area: del;
+      opacity: 0; background: none; border: none; cursor: pointer;
+      font-size: 15px; color: var(--text-muted); padding: 2px 6px;
+      border-radius: 5px; transition: all .15s;
+    }
+    .init-row:hover .del-btn { opacity: 1; }
+    .del-btn:hover { background: var(--danger-light); color: var(--danger); }
+
+    /* When the initiatives list is narrow, drop attributes to their own row */
+    @container initsList (max-width: 720px) {
+      .init-row {
+        grid-template-columns: auto minmax(0, 1fr) auto;
+        grid-template-areas:
+          "dot name del"
+          ".   attrs attrs";
+      }
+      .init-row .init-name { white-space: normal; line-height: 1.4; }
+      .init-row .init-attrs { justify-content: flex-start; }
+      .init-row .del-btn { opacity: 1; } /* touch-friendly — no hover on mobile */
+    }
+
+    /* ── BADGES ── */
+    .badge {
+      display: inline-block; font-size: 12px; font-weight: 700;
+      padding: 4px 10px; border-radius: 20px; white-space: nowrap;
+    }
+    .badge-not_started  { background: #F0EFED; color: #6B6A65; }
+    .badge-in_progress  { background: var(--primary-light); color: var(--warning); }
+    .badge-on_track     { background: var(--green-light); color: var(--green); }
+    .badge-at_risk      { background: var(--warning-light); color: var(--warning); }
+    .badge-blocked      { background: var(--danger-light); color: var(--danger); }
+    .badge-completed    { background: var(--green-light); color: var(--green); }
+
+    .dot-not_started  { background: #B0ADA6; }
+    .dot-in_progress  { background: var(--primary); }
+    .dot-on_track     { background: var(--green); }
+    .dot-at_risk      { background: var(--warning); }
+    .dot-blocked      { background: var(--danger); }
+    .dot-completed    { background: var(--green); }
+
+    /* ── OVERLAY + DRAWER ── */
+    .overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,.30);
+      z-index: 300; opacity: 0; pointer-events: none; transition: opacity .25s;
+    }
+    .overlay.show { opacity: 1; pointer-events: all; }
+    .drawer {
+      position: fixed; right: 0; top: 0; bottom: 0;
+      width: 500px; max-width: 96vw;
+      background: var(--surface); z-index: 310;
+      display: flex; flex-direction: column;
+      transform: translateX(110%); transition: transform .3s ease;
+      box-shadow: var(--shadow-lg);
+    }
+    .drawer.open { transform: translateX(0); }
+
+    .drawer-head {
+      padding: 18px 22px; border-bottom: 1px solid var(--border); flex-shrink: 0;
+    }
+    .drawer-close-btn {
+      float: right; background: none; border: none; font-size: 22px;
+      cursor: pointer; color: var(--text-muted); line-height: 1;
+      padding: 2px 4px; border-radius: 6px; transition: all .15s;
+    }
+    .drawer-close-btn:hover { background: var(--bg); color: var(--text); }
+    .drawer-crumb { font-size: 13px; color: var(--text-muted); margin-bottom: 6px; }
+    .drawer-title { font-size: 18px; font-weight: 700; line-height: 1.4; margin-right: 34px; }
+    .drawer-meta { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+    .chip {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 5px 11px; border-radius: 20px; font-size: 13px;
+      font-weight: 500; background: var(--bg); border: 1px solid var(--border);
+      color: var(--text-muted);
+    }
+    button.chip {
+      font-family: 'Inter', sans-serif; margin: 0; cursor: pointer;
+      transition: all .15s;
+    }
+    button.chip:hover {
+      border-color: var(--primary); background: var(--primary-light);
+      color: var(--text);
+    }
+    button.chip:focus-visible {
+      outline: 2px solid var(--primary); outline-offset: 2px;
+    }
+    button.chip.chip-empty { border-style: dashed; font-style: italic; }
+    button.chip.chip-empty:hover { font-style: normal; }
+    .chip-input {
+      padding: 4px 11px; border: 1.5px solid var(--primary);
+      border-radius: 20px; outline: none;
+      font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 500;
+      background: var(--surface); color: var(--text);
+      box-shadow: 0 0 0 3px var(--primary-light);
+      transition: box-shadow .15s;
+    }
+    .chip-input[type="text"] { min-width: 180px; }
+    .chip-input[type="date"] { min-width: 150px; }
+    select.chip-input { min-width: 200px; cursor: pointer; padding-right: 24px; }
+
+    .drawer-body { flex: 1; overflow-y: auto; padding: 20px 22px; }
+
+    /* ── UPDATE BOX ── */
+    .update-box {
+      background: var(--bg); border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm); padding: 16px; margin-bottom: 22px;
+    }
+    .update-box-title {
+      font-size: 12.5px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: .9px; color: var(--text-muted); margin-bottom: 12px;
+    }
+    .status-pills { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
+    .status-pill {
+      padding: 6px 14px; border-radius: 20px; border: 1.5px solid transparent;
+      font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 600;
+      cursor: pointer; transition: all .18s;
+    }
+    .status-pill:hover { transform: translateY(-1px); box-shadow: var(--shadow-sm); }
+    .status-pill.active { box-shadow: 0 0 0 2.5px var(--primary); }
+    .status-pending-hint {
+      margin-top: 10px; padding: 8px 12px;
+      background: var(--primary-light); border: 1px dashed var(--primary);
+      border-radius: var(--radius-sm);
+      font-size: 12.5px; color: var(--text);
+      line-height: 1.45;
+    }
+    .status-pending-hint strong { font-weight: 600; }
+
+    .comment-box {
+      background: var(--surface); border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm); overflow: hidden;
+    }
+    .comment-box textarea {
+      width: 100%; padding: 12px 14px; border: none; outline: none;
+      font-family: 'Inter', sans-serif; font-size: 15px;
+      resize: none; background: transparent; color: var(--text);
+      min-height: 78px; line-height: 1.5;
+    }
+    .comment-box textarea::placeholder { color: var(--neutral); }
+    .comment-box-foot {
+      padding: 8px 10px; display: flex; align-items: center;
+      justify-content: space-between; border-top: 1px solid var(--border);
+    }
+    .comment-hint { font-size: 12.5px; color: var(--text-muted); }
+
+    /* ── TIMELINE ── */
+    .timeline-label {
+      font-size: 14px; font-weight: 600; color: var(--text);
+      margin-bottom: 14px;
+    }
+    .timeline { position: relative; }
+    .timeline::before {
+      content: ''; position: absolute;
+      left: 16px; top: 34px; bottom: 6px;
+      width: 2px; background: var(--border);
+    }
+    .tl-item { display: flex; gap: 12px; margin-bottom: 18px; }
+    .tl-icon {
+      width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px; border: 2px solid var(--border);
+      background: var(--surface); z-index: 1;
+    }
+    .tl-icon.comment-ic  { background: var(--primary-light); border-color: var(--primary); }
+    .tl-icon.status-ic   { background: var(--green-light); border-color: var(--green); }
+    .tl-icon.created-ic  { background: #F0EFED; border-color: var(--neutral); }
+    .tl-body {
+      flex: 1; background: var(--bg); border: 1px solid var(--border);
+      border-radius: var(--radius-sm); padding: 12px 14px;
+    }
+    .tl-date { font-size: 12px; color: var(--text-muted); margin-bottom: 5px; }
+    .tl-text { font-size: 14px; line-height: 1.6; }
+
+    /* ── MODAL ── */
+    .modal-wrap {
+      position: fixed; inset: 0; z-index: 400;
+      display: flex; align-items: center; justify-content: center; padding: 20px;
+    }
+    .modal-bg { position: absolute; inset: 0; background: rgba(0,0,0,.32); }
+    .modal-box {
+      position: relative; background: var(--surface);
+      border-radius: var(--radius); padding: 26px 28px;
+      width: 100%; max-width: 460px; box-shadow: var(--shadow-lg);
+      animation: popIn .22s ease;
+    }
+    @keyframes popIn {
+      from { opacity: 0; transform: scale(.95) translateY(6px); }
+      to   { opacity: 1; transform: scale(1) translateY(0); }
+    }
+    .modal-title { font-size: 19px; font-weight: 700; margin-bottom: 18px; }
+    .form-group { margin-bottom: 14px; }
+    .form-label {
+      display: block; font-size: 12px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: .5px;
+      color: var(--text-muted); margin-bottom: 6px;
+    }
+    .form-input {
+      width: 100%; padding: 10px 13px;
+      border: 1.5px solid var(--border); border-radius: var(--radius-sm);
+      font-family: 'Inter', sans-serif; font-size: 15px;
+      background: var(--bg); color: var(--text); outline: none;
+      transition: border-color .18s;
+    }
+    .form-input:focus { border-color: var(--primary); }
+    textarea.form-input { resize: vertical; min-height: 62px; }
+    select.form-input { cursor: pointer; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    @media (max-width: 480px) { .form-row { grid-template-columns: 1fr; } }
+    .form-actions { display: flex; gap: 9px; justify-content: flex-end; margin-top: 20px; }
+
+    /* ── EMPTY STATES ── */
+    .empty {
+      text-align: center; padding: 40px 20px; color: var(--text-muted);
+    }
+    .empty-icon { font-size: 44px; margin-bottom: 10px; }
+    .empty h3 { font-size: 17px; color: var(--text); margin-bottom: 6px; }
+    .empty p { font-size: 14px; margin-bottom: 16px; }
+
+    /* ── ANIMATIONS ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .fade-up { animation: fadeUp .24s ease; }
+
+    /* ── SCROLLBAR ── */
+    ::-webkit-scrollbar { width: 5px; height: 5px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--neutral); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+  </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="header">
+  <div class="header-left">
+    <button class="menu-btn" id="menuBtn" type="button" aria-label="Toggle goals menu" aria-expanded="false">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <line class="mi-l1" x1="3" y1="6" x2="21" y2="6"/>
+        <line class="mi-l2" x1="3" y1="12" x2="21" y2="12"/>
+        <line class="mi-l3" x1="3" y1="18" x2="21" y2="18"/>
+      </svg>
+    </button>
+    <div class="header-logo">
+      <div class="logo-mark" aria-hidden="true">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="9"/>
+        <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/>
+      </svg>
+    </div>
+      <span class="logo-name">Zostel <em>Compass</em></span>
+    </div>
+  </div>
+  <div class="header-right">
+    <button class="btn btn-primary btn-sm" type="button" onclick="openGoalModal()">+ New Goal</button>
+  </div>
+</header>
+
+<!-- MOBILE OVERLAY -->
+<div class="mob-overlay" id="mobOverlay" onclick="closeSidebar()"></div>
+
+<!-- SHELL -->
+<div class="app-shell">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-label">Your Goals</div>
+    <div id="sidebarList"></div>
+    <button class="sidebar-add-btn" onclick="openGoalModal()">+ Add Goal</button>
+
+    <div class="sidebar-divider"></div>
+
+    <button class="nav-ideas-btn" id="navIdeasBtn" type="button" onclick="goToIdeas()">
+      <span class="nav-ideas-icon" aria-hidden="true">💡</span>
+      <span>Ideas</span>
+      <span class="nav-ideas-count" id="navIdeasCount">0</span>
+    </button>
+
+    <div class="sidebar-footer">
+      <button class="nav-ideas-btn" id="navHelpBtn" type="button" onclick="goToHelp()">
+        <span class="nav-ideas-icon" aria-hidden="true">❓</span>
+        <span>Help</span>
+      </button>
+      <button class="nav-ideas-btn" id="navSettingsBtn" type="button" onclick="goToSettings()">
+        <span class="nav-ideas-icon" aria-hidden="true">⚙️</span>
+        <span>Settings</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- CONTENT -->
+  <main class="content" id="mainContent"></main>
+</div>
+
+<!-- DRAWER OVERLAY -->
+<div class="overlay" id="drawerOverlay" onclick="closeDrawer()"></div>
+
+<!-- INITIATIVE DRAWER -->
+<div class="drawer" id="drawer">
+  <div class="drawer-head">
+    <button class="drawer-close-btn" onclick="closeDrawer()">×</button>
+    <div class="drawer-crumb" id="dCrumb"></div>
+    <div class="drawer-title" id="dTitle"></div>
+    <div class="drawer-meta" id="dMeta"></div>
+  </div>
+  <div class="drawer-body" id="dBody"></div>
+</div>
+
+<!-- MODAL CONTAINER -->
+<div id="modalRoot"></div>
+
+<script>
+// ═══════════════════════════════════════════
+//  STATE
+// ═══════════════════════════════════════════
+
+let S = { goals: [], ideas: [], members: [], activeGoalId: null, openKRs: new Set(), view: 'goals' };
+let ideaFilter = 'all'; // 'all' | 'unlinked' | <goalId>
+
+const STATUSES = [
+  { v:'not_started', label:'Not Started', emoji:'○' },
+  { v:'in_progress', label:'In Progress', emoji:'◔' },
+  { v:'on_track',    label:'On Track',    emoji:'●' },
+  { v:'at_risk',     label:'At Risk',     emoji:'⚠' },
+  { v:'blocked',     label:'Blocked',     emoji:'✕' },
+  { v:'completed',   label:'Completed',   emoji:'✓' },
+];
+const slabel = v => STATUSES.find(s=>s.v===v)?.label || v;
+
+// ═══════════════════════════════════════════
+//  PERSIST
+// ═══════════════════════════════════════════
+
+const KEY = 'zostel_okr_v3';
+function save() {
+  try { localStorage.setItem(KEY, JSON.stringify({goals:S.goals, ideas:S.ideas, members:S.members})); }
+  catch(e) { console.warn('[Zostel] Could not save to localStorage:', e); }
+}
+function load() {
+  try {
+    const d = JSON.parse(localStorage.getItem(KEY) || '{}');
+    if (d.goals?.length) {
+      S.goals = d.goals;
+      S.ideas = d.ideas || [];
+      S.members = Array.isArray(d.members) ? d.members : extractMembersFromGoals(d.goals);
+      return;
+    }
+  } catch(_){}
+  seedData();
+}
+function extractMembersFromGoals(goals) {
+  const owners = new Set();
+  (goals||[]).forEach(g => (g.keyResults||[]).forEach(kr => (kr.initiatives||[]).forEach(i => {
+    if (i.owner) owners.add(i.owner);
+  })));
+  return [...owners].sort((a,b)=>a.localeCompare(b)).map(name => ({
+    id: Date.now().toString(36)+Math.random().toString(36).slice(2,6), name
+  }));
+}
+function flashError(inputId, msg) {
+  const el = document.getElementById(inputId);
+  if (!el) return;
+  el.style.borderColor = 'var(--danger)';
+  el.focus();
+  let warn = document.getElementById(inputId+'-warn');
+  if (!warn) {
+    warn = document.createElement('div');
+    warn.id = inputId+'-warn';
+    warn.style.cssText = 'color:var(--danger);font-size:13px;margin-top:5px;font-weight:500';
+    el.parentNode.appendChild(warn);
+  }
+  warn.textContent = msg;
+  setTimeout(()=>{ el.style.borderColor=''; warn?.remove(); }, 3200);
+}
+
+function seedData() {
+  const mk = () => Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+  S.goals = [
+    {
+      id: mk(),
+      title: "Drive Vibe Curator Program adoption across all Zostel properties",
+      desc: "Get property managers to say \"We want this.\" Build clarity, trust, and clear business value so the Vibe Curator Program becomes the default — not the exception.",
+      quarter: "Q2 2026",
+      createdAt: "2026-04-01",
+      keyResults: [
+        {
+          id: mk(),
+          title: "Grow active participation from pilot properties to majority of the network",
+          target: 75, current: 28, unit: "%",
+          initiatives: [
+            { id: mk(), title: "Property Manager Communication Kit", status: "in_progress", owner: "Programs Team", dueDate: "2026-06-15",
+              history: [
+                {id:mk(),date:"2026-04-05",type:"created",note:"Initiative created"},
+                {id:mk(),date:"2026-04-22",type:"status_change",from:"not_started",to:"in_progress",note:"First draft of \"what the program is + isn't\" shared with Manali and Goa managers for feedback."}
+              ]},
+            { id: mk(), title: "Standardised Property Onboarding Process", status: "not_started", owner: "Operations", dueDate: "2026-07-15",
+              history: [{id:mk(),date:"2026-04-10",type:"created",note:"Initiative created"}]},
+            { id: mk(), title: "Small Property Adoption Model (lighter-touch curator format)", status: "not_started", owner: "Programs Team", dueDate: "2026-07-30",
+              history: [{id:mk(),date:"2026-04-12",type:"created",note:"Initiative created"}]}
+          ]
+        },
+        {
+          id: mk(),
+          title: "Keep properties operating without curator role-misuse incidents",
+          target: 90, current: 55, unit: "% incident-free",
+          initiatives: [
+            { id: mk(), title: "Program SOPs & Role Clarity Framework", status: "in_progress", owner: "Programs Team", dueDate: "2026-06-30",
+              history: [
+                {id:mk(),date:"2026-04-08",type:"created",note:"Initiative created"},
+                {id:mk(),date:"2026-04-30",type:"status_change",from:"not_started",to:"in_progress",note:"Drafting RACI matrix for curator vs property manager responsibilities."}
+              ]},
+            { id: mk(), title: "Escalation & Support System for managers and curators", status: "not_started", owner: "Support Team", dueDate: "2026-07-31",
+              history: [{id:mk(),date:"2026-04-12",type:"created",note:"Initiative created"}]}
+          ]
+        },
+        {
+          id: mk(),
+          title: "Reach a property manager NPS of 50+ on the Vibe Curator experience",
+          target: 50, current: 22, unit: "NPS",
+          initiatives: []
+        },
+        {
+          id: mk(),
+          title: "Make program ROI clearly visible to property managers",
+          target: 85, current: 40, unit: "% who feel ROI is clear",
+          initiatives: [
+            { id: mk(), title: "ROI & Success Metrics Dashboard for property managers", status: "not_started", owner: "Data Team", dueDate: "2026-07-15",
+              history: [{id:mk(),date:"2026-04-15",type:"created",note:"Initiative created"}]},
+            { id: mk(), title: "Case Studies from Top-Performing Properties", status: "not_started", owner: "Content Team", dueDate: "2026-06-30",
+              history: [{id:mk(),date:"2026-04-15",type:"created",note:"Initiative created"}]}
+          ]
+        },
+        {
+          id: mk(),
+          title: "Drive repeat participation — properties asking for the next curator on their own",
+          target: 70, current: 35, unit: "% repeating",
+          initiatives: []
+        }
+      ]
+    },
+    {
+      id: mk(),
+      title: "Build a scalable, high-quality Vibe Curator experience system",
+      desc: "Make sure every guest at a Vibe-curated property walks away saying \"This experience was amazing.\" Consistent curator quality, retention, and engagement across the network.",
+      quarter: "Q2 2026",
+      createdAt: "2026-04-01",
+      keyResults: [
+        {
+          id: mk(),
+          title: "Lift the share of curator applicants who are a strong fit for the role",
+          target: 60, current: 32, unit: "% qualified",
+          initiatives: [
+            { id: mk(), title: "Curator Recruitment Strategy", status: "on_track", owner: "Talent Team", dueDate: "2026-06-30",
+              history: [
+                {id:mk(),date:"2026-04-05",type:"created",note:"Initiative created"},
+                {id:mk(),date:"2026-04-25",type:"status_change",from:"not_started",to:"on_track",note:"Targeting creators in tier-2/3 cities and niche travel community pages — first outreach batch live."}
+              ]},
+            { id: mk(), title: "Selection & Evaluation Framework", status: "in_progress", owner: "Talent Team", dueDate: "2026-06-15",
+              history: [{id:mk(),date:"2026-04-05",type:"created",note:"Initiative created"}]}
+          ]
+        },
+        {
+          id: mk(),
+          title: "Improve curator completion and retention rates",
+          target: 85, current: 62, unit: "% completion",
+          initiatives: [
+            { id: mk(), title: "Curator Handbook & Training Program", status: "in_progress", owner: "Curator Programs", dueDate: "2026-06-30",
+              history: [{id:mk(),date:"2026-04-08",type:"created",note:"Initiative created"}]},
+            { id: mk(), title: "Curator Onboarding Redesign (why content matters, success examples)", status: "not_started", owner: "Curator Programs", dueDate: "2026-07-31",
+              history: [{id:mk(),date:"2026-04-12",type:"created",note:"Initiative created"}]},
+            { id: mk(), title: "Alumni Community Program", status: "not_started", owner: "Community Team", dueDate: "2026-08-31",
+              history: [{id:mk(),date:"2026-04-12",type:"created",note:"Initiative created"}]}
+          ]
+        },
+        {
+          id: mk(),
+          title: "Deliver consistent activity execution and guest engagement across properties",
+          target: 90, current: 55, unit: "% activities on plan",
+          initiatives: [
+            { id: mk(), title: "Activity Playbook Library", status: "in_progress", owner: "Curator Programs", dueDate: "2026-06-30",
+              history: [{id:mk(),date:"2026-04-08",type:"created",note:"Initiative created"}]},
+            { id: mk(), title: "Weekly Reporting System", status: "on_track", owner: "Programs Ops", dueDate: "2026-05-31",
+              history: [
+                {id:mk(),date:"2026-04-12",type:"created",note:"Initiative created"},
+                {id:mk(),date:"2026-05-02",type:"status_change",from:"not_started",to:"on_track",note:"Simple weekly check-in form running — getting ~80% completion across active curators."}
+              ]},
+            { id: mk(), title: "Curator Performance Framework", status: "not_started", owner: "Programs Ops", dueDate: "2026-07-15",
+              history: [{id:mk(),date:"2026-04-15",type:"created",note:"Initiative created"}]}
+          ]
+        },
+        {
+          id: mk(),
+          title: "Lift guest feedback on community, vibe and social experience",
+          target: 4.6, current: 4.1, unit: "rating",
+          initiatives: [
+            { id: mk(), title: "Curator Recognition System (badges, titles, monthly goodies)", status: "not_started", owner: "Programs Team", dueDate: "2026-07-31",
+              history: [{id:mk(),date:"2026-04-18",type:"created",note:"Initiative created"}]},
+            { id: mk(), title: "Curator Incentive Layer (paid features, room credits, XP, event access)", status: "not_started", owner: "Programs Team", dueDate: "2026-08-15",
+              history: [{id:mk(),date:"2026-04-20",type:"created",note:"Initiative created"}]}
+          ]
+        },
+        {
+          id: mk(),
+          title: "Lift curator content consistency and cut manual follow-up dependency",
+          target: 85, current: 45, unit: "% on weekly cadence",
+          initiatives: [
+            { id: mk(), title: "Content Operating System (weekly targets + ready-to-use templates)", status: "in_progress", owner: "Content Lead", dueDate: "2026-06-30",
+              history: [
+                {id:mk(),date:"2026-04-15",type:"created",note:"Initiative created"},
+                {id:mk(),date:"2026-05-02",type:"status_change",from:"not_started",to:"in_progress",note:"Locked weekly targets: X reels, X videos, X posts, X guest interactions. Templates next."},
+                {id:mk(),date:"2026-05-10",type:"comment",text:"4 weekly content formats drafted (Hostel Vibe, Guest Story, Activity Reel, Local Recommendation) + 5 low-effort formats (POV trends, room tour, sunset timelapse, café moments, guest reactions)."}
+              ]},
+            { id: mk(), title: "Plug & Play Creative Asset Library (audio, hooks, captions, reel structures)", status: "not_started", owner: "Content Lead", dueDate: "2026-07-15",
+              history: [{id:mk(),date:"2026-04-20",type:"created",note:"Initiative created"}]},
+            { id: mk(), title: "Content Buddy & Curator Peer Group System", status: "not_started", owner: "Community Team", dueDate: "2026-07-30",
+              history: [{id:mk(),date:"2026-04-22",type:"created",note:"Initiative created"}]},
+            { id: mk(), title: "Real-time Content Visibility Dashboard (output, completion %, gaps)", status: "not_started", owner: "Data Team", dueDate: "2026-08-15",
+              history: [{id:mk(),date:"2026-04-25",type:"created",note:"Initiative created"}]}
+          ]
+        }
+      ]
+    },
+    {
+      id: mk(),
+      title: "Make the Vibe Curator Program a movement travellers want to be part of",
+      desc: "Position the program as a distinctive hospitality-community brand — the kind where the market says \"I want to be part of this.\" Drive aspiration, applications, and storytelling.",
+      quarter: "Q2 2026",
+      createdAt: "2026-04-01",
+      keyResults: [
+        {
+          id: mk(),
+          title: "Lift engagement on Zostel-vibe and curator-led content",
+          target: 6, current: 3.2, unit: "% engagement",
+          initiatives: [
+            { id: mk(), title: "Instagram Content Strategy for the Curator Program", status: "in_progress", owner: "Social Team", dueDate: "2026-06-30",
+              history: [{id:mk(),date:"2026-04-05",type:"created",note:"Initiative created"}]},
+            { id: mk(), title: "Day-in-the-Life Curator Content Series", status: "on_track", owner: "Content Team", dueDate: "2026-07-15",
+              history: [
+                {id:mk(),date:"2026-04-10",type:"created",note:"Initiative created"},
+                {id:mk(),date:"2026-04-28",type:"status_change",from:"not_started",to:"on_track",note:"First three episodes filmed across Kasol, Coorg and Spiti. Engagement looking promising."}
+              ]},
+            { id: mk(), title: "Community-Led Campaigns", status: "not_started", owner: "Community Team", dueDate: "2026-08-15",
+              history: [{id:mk(),date:"2026-04-15",type:"created",note:"Initiative created"}]}
+          ]
+        },
+        {
+          id: mk(),
+          title: "Increase storytelling visibility for participating properties",
+          target: 50, current: 18, unit: "% featured monthly",
+          initiatives: [
+            { id: mk(), title: "Property Storytelling Playbook", status: "not_started", owner: "Content Team", dueDate: "2026-07-15",
+              history: [{id:mk(),date:"2026-04-12",type:"created",note:"Initiative created"}]},
+            { id: mk(), title: "Guest Story Collection Process", status: "in_progress", owner: "Content Team", dueDate: "2026-06-30",
+              history: [{id:mk(),date:"2026-04-12",type:"created",note:"Initiative created"}]}
+          ]
+        },
+        {
+          id: mk(),
+          title: "Grow inbound applications for the Vibe Curator Program",
+          target: 1200, current: 420, unit: "applications/qtr",
+          initiatives: [
+            { id: mk(), title: "LinkedIn Thought Leadership Strategy", status: "not_started", owner: "Brand Team", dueDate: "2026-07-31",
+              history: [{id:mk(),date:"2026-04-15",type:"created",note:"Initiative created"}]},
+            { id: mk(), title: "Partnership & Collaboration Strategy (creators, travel media)", status: "not_started", owner: "Brand Team", dueDate: "2026-08-15",
+              history: [{id:mk(),date:"2026-04-18",type:"created",note:"Initiative created"}]}
+          ]
+        },
+        {
+          id: mk(),
+          title: "Build a recognisable, aspirational identity for the program",
+          target: 60, current: 22, unit: "% aided awareness",
+          initiatives: [
+            { id: mk(), title: "Curator Creator Guidelines (look, feel, tone, do's and don'ts)", status: "not_started", owner: "Brand Team", dueDate: "2026-06-30",
+              history: [{id:mk(),date:"2026-04-15",type:"created",note:"Initiative created"}]}
+          ]
+        }
+      ]
+    }
+  ];
+
+  // Seed Ideas — loose thoughts from the brainstorm not yet shaped into initiatives
+  const G1 = S.goals[0], G2 = S.goals[1], G3 = S.goals[2];
+  const g1_conflicts_kr = G1.keyResults[1].id;
+  const g1_pmnps_kr     = G1.keyResults[2].id;
+  const g2_retention_kr = G2.keyResults[1].id;
+  const g2_content_kr   = G2.keyResults[4].id;
+  const g3_engage_kr    = G3.keyResults[0].id;
+
+  S.ideas = [
+    {
+      id: mk(),
+      text: "Run a structured intro call between property manager and curator BEFORE the curator arrives — align on goals, boundaries, working style, schedules and communication preferences. Cuts surprise and friction in week one.",
+      goalId: G1.id, krId: g1_conflicts_kr,
+      createdAt: "2026-05-08"
+    },
+    {
+      id: mk(),
+      text: "Bring property managers into the curator selection process — share the shortlist of selected curators and let the manager pick the best fit for their property. Makes the manager a co-owner of program success.",
+      goalId: G1.id, krId: g1_pmnps_kr,
+      createdAt: "2026-05-10"
+    },
+    {
+      id: mk(),
+      text: "\"Vibe Curator Superhero\" video series — slightly overacted scenarios showing exactly what a great curator looks like on the ground. Doubles as a recruitment and onboarding asset.",
+      goalId: G3.id, krId: g3_engage_kr,
+      createdAt: "2026-05-12"
+    },
+    {
+      id: mk(),
+      text: "Featured Curator slot on Zostel's main Instagram every month — top-performing curator gets the spotlight. Both a reward for them and a recruitment magnet for the next batch.",
+      goalId: G3.id, krId: null,
+      createdAt: "2026-05-14"
+    },
+    {
+      id: mk(),
+      text: "Weekly curator showcase calls — curators present their best content and share ideas with peers. Builds momentum, surfaces what works, and reduces dependency on the central content team.",
+      goalId: G2.id, krId: g2_content_kr,
+      createdAt: "2026-05-15"
+    },
+    {
+      id: mk(),
+      text: "Make Zostel Credits / XP points / complimentary room nights the core curator currency. Feels Zostel-native, transferable across properties, and fuels travel for the people who build our community.",
+      goalId: G2.id, krId: g2_retention_kr,
+      createdAt: "2026-05-16"
+    }
+  ];
+
+  S.members = extractMembersFromGoals(S.goals);
+
+  save();
+}
+
+// ═══════════════════════════════════════════
+//  HELPERS
+// ═══════════════════════════════════════════
+
+const id = () => Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+const today = () => new Date().toISOString().slice(0,10);
+const esc = s => String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+
+function fmtDate(s) {
+  if(!s) return '';
+  try { return new Date(s+'T00:00:00').toLocaleDateString('en-IN',{day:'numeric',month:'short'}); } catch(_){return s;}
+}
+function fmtDateLong(s) {
+  if(!s) return '';
+  try { return new Date(s+'T00:00:00').toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'}); } catch(_){return s;}
+}
+function fmtNum(n) {
+  if(n>=1e6) return (n/1e6).toFixed(1)+'M';
+  if(n>=1000) return (n/1000).toFixed(0)+'K';
+  return n;
+}
+function goalProgress(g) {
+  let tot=0,good=0;
+  g.keyResults.forEach(kr=>kr.initiatives.forEach(i=>{tot++;if(i.status==='completed'||i.status==='on_track')good++;}));
+  return tot?Math.round(good/tot*100):0;
+}
+function krProgress(kr) {
+  if(!kr.target) return 0;
+  return Math.min(100,Math.round(kr.current/kr.target*100));
+}
+function progColor(p) { return p>=70?'g':p>=40?'y':'r'; }
+
+function findGoal(gid) { return S.goals.find(g=>g.id===gid); }
+function findKR(g,krid) { return g?.keyResults.find(k=>k.id===krid); }
+function findInit(kr,iid) { return kr?.initiatives.find(i=>i.id===iid); }
+
+// ═══════════════════════════════════════════
+//  RENDER
+// ═══════════════════════════════════════════
+
+function render() { renderSidebar(); renderMain(); }
+
+function renderSidebar() {
+  const ideasBtn = document.getElementById('navIdeasBtn');
+  const ideasCount = document.getElementById('navIdeasCount');
+  if (ideasBtn) ideasBtn.classList.toggle('active', S.view === 'ideas');
+  if (ideasCount) ideasCount.textContent = S.ideas.length;
+  const helpBtn = document.getElementById('navHelpBtn');
+  if (helpBtn) helpBtn.classList.toggle('active', S.view === 'help');
+  const settingsBtn = document.getElementById('navSettingsBtn');
+  if (settingsBtn) settingsBtn.classList.toggle('active', S.view === 'settings');
+
+  const el = document.getElementById('sidebarList');
+  if(!S.goals.length) { el.innerHTML='<p style="font-size:13px;color:var(--text-muted);padding:4px 8px">No goals yet — let\'s set one.</p>'; return; }
+  el.innerHTML = S.goals.map(g=>{
+    const p=goalProgress(g), krC=g.keyResults.length;
+    const iC=g.keyResults.reduce((a,k)=>a+k.initiatives.length,0);
+    const isActive = S.view === 'goals' && g.id === S.activeGoalId;
+    return `<div class="goal-nav-item${isActive?' active':''}" onclick="selectGoal('${g.id}')">
+      <div class="goal-nav-title">${esc(g.title)}</div>
+      <div class="goal-nav-chips"><span>${g.quarter}</span><span>${krC} measure${krC!==1?'s':''}</span><span>${iC} initiative${iC!==1?'s':''}</span></div>
+      <div class="mini-bar"><div class="mini-bar-fill" style="width:${p}%"></div></div>
+    </div>`;
+  }).join('');
+}
+
+function renderMain() {
+  const el = document.getElementById('mainContent');
+  if(S.view === 'help') { renderHelpPage(el); return; }
+  if(S.view === 'settings') { renderSettingsPage(el); return; }
+  if(S.view === 'ideas') { renderIdeasPage(el); return; }
+  if(S.activeGoalId) {
+    const g = findGoal(S.activeGoalId);
+    if(g) { renderGoalDetail(el,g); return; }
+  }
+  renderDashboard(el);
+}
+
+function renderDashboard(el) {
+  const total = S.goals.length;
+  const allInits = S.goals.flatMap(g=>g.keyResults.flatMap(k=>k.initiatives));
+  const done = allInits.filter(i=>i.status==='completed').length;
+  const risk = allInits.filter(i=>i.status==='at_risk'||i.status==='blocked').length;
+
+  el.innerHTML = `<div class="fade-up">
+    <div class="banner">
+      <h2>Where are we heading next? 🏕️</h2>
+      <p>Set your goals, track each measure, and rally the crew around the initiatives that move us forward together.</p>
+    </div>
+    <div class="sec-header">
+      <div>
+        <div class="sec-title">Your Goals This Quarter</div>
+        <div class="sec-sub">${total} goal${total!==1?'s':''} · ${allInits.length} initiative${allInits.length!==1?'s':''} · ${done} done${risk?` · <span style="color:var(--danger)">${risk} need a hand</span>`:''}</div>
+      </div>
+      <button class="btn btn-primary btn-sm" onclick="openGoalModal()">+ New Goal</button>
+    </div>
+    ${!total ? `<div class="empty"><div class="empty-icon">🌄</div><h3>The horizon is clear</h3><p>What's the first goal worth chasing? Let's set it together.</p><button class="btn btn-primary" onclick="openGoalModal()">+ Set Your First Goal</button></div>`
+    : `<div class="goals-grid">${S.goals.map(goalCard).join('')}</div>`}
+  </div>`;
+}
+
+function goalCard(g) {
+  const p=goalProgress(g), iC=g.keyResults.reduce((a,k)=>a+k.initiatives.length,0);
+  const done=g.keyResults.reduce((a,k)=>a+k.initiatives.filter(i=>i.status==='completed').length,0);
+  const risk=g.keyResults.reduce((a,k)=>a+k.initiatives.filter(i=>i.status==='at_risk'||i.status==='blocked').length,0);
+  return `<div class="goal-card" onclick="selectGoal('${g.id}')">
+    <div class="goal-card-top">
+      <div class="goal-card-title">${esc(g.title)}</div>
+      <span class="q-chip">${esc(g.quarter)}</span>
+    </div>
+    <div class="goal-card-nums">
+      <div class="num-stat"><strong>${g.keyResults.length}</strong><span>Measures</span></div>
+      <div class="num-stat"><strong>${iC}</strong><span>Initiatives</span></div>
+      <div class="num-stat"><strong style="color:var(--green)">${done}</strong><span>Done</span></div>
+      ${risk?`<div class="num-stat"><strong style="color:var(--danger)">${risk}</strong><span>Need a Hand</span></div>`:''}
+    </div>
+    <div class="prog-bar"><div class="prog-fill ${progColor(p)}" style="width:${p}%"></div></div>
+    <div class="prog-note">${p}% of initiatives on track or done</div>
+  </div>`;
+}
+
+function renderGoalDetail(el, g) {
+  const iC=g.keyResults.reduce((a,k)=>a+k.initiatives.length,0);
+  const done=g.keyResults.reduce((a,k)=>a+k.initiatives.filter(i=>i.status==='completed').length,0);
+  const p=goalProgress(g);
+  el.innerHTML = `<div class="fade-up">
+    <div class="breadcrumb">
+      <a onclick="selectGoal(null)">All Goals</a>
+      <span class="breadcrumb-sep">›</span>
+      <span>${esc(g.title)}</span>
+    </div>
+    <div class="goal-detail-box">
+      <div style="display:flex;align-items:flex-start;gap:12px;justify-content:space-between">
+        <div style="flex:1;min-width:0">
+          <span class="q-chip" style="margin-bottom:8px;display:inline-block">${esc(g.quarter)}</span>
+          <div class="gd-title">${esc(g.title)}</div>
+          ${g.desc?`<div class="gd-desc">${esc(g.desc)}</div>`:''}
+        </div>
+        <div style="display:flex;gap:7px;flex-shrink:0">
+          <button class="btn btn-ghost btn-sm" onclick="openGoalModal('${g.id}')">Edit</button>
+          <button class="btn btn-danger btn-sm" onclick="deleteGoal('${g.id}')">Delete</button>
+        </div>
+      </div>
+      <div class="gd-stats">
+        <div><div class="gd-stat-val">${g.keyResults.length}</div><div class="gd-stat-lab">Measures</div></div>
+        <div><div class="gd-stat-val">${iC}</div><div class="gd-stat-lab">Initiatives</div></div>
+        <div><div class="gd-stat-val" style="color:var(--green)">${done}</div><div class="gd-stat-lab">Done</div></div>
+        <div><div class="gd-stat-val" style="color:${p>=70?'var(--green)':p>=40?'var(--primary)':'var(--danger)'}">${p}%</div><div class="gd-stat-lab">Progress</div></div>
+      </div>
+    </div>
+    <div class="sec-header">
+      <div class="sec-title" style="font-size:17px">Measures & Initiatives</div>
+      <button class="btn btn-primary btn-sm" onclick="openKRModal('${g.id}')">+ Add Measure</button>
+    </div>
+    ${!g.keyResults.length
+      ?`<div class="empty"><div class="empty-icon">🗺️</div><h3>No measures yet</h3><p>How will we know we've arrived? Add a measure to track our progress.</p><button class="btn btn-primary" onclick="openKRModal('${g.id}')">+ Add First Measure</button></div>`
+      : g.keyResults.map(kr=>krCard(g,kr)).join('')
+    }
+    ${renderGoalIdeasSection(g)}
+  </div>`;
+}
+
+function krCard(g, kr) {
+  const p=krProgress(kr), open=S.openKRs.has(kr.id);
+  const risk=kr.initiatives.filter(i=>i.status==='at_risk'||i.status==='blocked').length;
+  let pDisp;
+  if(kr.unit==='rating') pDisp=`${kr.current} / ${kr.target} ${kr.unit}`;
+  else if(kr.unit==='%') pDisp=`${kr.current}% / ${kr.target}%`;
+  else pDisp=`${fmtNum(kr.current)} / ${fmtNum(kr.target)}`;
+
+  return `<div class="kr-card" id="kr-${kr.id}">
+    <div class="kr-header" onclick="toggleKR('${kr.id}')">
+      <div class="kr-title-wrap">
+        <div class="kr-title">${esc(kr.title)}</div>
+        <div class="kr-meta">
+          <span>${kr.initiatives.length} initiative${kr.initiatives.length!==1?'s':''}</span>
+          ${risk?`<span style="color:var(--danger)">⚠ ${risk} need a hand</span>`:''}
+        </div>
+      </div>
+      <div class="kr-progress-block">
+        <span class="kr-prog-val">${pDisp}</span>
+        <div class="kr-prog-bar"><div class="prog-fill ${progColor(p)}" style="width:${p}%"></div></div>
+      </div>
+      <button class="btn btn-ghost btn-sm" style="flex-shrink:0" onclick="event.stopPropagation();openKRModal('${g.id}','${kr.id}')">Edit</button>
+      <span class="kr-chevron${open?' open':''}">▾</span>
+    </div>
+    ${open?`<div class="inits-wrap">
+      <div class="inits-toolbar">
+        <span class="inits-toolbar-label">Initiatives</span>
+        <button class="btn btn-primary btn-sm" onclick="openInitModal('${g.id}','${kr.id}')">+ Add Initiative</button>
+      </div>
+      ${!kr.initiatives.length
+        ?`<div style="padding:20px;font-size:14px;color:var(--text-muted);text-align:center">No initiatives yet — add the first one to get this journey started!</div>`
+        : kr.initiatives.map(i=>initRow(g,kr,i)).join('')
+      }
+    </div>`:''}
+  </div>`;
+}
+
+function initRow(g, kr, init) {
+  const coms=init.history.filter(h=>h.type==='comment').length;
+  return `<div class="init-row" onclick="openDrawer('${g.id}','${kr.id}','${init.id}')">
+    <div class="init-dot dot-${init.status}"></div>
+    <div class="init-name">${esc(init.title)}</div>
+    <div class="init-attrs">
+      <span class="badge badge-${init.status}">${slabel(init.status)}</span>
+      ${init.owner?`<span class="init-owner">👤 ${esc(init.owner)}</span>`:''}
+      ${init.dueDate?`<span class="init-due">📅 ${fmtDate(init.dueDate)}</span>`:''}
+      <span class="init-comments">💬 ${coms}</span>
+    </div>
+    <button class="del-btn" onclick="event.stopPropagation();deleteInit('${g.id}','${kr.id}','${init.id}')" title="Delete">✕</button>
+  </div>`;
+}
+
+// ═══════════════════════════════════════════
+//  IDEAS
+// ═══════════════════════════════════════════
+
+const CAPTURE_PROMPTS = [
+  "Drop an idea — anything worth exploring? Press Enter to save.",
+  "What's brewing? Big or tiny, capture it here.",
+  "Half-baked is fine — type it now, polish it later.",
+  "What if we tried… Press Enter to save the spark.",
+  "A thought you'd hate to forget? Drop it here.",
+  "Saw something on the road today? Bring it to the wall.",
+  "An idea worth a chat in the next planning meeting?",
+  "Type the spark — we'll grow it together."
+];
+const GOAL_CAPTURE_PROMPTS = [
+  "An idea for this goal — type it and press Enter",
+  "What might move the needle here? Press Enter to save.",
+  "A spark worth chasing for this goal? Drop it in.",
+  "What if we tried something new here? Type and Enter.",
+  "A thought worth bringing to planning? Capture it."
+];
+const SAVE_HUZZAHS = [
+  "Nice — captured! ✨",
+  "On the wall ✨",
+  "Filed under: worth a try",
+  "Locked in 💡",
+  "Got it — keep them coming",
+  "Saved. Good one.",
+  "Spark on the wall ✨",
+  "That's a keeper 🌟",
+  "Onto the next one →"
+];
+const MILESTONE_MESSAGES = {
+  1:   { text: "First idea on the wall — let it grow ✨",      big: true },
+  5:   { text: "5 ideas captured — the wall's coming alive 🔥", big: true },
+  10:  { text: "10 ideas in the bank — that's a real brainstorm 💡", big: true },
+  25:  { text: "25 ideas! Serious momentum on this wall ⚡",    big: true },
+  50:  { text: "50 ideas! The wall is glowing 🌟",              big: true },
+  100: { text: "100 ideas! Legendary collection 🏔️",           big: true }
+};
+function pickPrompt(list) { return list[Math.floor(Math.random()*list.length)]; }
+
+let justAddedIdeaId = null;
+let huzzahTimeout = null;
+
+function celebrateIdea(rect) {
+  sparkleBurstFromRect(rect);
+  bumpIdeaCounter();
+  const count = S.ideas.length;
+  const msg = MILESTONE_MESSAGES[count] || { text: pickPrompt(SAVE_HUZZAHS), big: false };
+  showHuzzah(msg.text, msg.big);
+}
+
+function sparkleBurstFromRect(rect) {
+  if (!rect || !rect.width) return;
+  const cx = rect.left + rect.width / 2;
+  const cy = rect.top + rect.height / 2;
+  const N = 14;
+  for (let i = 0; i < N; i++) {
+    const dot = document.createElement('span');
+    dot.className = 'idea-spark';
+    if (i % 3 === 0) dot.classList.add('s-sm');
+    if (i % 5 === 0) dot.classList.add('s-green');
+    document.body.appendChild(dot);
+    const angle = (Math.PI * 2 * i) / N + (Math.random() * 0.4 - 0.2);
+    const dist  = 38 + Math.random() * 80;
+    const dx    = Math.cos(angle) * dist;
+    const dy    = Math.sin(angle) * dist - 22; // slight upward bias
+    dot.style.left = cx + 'px';
+    dot.style.top  = cy + 'px';
+    dot.style.setProperty('--dx', dx + 'px');
+    dot.style.setProperty('--dy', dy + 'px');
+    dot.style.animationDelay = (i * 6) + 'ms';
+    setTimeout(() => dot.remove(), 1000);
+  }
+}
+
+function bumpIdeaCounter() {
+  const el = document.getElementById('navIdeasCount');
+  if (!el) return;
+  el.classList.remove('bump');
+  void el.offsetWidth;
+  el.classList.add('bump');
+}
+
+function showHuzzah(text, big=false) {
+  let host = document.getElementById('ideaHuzzah');
+  if (!host) {
+    host = document.createElement('div');
+    host.id = 'ideaHuzzah';
+    document.body.appendChild(host);
+  }
+  host.className = 'idea-huzzah show' + (big?' big':'');
+  host.textContent = text;
+  clearTimeout(huzzahTimeout);
+  huzzahTimeout = setTimeout(() => host.classList.remove('show'), big ? 2400 : 1700);
+}
+
+function renderIdeasPage(el) {
+  const total = S.ideas.length;
+  el.innerHTML = `<div class="fade-up">
+    <div class="ideas-hero">
+      <h2>What's brewing? 💡</h2>
+      <p>A backlog for half-formed ideas. Capture them here now — they'll be ready when planning rolls around.</p>
+    </div>
+
+    <div class="idea-capture">
+      <textarea id="newIdeaText" placeholder="${esc(pickPrompt(CAPTURE_PROMPTS))}" rows="2"></textarea>
+      <div class="idea-capture-foot">
+        <div class="idea-capture-tags">
+          <select id="newIdeaGoal" class="idea-capture-select" aria-label="Link to a goal">
+            <option value="">Link to a goal (optional)…</option>
+            ${S.goals.map(g=>`<option value="${g.id}">🎯 ${esc(g.title)}</option>`).join('')}
+          </select>
+          <select id="newIdeaKR" class="idea-capture-select" aria-label="Link to a measure" disabled>
+            <option value="">Pick a goal first…</option>
+          </select>
+        </div>
+        <button class="btn btn-primary btn-sm" type="button" onclick="addIdeaFromForm()">+ Add Idea</button>
+      </div>
+      <span class="idea-capture-hint">Tip: Just type and hit Enter to capture a loose idea instantly.</span>
+    </div>
+
+    ${total
+      ? `<div class="sec-header" style="margin-bottom:14px"><div class="sec-title" style="font-size:17px">Idea Wall</div><div class="sec-sub">${total} idea${total!==1?'s':''} so far — promote them anytime.</div></div>
+         ${renderIdeaFilters()}
+         ${renderIdeasGrid()}`
+      : `<div class="empty"><div class="empty-icon">💭</div><h3>No ideas yet</h3><p>Capture loose thoughts here — even the wild ones.</p></div>`
+    }
+  </div>`;
+
+  const goalSel = document.getElementById('newIdeaGoal');
+  if (goalSel) goalSel.addEventListener('change', updateIdeaKROptions);
+  const ta = document.getElementById('newIdeaText');
+  if (ta) {
+    ta.addEventListener('keydown', e => {
+      if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); addIdeaFromForm(); }
+    });
+    setTimeout(()=>ta.focus(),50);
+  }
+}
+
+function updateIdeaKROptions() {
+  const gid = document.getElementById('newIdeaGoal')?.value;
+  const krSel = document.getElementById('newIdeaKR');
+  if (!krSel) return;
+  if (!gid) {
+    krSel.innerHTML = '<option value="">Pick a goal first…</option>';
+    krSel.disabled = true; return;
+  }
+  const g = findGoal(gid);
+  krSel.disabled = false;
+  krSel.innerHTML = '<option value="">Just the goal — no specific measure</option>'
+    + (g?.keyResults||[]).map(kr=>`<option value="${kr.id}">🧭 ${esc(kr.title)}</option>`).join('');
+}
+
+function renderIdeaFilters() {
+  if (!S.goals.length) return '';
+  const counts = {
+    all: S.ideas.length,
+    unlinked: S.ideas.filter(i=>!i.goalId).length,
+  };
+  S.goals.forEach(g => { counts[g.id] = S.ideas.filter(i=>i.goalId===g.id).length; });
+
+  const chips = [];
+  chips.push(`<button class="idea-filter${ideaFilter==='all'?' active':''}" type="button" onclick="setIdeaFilter('all')"><span class="idea-filter-label">All ideas</span><span class="idea-filter-count">${counts.all}</span></button>`);
+  if (counts.unlinked > 0) {
+    chips.push(`<button class="idea-filter${ideaFilter==='unlinked'?' active':''}" type="button" onclick="setIdeaFilter('unlinked')"><span class="idea-filter-label">Loose ideas</span><span class="idea-filter-count">${counts.unlinked}</span></button>`);
+  }
+  S.goals.forEach(g => {
+    if (counts[g.id] > 0) {
+      chips.push(`<button class="idea-filter${ideaFilter===g.id?' active':''}" type="button" onclick="setIdeaFilter('${g.id}')"><span class="idea-filter-label">${esc(g.title)}</span><span class="idea-filter-count">${counts[g.id]}</span></button>`);
+    }
+  });
+  return `<div class="idea-filters">${chips.join('')}</div>`;
+}
+
+function setIdeaFilter(f) { ideaFilter = f; renderMain(); }
+
+function renderIdeasGrid() {
+  let list = S.ideas;
+  if (ideaFilter === 'unlinked') list = list.filter(i=>!i.goalId);
+  else if (ideaFilter !== 'all') list = list.filter(i=>i.goalId===ideaFilter);
+
+  list = [...list].sort((a,b)=>(b.createdAt||'').localeCompare(a.createdAt||''));
+
+  if (!list.length) return `<div class="empty" style="padding:24px"><p>Nothing here yet — try a different filter or add an idea above.</p></div>`;
+
+  return `<div class="ideas-grid">${list.map(renderIdeaCard).join('')}</div>`;
+}
+
+function renderIdeaCard(idea) {
+  const g = idea.goalId ? findGoal(idea.goalId) : null;
+  const kr = (g && idea.krId) ? findKR(g, idea.krId) : null;
+  const fresh = idea.id === justAddedIdeaId ? ' fresh' : '';
+  return `<div class="idea-card${fresh}">
+    <div class="idea-text">${esc(idea.text)}</div>
+    <div class="idea-meta">
+      ${g
+        ? `<span class="idea-link-chip" title="${esc(g.title)}${kr?' › '+esc(kr.title):''}">🎯 ${esc(g.title)}${kr?` › ${esc(kr.title)}`:''}</span>`
+        : `<span class="idea-loose-chip">💭 Loose idea</span>`
+      }
+      <span class="idea-date">${fmtDate(idea.createdAt)}</span>
+    </div>
+    <div class="idea-actions">
+      <button class="btn btn-outline btn-sm" type="button" onclick="openPromoteModal('${idea.id}')">↗ Turn into initiative</button>
+      <button class="btn-icon-only" type="button" onclick="deleteIdea('${idea.id}')" title="Delete idea" aria-label="Delete idea">✕</button>
+    </div>
+  </div>`;
+}
+
+function addIdeaFromForm() {
+  const ta = document.getElementById('newIdeaText');
+  const text = (ta?.value||'').trim();
+  if (!text) { flashError('newIdeaText','What\'s the idea? Type it in to capture it.'); return; }
+  const rect = ta?.getBoundingClientRect();
+  const gid = document.getElementById('newIdeaGoal')?.value || null;
+  const krid = document.getElementById('newIdeaKR')?.value || null;
+  const newIdea = { id:id(), text, goalId:gid||null, krId:krid||null, createdAt:today() };
+  S.ideas.push(newIdea);
+  justAddedIdeaId = newIdea.id;
+  if (ta) ta.value = '';
+  save(); render();
+  setTimeout(()=>document.getElementById('newIdeaText')?.focus(),50);
+  celebrateIdea(rect);
+  setTimeout(()=>{ justAddedIdeaId = null; }, 2000);
+}
+
+function addQuickIdea(gid) {
+  const input = document.getElementById('goalIdeaInput');
+  const text = (input?.value||'').trim();
+  if (!text || !input) return;
+  const rect = input.getBoundingClientRect();
+  const newIdea = { id:id(), text, goalId:gid, krId:null, createdAt:today() };
+  S.ideas.push(newIdea);
+  justAddedIdeaId = newIdea.id;
+  input.value = '';
+  save(); render();
+  setTimeout(()=>document.getElementById('goalIdeaInput')?.focus(),50);
+  celebrateIdea(rect);
+  setTimeout(()=>{ justAddedIdeaId = null; }, 2000);
+}
+
+function deleteIdea(iid) {
+  if (!confirm('Delete this idea?')) return;
+  S.ideas = S.ideas.filter(i=>i.id!==iid);
+  save(); render();
+}
+
+function openPromoteModal(iid) {
+  const idea = S.ideas.find(i=>i.id===iid);
+  if (!idea) return;
+  if (!S.goals.length) { alert('Add a goal first — initiatives need a measure to live under.'); return; }
+
+  showModal(`
+    <div class="modal-title">Turn into Initiative 🚀</div>
+    <div class="form-group">
+      <label class="form-label">The idea</label>
+      <div style="background:var(--bg);padding:11px 13px;border-radius:var(--radius-sm);font-size:14px;line-height:1.5;border:1.5px solid var(--border)">${esc(idea.text)}</div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Goal</label>
+        <select class="form-input" id="pGoal"></select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Measure</label>
+        <select class="form-input" id="pKR"></select>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Who's leading it</label>
+        <select class="form-input" id="pOwner">${ownerOptions('')}</select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">By when</label>
+        <input class="form-input" id="pDue" type="date" />
+      </div>
+    </div>
+    <div class="form-actions">
+      <button type="button" class="btn btn-outline" id="pCancel">Cancel</button>
+      <button type="button" class="btn btn-primary" id="pSave">Add as Initiative</button>
+    </div>
+  `);
+
+  const goalSel = document.getElementById('pGoal');
+  const krSel = document.getElementById('pKR');
+
+  goalSel.innerHTML = S.goals.map(g=>`<option value="${g.id}"${g.id===idea.goalId?' selected':''}>${esc(g.title)}</option>`).join('');
+
+  const fillKR = () => {
+    const g = findGoal(goalSel.value);
+    if (!g?.keyResults?.length) {
+      krSel.innerHTML = '<option value="">No measures yet — add one to this goal first</option>';
+      krSel.disabled = true; return;
+    }
+    krSel.disabled = false;
+    krSel.innerHTML = g.keyResults.map(kr=>`<option value="${kr.id}"${kr.id===idea.krId?' selected':''}>${esc(kr.title)}</option>`).join('');
+  };
+  fillKR();
+  goalSel.addEventListener('change', fillKR);
+
+  document.getElementById('pCancel').addEventListener('click', closeModal);
+  document.getElementById('pSave').addEventListener('click', ()=>promoteIdea(iid));
+}
+
+function promoteIdea(iid) {
+  const idea = S.ideas.find(i=>i.id===iid);
+  if (!idea) return;
+  const gid = document.getElementById('pGoal')?.value;
+  const krid = document.getElementById('pKR')?.value;
+  if (!krid) { alert('Pick a measure for this initiative to live under.'); return; }
+  const g = findGoal(gid), kr = findKR(g, krid);
+  if (!kr) return;
+
+  const owner = (document.getElementById('pOwner')?.value||'').trim();
+  const dueDate = document.getElementById('pDue')?.value || '';
+
+  kr.initiatives.push({
+    id: id(),
+    title: idea.text,
+    status: 'not_started',
+    owner, dueDate,
+    history: [{ id:id(), date:today(), type:'created', note:'Promoted from an idea 💡' }]
+  });
+  S.ideas = S.ideas.filter(i=>i.id!==iid);
+  save();
+  closeModal();
+  S.view = 'goals';
+  S.activeGoalId = gid;
+  S.openKRs.add(krid);
+  render();
+}
+
+function renderGoalIdeasSection(g) {
+  const list = S.ideas.filter(i=>i.goalId===g.id);
+  const sorted = [...list].sort((a,b)=>(b.createdAt||'').localeCompare(a.createdAt||''));
+  const visible = sorted.slice(0,5);
+  return `<div class="goal-ideas-card">
+    <div class="goal-ideas-header">
+      <div>
+        <div class="goal-ideas-title">💡 Ideas for this goal</div>
+        <div class="goal-ideas-sub">${list.length
+          ? `${list.length} captured — ready when planning rolls around.`
+          : `Nothing captured yet — drop loose thoughts here as they come.`}</div>
+      </div>
+    </div>
+    <div class="goal-ideas-quick">
+      <input type="text" id="goalIdeaInput" placeholder="${esc(pickPrompt(GOAL_CAPTURE_PROMPTS))}" onkeydown="if(event.key==='Enter'){event.preventDefault();addQuickIdea('${g.id}')}" />
+      <button class="btn btn-primary btn-sm" type="button" onclick="addQuickIdea('${g.id}')">Add</button>
+    </div>
+    ${list.length
+      ? `<div class="goal-ideas-list">
+          ${visible.map(i=>{
+            const kr = i.krId ? findKR(g, i.krId) : null;
+            const fresh = i.id === justAddedIdeaId ? ' fresh' : '';
+            return `<div class="goal-idea-row${fresh}">
+              <span class="gi-text">${esc(i.text)}</span>
+              ${kr?`<span class="gi-kr" title="${esc(kr.title)}">${esc(kr.title)}</span>`:''}
+              <span class="gi-acts">
+                <button class="gi-mini-btn" type="button" title="Turn into initiative" onclick="openPromoteModal('${i.id}')">↗</button>
+                <button class="gi-mini-btn gi-danger" type="button" title="Delete" onclick="deleteIdea('${i.id}')">✕</button>
+              </span>
+            </div>`;
+          }).join('')}
+        </div>
+        ${list.length>5 ? `<button class="goal-ideas-more" type="button" onclick="setIdeaFilter('${g.id}');goToIdeas()">View all ${list.length} ideas →</button>` : ''}`
+      : `<div class="goal-ideas-empty">No ideas yet — capture the first one above.</div>`
+    }
+  </div>`;
+}
+
+// ═══════════════════════════════════════════
+//  DRAWER
+// ═══════════════════════════════════════════
+
+let DX = null; // { goalId, krId, initId }
+let pendingStatus = null; // staged status selection in the drawer
+
+function openDrawer(gid, krid, iid) {
+  const g=findGoal(gid), kr=findKR(g,krid), init=findInit(kr,iid);
+  if(!init) return;
+  DX = {gid,krid,iid};
+  pendingStatus = init.status;
+  document.getElementById('dCrumb').textContent = `${g.title}  ›  ${kr.title}`;
+  document.getElementById('dTitle').textContent = init.title;
+  refreshDrawerMeta(init);
+  renderDrawerBody(init);
+  document.getElementById('drawerOverlay').classList.add('show');
+  document.getElementById('drawer').classList.add('open');
+}
+
+function refreshDrawerMeta(init) {
+  const dMeta = document.getElementById('dMeta');
+  dMeta.innerHTML =
+    `<span class="badge badge-${init.status}">${slabel(init.status)}</span>`+
+    `<button type="button" class="chip${init.owner?'':' chip-empty'}" data-edit="owner" title="Click to edit who's leading">${init.owner?`👤 Led by ${esc(init.owner)}`:`👤 + Add lead`}</button>`+
+    `<button type="button" class="chip${init.dueDate?'':' chip-empty'}" data-edit="due" title="Click to edit the date">${init.dueDate?`📅 By ${fmtDate(init.dueDate)}`:`📅 + Add date`}</button>`;
+  dMeta.querySelectorAll('[data-edit]').forEach(btn => {
+    btn.addEventListener('click', () => startEditMeta(btn.dataset.edit));
+  });
+}
+
+function startEditMeta(field) {
+  if (!DX) return;
+  const g = findGoal(DX.gid), kr = findKR(g, DX.krid), init = findInit(kr, DX.iid);
+  if (!init) return;
+  const btn = document.querySelector(`#dMeta [data-edit="${field}"]`);
+  if (!btn) return;
+
+  let input;
+  if (field === 'owner') {
+    input = document.createElement('select');
+    input.className = 'chip-input';
+    input.innerHTML = ownerOptions(init.owner || '');
+    input.addEventListener('change', () => input.blur());
+  } else if (field === 'due') {
+    input = document.createElement('input');
+    input.type = 'date';
+    input.className = 'chip-input';
+    input.value = init.dueDate || '';
+  }
+
+  let done = false;
+  const commit = () => {
+    if (done) return;
+    done = true;
+    const v = (input.value || '').trim();
+    if (field === 'owner') init.owner = v;
+    else if (field === 'due') init.dueDate = v;
+    save();
+    refreshDrawerMeta(init);
+    renderMain();
+  };
+  const cancel = () => {
+    if (done) return;
+    done = true;
+    refreshDrawerMeta(init);
+  };
+
+  input.addEventListener('keydown', e => {
+    if (e.key === 'Enter') { e.preventDefault(); input.blur(); }
+    else if (e.key === 'Escape') { e.preventDefault(); cancel(); }
+  });
+  input.addEventListener('blur', commit);
+
+  btn.replaceWith(input);
+  input.focus();
+  if (field === 'owner' && input.tagName !== 'SELECT') input.select();
+}
+
+function renderDrawerBody(init) {
+  if (pendingStatus == null) pendingStatus = init.status;
+  document.getElementById('dBody').innerHTML = `
+    <div class="update-box">
+      <div class="update-box-title">Share an Update</div>
+      <div style="margin-bottom:10px">
+        <div class="form-label" style="margin-bottom:8px">Status</div>
+        <div class="status-pills" id="statusPills">
+          ${STATUSES.map(s=>`<button type="button" class="status-pill badge-${s.v}${pendingStatus===s.v?' active':''}"
+            data-status="${s.v}" onclick="stageStatus('${s.v}')">${s.emoji} ${s.label}</button>`).join('')}
+        </div>
+        <div class="status-pending-hint" id="statusPendingHint" style="${pendingStatus!==init.status?'':'display:none'}">
+          ↗ Status change staged — hit <strong>Share Update</strong> to save it to the trail.
+        </div>
+      </div>
+      <div class="form-label" style="margin-bottom:6px">Comment <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--text-muted)">(optional)</span></div>
+      <div class="comment-box">
+        <textarea id="commentInput" placeholder="How's it going? Share progress, roadblocks, or a little win to celebrate…" rows="3"
+          onkeydown="if((event.ctrlKey||event.metaKey)&&event.key==='Enter')shareUpdate()"></textarea>
+        <div class="comment-box-foot">
+          <span class="comment-hint">Ctrl+Enter to share</span>
+          <button class="btn btn-primary btn-sm" type="button" onclick="shareUpdate()">Share Update</button>
+        </div>
+      </div>
+    </div>
+    <div class="timeline-label">Activity Trail</div>
+    <div class="timeline" id="timeline">${renderTimeline(init)}</div>
+  `;
+}
+
+function stageStatus(newStatus) {
+  if (!DX) return;
+  pendingStatus = newStatus;
+  document.querySelectorAll('#statusPills .status-pill').forEach(p => {
+    p.classList.toggle('active', p.dataset.status === newStatus);
+  });
+  const init = findInit(findKR(findGoal(DX.gid), DX.krid), DX.iid);
+  const hint = document.getElementById('statusPendingHint');
+  if (hint && init) {
+    hint.style.display = (newStatus !== init.status) ? '' : 'none';
+  }
+}
+
+function shareUpdate() {
+  if(!DX) return;
+  const g=findGoal(DX.gid), kr=findKR(g,DX.krid), init=findInit(kr,DX.iid);
+  if(!init) return;
+  const text=(document.getElementById('commentInput')?.value||'').trim();
+  const statusChanged = pendingStatus && pendingStatus !== init.status;
+  if (!statusChanged && !text) return; // nothing to share
+
+  if (statusChanged) {
+    const old = init.status;
+    init.status = pendingStatus;
+    init.history.push({ id:id(), date:today(), type:'status_change', from:old, to:pendingStatus, note:text });
+  } else if (text) {
+    init.history.push({ id:id(), date:today(), type:'comment', text });
+  }
+  if (document.getElementById('commentInput')) document.getElementById('commentInput').value = '';
+  pendingStatus = init.status;
+  save();
+  refreshDrawerMeta(init);
+  renderDrawerBody(init);
+  renderMain();
+  renderSidebar();
+}
+
+function renderTimeline(init) {
+  if(!init.history.length) return '<p style="font-size:14px;color:var(--text-muted)">Quiet on the trail so far. Drop a comment or update the status!</p>';
+  return [...init.history].reverse().map(item=>{
+    let cls='created-ic', icon='✦', body='';
+    if(item.type==='comment') {
+      cls='comment-ic'; icon='💬';
+      body=`<div class="tl-text">${esc(item.text)}</div>`;
+    } else if(item.type==='status_change') {
+      cls='status-ic'; icon='⟳';
+      body=`<div class="tl-text" style="margin-bottom:5px">
+        <span class="badge badge-${item.from}">${slabel(item.from)}</span>
+        <span style="margin:0 7px;color:var(--text-muted)">→</span>
+        <span class="badge badge-${item.to}">${slabel(item.to)}</span>
+      </div>${item.note?`<div class="tl-text" style="color:var(--text-muted)">${esc(item.note)}</div>`:''}`;
+    } else {
+      body=`<div class="tl-text" style="color:var(--text-muted)">${esc(item.note||'Step added to the journey!')}</div>`;
+    }
+    return `<div class="tl-item">
+      <div class="tl-icon ${cls}">${icon}</div>
+      <div class="tl-body"><div class="tl-date">${fmtDateLong(item.date)}</div>${body}</div>
+    </div>`;
+  }).join('');
+}
+
+function closeDrawer() {
+  document.getElementById('drawerOverlay').classList.remove('show');
+  document.getElementById('drawer').classList.remove('open');
+  DX = null;
+  pendingStatus = null;
+}
+
+// ═══════════════════════════════════════════
+//  MODALS
+// ═══════════════════════════════════════════
+
+function showModal(html) {
+  document.getElementById('modalRoot').innerHTML =
+    `<div class="modal-wrap">
+       <div class="modal-bg" onclick="closeModal()"></div>
+       <div class="modal-box">${html}</div>
+     </div>`;
+}
+function closeModal() { document.getElementById('modalRoot').innerHTML=''; }
+
+// GOAL MODAL
+function openGoalModal(gid) {
+  const g = gid?findGoal(gid):null;
+  showModal(`
+    <div class="modal-title">${g?'Edit Goal':'New Goal 🎯'}</div>
+    <div class="form-group">
+      <label class="form-label">Goal</label>
+      <input class="form-input" id="mGoalTitle" value="${esc(g?.title||'')}" placeholder="e.g. Become India's most loved community for backpackers" />
+    </div>
+    <div class="form-group">
+      <label class="form-label">The vision (optional)</label>
+      <textarea class="form-input" id="mGoalDesc" rows="2" placeholder="Paint a picture of what we're building together…">${esc(g?.desc||'')}</textarea>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Quarter</label>
+        <select class="form-input" id="mGoalQ">
+          ${['Q1 2026','Q2 2026','Q3 2026','Q4 2026'].map(q=>`<option${q===(g?.quarter||'Q2 2026')?' selected':''}>${q}</option>`).join('')}
+        </select>
+      </div>
+    </div>
+    <div class="form-actions">
+      ${g?`<button type="button" class="btn btn-danger btn-sm" id="mGoalDelete" style="margin-right:auto">Delete Goal</button>`:''}
+      <button type="button" class="btn btn-outline" id="mGoalCancel">Cancel</button>
+      <button type="button" class="btn btn-primary" id="mGoalSave">${g?'Save Changes':'Add Goal'}</button>
+    </div>
+  `);
+  setTimeout(()=>document.getElementById('mGoalTitle')?.focus(),50);
+  document.getElementById('mGoalSave')?.addEventListener('click', ()=>saveGoal(g?.id||''));
+  document.getElementById('mGoalCancel')?.addEventListener('click', closeModal);
+  document.getElementById('mGoalDelete')?.addEventListener('click', ()=>{ deleteGoal(g.id); closeModal(); });
+}
+
+function saveGoal(gid) {
+  console.log('[Zostel] saveGoal called with gid=', JSON.stringify(gid));
+  const title=(document.getElementById('mGoalTitle')?.value||'').trim();
+  if(!title){ flashError('mGoalTitle','Give your adventure a name to set off!'); return; }
+  const desc=(document.getElementById('mGoalDesc')?.value||'').trim();
+  const quarter=document.getElementById('mGoalQ')?.value||'Q2 2026';
+  if(gid) {
+    const g=findGoal(gid); if(!g) return;
+    g.title=title; g.desc=desc; g.quarter=quarter;
+  } else {
+    const g={id:id(),title,desc,quarter,createdAt:today(),keyResults:[]};
+    S.goals.push(g);
+    S.activeGoalId=g.id;
+  }
+  save(); closeModal(); render();
+}
+
+function deleteGoal(gid) {
+  if(!confirm('Delete this goal and all its measures and initiatives?')) return;
+  S.goals=S.goals.filter(g=>g.id!==gid);
+  if(S.activeGoalId===gid) S.activeGoalId=null;
+  save(); render();
+}
+
+// KR MODAL
+function openKRModal(gid, krid) {
+  const g=findGoal(gid); if(!g) return;
+  const kr=krid?findKR(g,krid):null;
+  showModal(`
+    <div class="modal-title">${kr?'Edit Measure':'New Measure 🧭'}</div>
+    <div class="form-group">
+      <label class="form-label">Measure</label>
+      <input class="form-input" id="mKRTitle" value="${esc(kr?.title||'')}" placeholder="e.g. 4.8+ average community rating across all stays" />
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Where we are now</label>
+        <input class="form-input" id="mKRCur" type="number" value="${kr?.current??''}" placeholder="0" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Where we're headed</label>
+        <input class="form-input" id="mKRTarget" type="number" value="${kr?.target??''}" placeholder="100" />
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Unit (e.g. %, travellers, rating, followers)</label>
+      <input class="form-input" id="mKRUnit" value="${esc(kr?.unit||'')}" placeholder="%" />
+    </div>
+    <div class="form-actions">
+      ${kr?`<button type="button" class="btn btn-danger btn-sm" id="mKRDelete" style="margin-right:auto">Delete Measure</button>`:''}
+      <button type="button" class="btn btn-outline" id="mKRCancel">Cancel</button>
+      <button type="button" class="btn btn-primary" id="mKRSave">${kr?'Save Changes':'Add Measure'}</button>
+    </div>
+  `);
+  setTimeout(()=>document.getElementById('mKRTitle')?.focus(),50);
+  document.getElementById('mKRSave')?.addEventListener('click', ()=>saveKR(gid, kr?.id||''));
+  document.getElementById('mKRCancel')?.addEventListener('click', closeModal);
+  document.getElementById('mKRDelete')?.addEventListener('click', ()=>{ deleteKR(gid, krid); closeModal(); });
+}
+
+function saveKR(gid, krid) {
+  const g=findGoal(gid); if(!g) return;
+  const title=(document.getElementById('mKRTitle')?.value||'').trim();
+  if(!title){ flashError('mKRTitle','Tell us what this signpost marks!'); return; }
+  const cur=parseFloat(document.getElementById('mKRCur')?.value)||0;
+  const target=parseFloat(document.getElementById('mKRTarget')?.value)||100;
+  const unit=(document.getElementById('mKRUnit')?.value||'').trim()||'%';
+  if(krid) {
+    const kr=findKR(g,krid); if(!kr) return;
+    kr.title=title; kr.current=cur; kr.target=target; kr.unit=unit;
+  } else {
+    const kr={id:id(),title,current:cur,target,unit,initiatives:[]};
+    g.keyResults.push(kr);
+    S.openKRs.add(kr.id);
+  }
+  save(); closeModal(); render();
+}
+
+function deleteKR(gid, krid) {
+  const g=findGoal(gid); if(!g) return;
+  g.keyResults=g.keyResults.filter(k=>k.id!==krid);
+  S.openKRs.delete(krid);
+  save(); render();
+}
+
+// INITIATIVE MODAL
+function openInitModal(gid, krid) {
+  showModal(`
+    <div class="modal-title">New Initiative 🚀</div>
+    <div class="form-group">
+      <label class="form-label">Initiative</label>
+      <input class="form-input" id="mInitTitle" placeholder="e.g. Host community-building workshops for property managers" />
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Who's leading it</label>
+        <select class="form-input" id="mInitOwner">${ownerOptions('')}</select>
+        ${S.members.length === 0 ? `<div style="font-size:12px;color:var(--text-muted);margin-top:5px">No teammates yet — <a onclick="closeModal();goToSettings()" style="color:var(--primary);cursor:pointer;font-weight:600">add them in Settings</a> to assign a lead.</div>` : ''}
+      </div>
+      <div class="form-group">
+        <label class="form-label">By when</label>
+        <input class="form-input" id="mInitDue" type="date" />
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Starting status</label>
+      <select class="form-input" id="mInitStatus">
+        ${STATUSES.map(s=>`<option value="${s.v}">${s.label}</option>`).join('')}
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">A kickoff note (optional)</label>
+      <input class="form-input" id="mInitNote" placeholder="Anything to rally the crew before we set off?" />
+    </div>
+    <div class="form-actions">
+      <button type="button" class="btn btn-outline" id="mInitCancel">Cancel</button>
+      <button type="button" class="btn btn-primary" id="mInitSave">Add Initiative</button>
+    </div>
+  `);
+  setTimeout(()=>document.getElementById('mInitTitle')?.focus(),50);
+  document.getElementById('mInitSave')?.addEventListener('click', ()=>saveInit(gid, krid));
+  document.getElementById('mInitCancel')?.addEventListener('click', closeModal);
+}
+
+function saveInit(gid, krid) {
+  const g=findGoal(gid), kr=findKR(g,krid); if(!kr) return;
+  const title=(document.getElementById('mInitTitle')?.value||'').trim();
+  if(!title){ flashError('mInitTitle','Give this step a name so the crew knows what to chase!'); return; }
+  const status=document.getElementById('mInitStatus')?.value||'not_started';
+  const owner=(document.getElementById('mInitOwner')?.value||'').trim();
+  const dueDate=document.getElementById('mInitDue')?.value||'';
+  const note=(document.getElementById('mInitNote')?.value||'').trim();
+  const hist=[{id:id(),date:today(),type:'created',note:note||'Step added to the journey!'}];
+  if(status!=='not_started') hist.push({id:id(),date:today(),type:'status_change',from:'not_started',to:status,note});
+  kr.initiatives.push({id:id(),title,status,owner,dueDate,history:hist});
+  save(); closeModal(); render();
+}
+
+function deleteInit(gid, krid, iid) {
+  if(!confirm('Delete this initiative?')) return;
+  const g=findGoal(gid), kr=findKR(g,krid); if(!kr) return;
+  kr.initiatives=kr.initiatives.filter(i=>i.id!==iid);
+  save(); render();
+}
+
+// ═══════════════════════════════════════════
+//  NAV
+// ═══════════════════════════════════════════
+
+function selectGoal(gid) {
+  S.view = 'goals';
+  S.activeGoalId=gid;
+  if(gid) {
+    const g=findGoal(gid);
+    if(g?.keyResults.length) S.openKRs.add(g.keyResults[0].id);
+  }
+  render();
+  closeSidebar();
+}
+
+function goToIdeas() {
+  S.view = 'ideas';
+  S.activeGoalId = null;
+  render();
+  closeSidebar();
+}
+
+function goToSettings() {
+  S.view = 'settings';
+  S.activeGoalId = null;
+  render();
+  closeSidebar();
+}
+
+function goToHelp() {
+  S.view = 'help';
+  S.activeGoalId = null;
+  render();
+  closeSidebar();
+  document.getElementById('mainContent')?.scrollTo({ top: 0, behavior: 'instant' });
+}
+
+function renderHelpPage(el) {
+  el.innerHTML = `<div class="fade-up">
+    <div class="help-hero">
+      <h2>How Compass works</h2>
+      <p>Most goal trackers end up as graveyards for plans no one remembers writing. Compass is built around how a team actually moves — set the destination, mark the signposts, share the load, and check in often enough to course-correct before the season is over.</p>
+    </div>
+
+    <div class="help-section">
+      <div class="help-section-title">The four things you track</div>
+      <div class="help-section-sub">A simple hierarchy: a goal is what you're chasing, measures tell you you're winning, initiatives are the work, and ideas are the sparks before they're work.</div>
+      <div class="help-pillars">
+        <div class="help-pillar">
+          <div class="help-pillar-icon">🎯</div>
+          <div class="help-pillar-name">Goals</div>
+          <div class="help-pillar-desc">Where we're heading. Outcome-led and ambitious.<em>"Make the Vibe Curator Program the default at every Zostel property."</em></div>
+        </div>
+        <div class="help-pillar">
+          <div class="help-pillar-icon">🧭</div>
+          <div class="help-pillar-name">Measures</div>
+          <div class="help-pillar-desc">How we'll know we got there. Specific, numeric, time-bound.<em>"Grow active participation from pilot to 75% of properties."</em></div>
+        </div>
+        <div class="help-pillar">
+          <div class="help-pillar-icon">🚀</div>
+          <div class="help-pillar-name">Initiatives</div>
+          <div class="help-pillar-desc">The work that moves us forward. A clear lead, a date, a status.<em>"Build the Property Manager Communication Kit."</em></div>
+        </div>
+        <div class="help-pillar">
+          <div class="help-pillar-icon">💡</div>
+          <div class="help-pillar-name">Ideas</div>
+          <div class="help-pillar-desc">Sparks before they become work. Capture freely, shape later.<em>"Bring property managers into curator selection."</em></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="help-section">
+      <div class="help-section-title">The rhythm</div>
+      <div class="help-section-sub">Quarterly planning, weekly heartbeats, end-of-season reflection. Compass works best when you treat updates like postcards, not reports.</div>
+      <ul class="help-list">
+        <li><strong>Once a quarter</strong> — write a few honest goals, define measures, line up the initiatives that'll get you there.</li>
+        <li><strong>Whenever inspiration strikes</strong> — drop the idea in the Ideas wall. No formality, no measure required.</li>
+        <li><strong>Every week</strong> — open each initiative, update its status, share a one-line note. The Activity Trail tells the story over time.</li>
+        <li><strong>End of quarter</strong> — look at what shipped, what stalled, what changed. Plan the next leg from real ground truth.</li>
+      </ul>
+    </div>
+
+    <div class="help-section">
+      <div class="help-section-title">A few principles</div>
+      <div class="help-section-sub">Borrowed from teams that actually ship things, adapted for a hospitality-community brand.</div>
+      <ul class="help-principles">
+        <li><strong>Outcomes over output.</strong> A goal isn't "ship 10 things" — it's the change you want to create in a guest's stay, a curator's confidence, or a property's numbers.</li>
+        <li><strong>Three or four goals, max.</strong> Focus is the whole point. A team chasing eight goals is a team chasing none.</li>
+        <li><strong>Measures should sting a little.</strong> If you're hitting 100% every quarter, they're too easy. Aim for stretch, not safety.</li>
+        <li><strong>A short update beats a long deck.</strong> Two lines a week — what moved, what's stuck — is enough. The trail builds the story.</li>
+        <li><strong>Capture loose ideas freely.</strong> Not every spark needs a measure yet. The best ones earn their place at the next planning meeting.</li>
+      </ul>
+    </div>
+
+    <div class="help-section">
+      <div class="help-section-title">How to use Compass well</div>
+      <div class="help-section-sub">The shortest path from "we've installed it" to "we actually rely on it."</div>
+      <ol class="help-steps">
+        <li>Set <strong>2–4 goals</strong> for the quarter. Write them as outcomes, not tasks.</li>
+        <li>Add <strong>3–5 measures</strong> under each — the signposts that'll tell you you're winning.</li>
+        <li>Build the <strong>initiatives</strong> that drive those measures. Assign a lead and a date for each.</li>
+        <li>Capture every <strong>idea</strong> as it comes — loose is fine. Sort them in your next planning round.</li>
+        <li>Drop a quick <strong>update</strong> on each initiative every week. Even "no change this week" is signal.</li>
+      </ol>
+    </div>
+
+    <div class="help-credit">
+      Crafted with care by <a href="https://www.linkedin.com/in/vikasnagpal/?skipRedirect=true" target="_blank" rel="noopener noreferrer">Vikas N.</a>
+    </div>
+  </div>`;
+}
+
+// ─── Team members (owner dropdown source) ───
+function ownerOptions(currentValue = '') {
+  const members = [...S.members].sort((a,b) => a.name.localeCompare(b.name));
+  let opts = `<option value="">— Unassigned —</option>`;
+  const inList = members.some(m => m.name === currentValue);
+  if (currentValue && !inList) {
+    opts += `<option value="${esc(currentValue)}" selected>${esc(currentValue)} — not on team</option>`;
+  }
+  opts += members.map(m => `<option value="${esc(m.name)}"${m.name===currentValue?' selected':''}>${esc(m.name)}</option>`).join('');
+  return opts;
+}
+
+function renderSettingsPage(el) {
+  el.innerHTML = `<div class="fade-up">
+    <div class="settings-hero">
+      <h2>Settings</h2>
+      <p>Manage who can lead initiatives in Zostel Compass. Add your teammates here once — they'll show up everywhere "Led by" lives.</p>
+    </div>
+
+    <div class="settings-section">
+      <div class="settings-section-header">
+        <div class="settings-section-title">Team Members</div>
+        <div class="settings-section-sub">Add the people you work with. Removing someone here will unassign them from any initiative they're currently leading.</div>
+      </div>
+
+      <div class="member-add">
+        <input id="memberInput" type="text" placeholder="Add a teammate — e.g. Priya Sharma" autocomplete="off" onkeydown="if(event.key==='Enter'){event.preventDefault();addMember()}" />
+        <button class="btn btn-primary btn-sm" type="button" onclick="addMember()">+ Add Member</button>
+      </div>
+
+      ${S.members.length
+        ? `<div class="member-list">
+            ${[...S.members].sort((a,b)=>a.name.localeCompare(b.name)).map(m => `<div class="member-row">
+              <span class="member-avatar" aria-hidden="true">${esc(m.name.charAt(0).toUpperCase())}</span>
+              <span class="member-name">${esc(m.name)}</span>
+              <button class="mr-remove" type="button" onclick="removeMember('${m.id}')" title="Remove ${esc(m.name)}" aria-label="Remove ${esc(m.name)}">✕</button>
+            </div>`).join('')}
+          </div>`
+        : `<div class="member-empty">No teammates yet — add the first one above to start assigning leads.</div>`
+      }
+    </div>
+  </div>`;
+  setTimeout(()=>document.getElementById('memberInput')?.focus(),50);
+}
+
+function addMember() {
+  const input = document.getElementById('memberInput');
+  const name = (input?.value || '').trim();
+  if (!name) { flashError('memberInput','Type a name to add a teammate.'); return; }
+  if (S.members.some(m => m.name.toLowerCase() === name.toLowerCase())) {
+    flashError('memberInput', `${name} is already on the team.`);
+    return;
+  }
+  S.members.push({ id: id(), name });
+  if (input) input.value = '';
+  save(); render();
+  setTimeout(()=>document.getElementById('memberInput')?.focus(),50);
+}
+
+function removeMember(mid) {
+  const m = S.members.find(x => x.id === mid);
+  if (!m) return;
+  let leadingCount = 0;
+  S.goals.forEach(g => g.keyResults.forEach(kr => kr.initiatives.forEach(i => {
+    if (i.owner === m.name) leadingCount++;
+  })));
+  let msg = `Remove ${m.name} from the team?`;
+  if (leadingCount > 0) {
+    msg += `\n\n${m.name} is currently leading ${leadingCount} initiative${leadingCount!==1?'s':''} — they'll be set to unassigned.`;
+  }
+  if (!confirm(msg)) return;
+  S.goals.forEach(g => g.keyResults.forEach(kr => kr.initiatives.forEach(i => {
+    if (i.owner === m.name) i.owner = '';
+  })));
+  S.members = S.members.filter(x => x.id !== mid);
+  save(); render();
+}
+
+function toggleKR(krid) {
+  S.openKRs.has(krid)?S.openKRs.delete(krid):S.openKRs.add(krid);
+  render();
+}
+
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('mobOverlay').classList.remove('show');
+  const mb = document.getElementById('menuBtn');
+  mb.classList.remove('is-open');
+  mb.setAttribute('aria-expanded','false');
+}
+
+document.getElementById('menuBtn').addEventListener('click',()=>{
+  const sb=document.getElementById('sidebar');
+  const open=sb.classList.toggle('open');
+  document.getElementById('mobOverlay').classList.toggle('show',open);
+  const mb=document.getElementById('menuBtn');
+  mb.classList.toggle('is-open', open);
+  mb.setAttribute('aria-expanded', open?'true':'false');
+});
+
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'){closeDrawer();closeModal();}
+});
+
+// ═══════════════════════════════════════════
+//  BOOT
+// ═══════════════════════════════════════════
+
+load();
+render();
+</script>
+</body>
+</html>
