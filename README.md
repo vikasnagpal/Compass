@@ -4,7 +4,9 @@ A goal-tracking workspace for Zostel — a single-file (vanilla HTML/CSS/JS) app
 
 Built around how a real team actually moves: outcome-first goals, weekly check-ins via an activity trail, and a low-friction ideas wall for sparks before they become work.
 
-## Run it
+**Live demo:** https://vikasnagpal.github.io/Compass/
+
+## Run it locally
 
 Open `index.html` in any modern browser. No build step, no server, no dependencies. State persists in `localStorage`.
 
