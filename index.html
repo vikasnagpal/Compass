@@ -1048,6 +1048,51 @@
     .drawer-body { flex: 1; overflow-y: auto; padding: 20px 22px; }
 
     /* ── UPDATE BOX ── */
+    /* ── INITIATIVE DESCRIPTION (drawer) ──
+       Read-block reveals a textarea on click. Empty state nudges the
+       user to add context with a dashed border. */
+    .init-desc {
+      font-size: 14px; line-height: 1.6;
+      color: var(--text);
+      padding: 12px 14px;
+      background: var(--bg);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      margin-bottom: 18px;
+      cursor: pointer;
+      transition: all .15s;
+      white-space: pre-wrap; word-wrap: break-word;
+    }
+    .init-desc:hover { border-color: var(--primary); }
+    .init-desc.is-empty {
+      border-style: dashed;
+      color: var(--text-muted); font-style: italic;
+    }
+    .init-desc.is-empty:hover {
+      color: var(--text); font-style: normal;
+      background: var(--primary-light);
+    }
+    .init-desc-editor { margin-bottom: 18px; }
+    .init-desc-editor textarea {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1.5px solid var(--primary);
+      border-radius: var(--radius-sm);
+      font-family: 'Inter', sans-serif;
+      font-size: 14px; line-height: 1.6;
+      background: var(--surface); color: var(--text);
+      outline: none;
+      box-shadow: 0 0 0 3px var(--primary-light);
+      resize: vertical;
+      min-height: 80px;
+    }
+    .init-desc-actions {
+      display: flex; gap: 8px;
+      justify-content: flex-end; align-items: center;
+      margin-top: 8px;
+    }
+    .init-desc-hint { font-size: 12px; color: var(--text-muted); margin-right: auto; }
+
     .update-box {
       background: var(--bg); border: 1.5px solid var(--border);
       border-radius: var(--radius-sm); padding: 16px; margin-bottom: 22px;
@@ -1306,7 +1351,7 @@ const slabel = v => STATUSES.find(s=>s.v===v)?.label || v;
 //  PERSIST
 // ═══════════════════════════════════════════
 
-const KEY = 'zostel_okr_v3';
+const KEY = 'zostel_okr_v6';
 function save() {
   try { localStorage.setItem(KEY, JSON.stringify({goals:S.goals, ideas:S.ideas, members:S.members})); }
   catch(e) { console.warn('[Zostel] Could not save to localStorage:', e); }
@@ -1351,256 +1396,265 @@ function flashError(inputId, msg) {
 function seedData() {
   const mk = () => Date.now().toString(36)+Math.random().toString(36).slice(2,6);
   S.goals = [
+    // ── GOAL 1 ─────────────────────────────────────────────────────
     {
       id: mk(),
-      title: "Drive Vibe Curator Program adoption across all Zostel properties",
-      desc: "Get property managers to say \"We want this.\" Build clarity, trust, and clear business value so the Vibe Curator Program becomes the default — not the exception.",
-      quarter: "Q2 2026",
-      createdAt: "2026-04-01",
+      title: "Increase adoption of the Vibe Curator Program across all Zostel properties",
+      desc: "Get property managers to say \"We want this.\" Build clarity, trust, and clear business value so the Vibe Curator Program becomes the default at every Zostel property.",
+      quarter: "Q2 2026", createdAt: "2026-04-01",
       keyResults: [
         {
           id: mk(),
-          title: "Grow active participation from pilot properties to majority of the network",
+          title: "Increase active participation from pilot properties to majority network adoption",
           target: 75, current: 28, unit: "%",
           initiatives: [
-            { id: mk(), title: "Property Manager Communication Kit", status: "in_progress", owner: "Programs Team", dueDate: "2026-06-15",
+            { id: mk(), title: "Property Manager Communication Kit", desc: "A ready-to-share package that explains the program in 10 minutes — what it is, what it'll cost, what it returns. Designed so a manager can decide on the first call.", status: "in_progress", owner: "Harpreet Singh", dueDate: "2026-06-15",
               history: [
                 {id:mk(),date:"2026-04-05",type:"created",note:"Initiative created"},
-                {id:mk(),date:"2026-04-22",type:"status_change",from:"not_started",to:"in_progress",note:"First draft of \"what the program is + isn't\" shared with Manali and Goa managers for feedback."}
+                {id:mk(),date:"2026-04-22",type:"status_change",from:"not_started",to:"in_progress",note:"First draft shared with Manali and Goa managers for feedback."}
               ]},
-            { id: mk(), title: "Standardised Property Onboarding Process", status: "not_started", owner: "Operations", dueDate: "2026-07-15",
+            { id: mk(), title: "Property Onboarding Process", desc: "A standardised path from 'never run a curator program' to 'first curator on-site' in under 4 weeks, with clear handoffs between Programs, Operations and the property team.", status: "not_started", owner: "Swapnil Srivastava", dueDate: "2026-07-15",
               history: [{id:mk(),date:"2026-04-10",type:"created",note:"Initiative created"}]},
-            { id: mk(), title: "Small Property Adoption Model (lighter-touch curator format)", status: "not_started", owner: "Programs Team", dueDate: "2026-07-30",
-              history: [{id:mk(),date:"2026-04-12",type:"created",note:"Initiative created"}]}
+            { id: mk(), title: "Case Studies from Successful Properties", desc: "Short write-ups and videos from properties already running the program — the wins, the rough patches, and what the manager would do differently next time.", status: "not_started", owner: "Anaya", dueDate: "2026-06-30",
+              history: [{id:mk(),date:"2026-04-12",type:"created",note:"Initiative created"}]},
+            { id: mk(), title: "ROI & Success Metrics Dashboard", desc: "A live dashboard property managers can actually open — bookings, ratings, content output, repeat guests. Makes the program's value a number, not a vibe.", status: "not_started", owner: "Vikas Nagpal", dueDate: "2026-07-15",
+              history: [{id:mk(),date:"2026-04-15",type:"created",note:"Initiative created"}]},
+            { id: mk(), title: "Small Property Adoption Model", desc: "A lighter version of the program for smaller hostels (under 30 beds) — fewer hours, simpler reporting, same vibe. Removes 'we're too small' as a reason to say no.", status: "not_started", owner: "Kartikey Seth", dueDate: "2026-07-30",
+              history: [{id:mk(),date:"2026-04-15",type:"created",note:"Initiative created"}]}
           ]
         },
         {
           id: mk(),
-          title: "Keep properties operating without curator role-misuse incidents",
+          title: "Improve property manager satisfaction and trust in the program",
+          target: 65, current: 32, unit: "NPS",
+          initiatives: [
+            { id: mk(), title: "Shared Alignment Session Before Curator Arrival", desc: "A structured 30-minute call between property manager and curator before the curator arrives — goals, boundaries, working style, schedules, comms preferences. Replaces 'we'll figure it out' with 'we already did'.", status: "in_progress", owner: "Harpreet Singh", dueDate: "2026-06-15",
+              history: [
+                {id:mk(),date:"2026-04-08",type:"created",note:"Initiative created"},
+                {id:mk(),date:"2026-04-28",type:"status_change",from:"not_started",to:"in_progress",note:"Drafting the structured intro-call agenda template — covers goals, boundaries, working style, schedules and comms."}
+              ]},
+            { id: mk(), title: "Property Manager ↔ Curator Collaboration Framework", desc: "Defines how the two roles work together day-to-day — weekly rituals, shared dashboards, who decides what. So collaboration isn't left to chemistry alone.", status: "not_started", owner: "Swapnil Srivastava", dueDate: "2026-07-15",
+              history: [{id:mk(),date:"2026-04-12",type:"created",note:"Initiative created"}]},
+            { id: mk(), title: "Escalation & Support System", desc: "A clear, low-friction path for managers and curators to flag problems — who they talk to, how fast they'll hear back, what gets resolved at each level. Cuts 'I didn't know who to call' from the equation.", status: "not_started", owner: "Harpreet Singh", dueDate: "2026-07-31",
+              history: [{id:mk(),date:"2026-04-12",type:"created",note:"Initiative created"}]},
+            { id: mk(), title: "Property Manager Playbook", desc: "A short, opinionated guide for managers running the program — what to expect, what good looks like, when to nudge. Treats the manager as a program operator, not a bystander.", status: "not_started", owner: "Anaya", dueDate: "2026-06-30",
+              history: [{id:mk(),date:"2026-04-15",type:"created",note:"Initiative created"}]}
+          ]
+        },
+        {
+          id: mk(),
+          title: "Reduce operational misuse and role-boundary conflicts",
           target: 90, current: 55, unit: "% incident-free",
           initiatives: [
-            { id: mk(), title: "Program SOPs & Role Clarity Framework", status: "in_progress", owner: "Programs Team", dueDate: "2026-06-30",
+            { id: mk(), title: "Program SOPs & Role Clarity Framework", desc: "The source of truth on who-does-what across curators, property managers and central teams. Removes the grey zones that cause friction in week two.", status: "in_progress", owner: "Swapnil Srivastava", dueDate: "2026-06-30",
               history: [
                 {id:mk(),date:"2026-04-08",type:"created",note:"Initiative created"},
                 {id:mk(),date:"2026-04-30",type:"status_change",from:"not_started",to:"in_progress",note:"Drafting RACI matrix for curator vs property manager responsibilities."}
               ]},
-            { id: mk(), title: "Escalation & Support System for managers and curators", status: "not_started", owner: "Support Team", dueDate: "2026-07-31",
-              history: [{id:mk(),date:"2026-04-12",type:"created",note:"Initiative created"}]}
-          ]
-        },
-        {
-          id: mk(),
-          title: "Reach a property manager NPS of 50+ on the Vibe Curator experience",
-          target: 50, current: 22, unit: "NPS",
-          initiatives: []
-        },
-        {
-          id: mk(),
-          title: "Make program ROI clearly visible to property managers",
-          target: 85, current: 40, unit: "% who feel ROI is clear",
-          initiatives: [
-            { id: mk(), title: "ROI & Success Metrics Dashboard for property managers", status: "not_started", owner: "Data Team", dueDate: "2026-07-15",
-              history: [{id:mk(),date:"2026-04-15",type:"created",note:"Initiative created"}]},
-            { id: mk(), title: "Case Studies from Top-Performing Properties", status: "not_started", owner: "Content Team", dueDate: "2026-06-30",
+            { id: mk(), title: "Curator Responsibility Matrix", desc: "A one-pager mapping every curator activity — content, community moments, guest interactions, reporting — to a clear owner. So nobody wonders 'wait, was that mine?'", status: "not_started", owner: "Swapnil Srivastava", dueDate: "2026-07-15",
+              history: [{id:mk(),date:"2026-04-12",type:"created",note:"Initiative created"}]},
+            { id: mk(), title: "Standardized Participation Guidelines", desc: "Baseline expectations for any property running the program — minimum curator hours, content cadence, community events. So a guest's experience doesn't depend on which hostel they walked into.", status: "not_started", owner: "Harpreet Singh", dueDate: "2026-07-31",
               history: [{id:mk(),date:"2026-04-15",type:"created",note:"Initiative created"}]}
           ]
-        },
-        {
-          id: mk(),
-          title: "Drive repeat participation — properties asking for the next curator on their own",
-          target: 70, current: 35, unit: "% repeating",
-          initiatives: []
         }
       ]
     },
+    // ── GOAL 2 ─────────────────────────────────────────────────────
     {
       id: mk(),
-      title: "Build a scalable, high-quality Vibe Curator experience system",
-      desc: "Make sure every guest at a Vibe-curated property walks away saying \"This experience was amazing.\" Consistent curator quality, retention, and engagement across the network.",
-      quarter: "Q2 2026",
-      createdAt: "2026-04-01",
+      title: "Build a scalable, high-quality Vibe Curator ecosystem that consistently delivers strong guest experiences and content output",
+      desc: "Every guest at a Vibe-curated property should walk away saying \"This experience was amazing.\" Consistent curator quality, retention, engagement, and content output across the network.",
+      quarter: "Q2 2026", createdAt: "2026-04-01",
       keyResults: [
         {
           id: mk(),
-          title: "Lift the share of curator applicants who are a strong fit for the role",
-          target: 60, current: 32, unit: "% qualified",
+          title: "Improve curator quality, retention, and completion rates",
+          target: 85, current: 62, unit: "% completion",
           initiatives: [
-            { id: mk(), title: "Curator Recruitment Strategy", status: "on_track", owner: "Talent Team", dueDate: "2026-06-30",
+            { id: mk(), title: "Curator Recruitment Strategy", desc: "A coordinated approach to finding curators — tier-2/3 city creators, niche travel communities, college networks. Targets people who show up for the community, not just the Instagram.", status: "on_track", owner: "Bhavya G", dueDate: "2026-06-30",
               history: [
                 {id:mk(),date:"2026-04-05",type:"created",note:"Initiative created"},
                 {id:mk(),date:"2026-04-25",type:"status_change",from:"not_started",to:"on_track",note:"Targeting creators in tier-2/3 cities and niche travel community pages — first outreach batch live."}
               ]},
-            { id: mk(), title: "Selection & Evaluation Framework", status: "in_progress", owner: "Talent Team", dueDate: "2026-06-15",
-              history: [{id:mk(),date:"2026-04-05",type:"created",note:"Initiative created"}]}
-          ]
-        },
-        {
-          id: mk(),
-          title: "Improve curator completion and retention rates",
-          target: 85, current: 62, unit: "% completion",
-          initiatives: [
-            { id: mk(), title: "Curator Handbook & Training Program", status: "in_progress", owner: "Curator Programs", dueDate: "2026-06-30",
-              history: [{id:mk(),date:"2026-04-08",type:"created",note:"Initiative created"}]},
-            { id: mk(), title: "Curator Onboarding Redesign (why content matters, success examples)", status: "not_started", owner: "Curator Programs", dueDate: "2026-07-31",
-              history: [{id:mk(),date:"2026-04-12",type:"created",note:"Initiative created"}]},
-            { id: mk(), title: "Alumni Community Program", status: "not_started", owner: "Community Team", dueDate: "2026-08-31",
-              history: [{id:mk(),date:"2026-04-12",type:"created",note:"Initiative created"}]}
-          ]
-        },
-        {
-          id: mk(),
-          title: "Deliver consistent activity execution and guest engagement across properties",
-          target: 90, current: 55, unit: "% activities on plan",
-          initiatives: [
-            { id: mk(), title: "Activity Playbook Library", status: "in_progress", owner: "Curator Programs", dueDate: "2026-06-30",
-              history: [{id:mk(),date:"2026-04-08",type:"created",note:"Initiative created"}]},
-            { id: mk(), title: "Weekly Reporting System", status: "on_track", owner: "Programs Ops", dueDate: "2026-05-31",
-              history: [
-                {id:mk(),date:"2026-04-12",type:"created",note:"Initiative created"},
-                {id:mk(),date:"2026-05-02",type:"status_change",from:"not_started",to:"on_track",note:"Simple weekly check-in form running — getting ~80% completion across active curators."}
-              ]},
-            { id: mk(), title: "Curator Performance Framework", status: "not_started", owner: "Programs Ops", dueDate: "2026-07-15",
-              history: [{id:mk(),date:"2026-04-15",type:"created",note:"Initiative created"}]}
-          ]
-        },
-        {
-          id: mk(),
-          title: "Lift guest feedback on community, vibe and social experience",
-          target: 4.6, current: 4.1, unit: "rating",
-          initiatives: [
-            { id: mk(), title: "Curator Recognition System (badges, titles, monthly goodies)", status: "not_started", owner: "Programs Team", dueDate: "2026-07-31",
-              history: [{id:mk(),date:"2026-04-18",type:"created",note:"Initiative created"}]},
-            { id: mk(), title: "Curator Incentive Layer (paid features, room credits, XP, event access)", status: "not_started", owner: "Programs Team", dueDate: "2026-08-15",
-              history: [{id:mk(),date:"2026-04-20",type:"created",note:"Initiative created"}]}
-          ]
-        },
-        {
-          id: mk(),
-          title: "Lift curator content consistency and cut manual follow-up dependency",
-          target: 85, current: 45, unit: "% on weekly cadence",
-          initiatives: [
-            { id: mk(), title: "Content Operating System (weekly targets + ready-to-use templates)", status: "in_progress", owner: "Content Lead", dueDate: "2026-06-30",
-              history: [
-                {id:mk(),date:"2026-04-15",type:"created",note:"Initiative created"},
-                {id:mk(),date:"2026-05-02",type:"status_change",from:"not_started",to:"in_progress",note:"Locked weekly targets: X reels, X videos, X posts, X guest interactions. Templates next."},
-                {id:mk(),date:"2026-05-10",type:"comment",text:"4 weekly content formats drafted (Hostel Vibe, Guest Story, Activity Reel, Local Recommendation) + 5 low-effort formats (POV trends, room tour, sunset timelapse, café moments, guest reactions)."}
-              ]},
-            { id: mk(), title: "Plug & Play Creative Asset Library (audio, hooks, captions, reel structures)", status: "not_started", owner: "Content Lead", dueDate: "2026-07-15",
-              history: [{id:mk(),date:"2026-04-20",type:"created",note:"Initiative created"}]},
-            { id: mk(), title: "Content Buddy & Curator Peer Group System", status: "not_started", owner: "Community Team", dueDate: "2026-07-30",
-              history: [{id:mk(),date:"2026-04-22",type:"created",note:"Initiative created"}]},
-            { id: mk(), title: "Real-time Content Visibility Dashboard (output, completion %, gaps)", status: "not_started", owner: "Data Team", dueDate: "2026-08-15",
-              history: [{id:mk(),date:"2026-04-25",type:"created",note:"Initiative created"}]}
-          ]
-        }
-      ]
-    },
-    {
-      id: mk(),
-      title: "Make the Vibe Curator Program a movement travellers want to be part of",
-      desc: "Position the program as a distinctive hospitality-community brand — the kind where the market says \"I want to be part of this.\" Drive aspiration, applications, and storytelling.",
-      quarter: "Q2 2026",
-      createdAt: "2026-04-01",
-      keyResults: [
-        {
-          id: mk(),
-          title: "Lift engagement on Zostel-vibe and curator-led content",
-          target: 6, current: 3.2, unit: "% engagement",
-          initiatives: [
-            { id: mk(), title: "Instagram Content Strategy for the Curator Program", status: "in_progress", owner: "Social Team", dueDate: "2026-06-30",
+            { id: mk(), title: "Selection & Evaluation Framework", desc: "A consistent way to assess applicants beyond 'do they make nice content?' — community instincts, on-property fit, reliability under low supervision.", status: "in_progress", owner: "Bhavya G", dueDate: "2026-06-15",
               history: [{id:mk(),date:"2026-04-05",type:"created",note:"Initiative created"}]},
-            { id: mk(), title: "Day-in-the-Life Curator Content Series", status: "on_track", owner: "Content Team", dueDate: "2026-07-15",
-              history: [
-                {id:mk(),date:"2026-04-10",type:"created",note:"Initiative created"},
-                {id:mk(),date:"2026-04-28",type:"status_change",from:"not_started",to:"on_track",note:"First three episodes filmed across Kasol, Coorg and Spiti. Engagement looking promising."}
-              ]},
-            { id: mk(), title: "Community-Led Campaigns", status: "not_started", owner: "Community Team", dueDate: "2026-08-15",
-              history: [{id:mk(),date:"2026-04-15",type:"created",note:"Initiative created"}]}
-          ]
-        },
-        {
-          id: mk(),
-          title: "Increase storytelling visibility for participating properties",
-          target: 50, current: 18, unit: "% featured monthly",
-          initiatives: [
-            { id: mk(), title: "Property Storytelling Playbook", status: "not_started", owner: "Content Team", dueDate: "2026-07-15",
-              history: [{id:mk(),date:"2026-04-12",type:"created",note:"Initiative created"}]},
-            { id: mk(), title: "Guest Story Collection Process", status: "in_progress", owner: "Content Team", dueDate: "2026-06-30",
-              history: [{id:mk(),date:"2026-04-12",type:"created",note:"Initiative created"}]}
-          ]
-        },
-        {
-          id: mk(),
-          title: "Grow inbound applications for the Vibe Curator Program",
-          target: 1200, current: 420, unit: "applications/qtr",
-          initiatives: [
-            { id: mk(), title: "LinkedIn Thought Leadership Strategy", status: "not_started", owner: "Brand Team", dueDate: "2026-07-31",
-              history: [{id:mk(),date:"2026-04-15",type:"created",note:"Initiative created"}]},
-            { id: mk(), title: "Partnership & Collaboration Strategy (creators, travel media)", status: "not_started", owner: "Brand Team", dueDate: "2026-08-15",
+            { id: mk(), title: "Curator Handbook & Training", desc: "The crash course every new curator goes through before stepping on a property — the role, the standards, the rituals, the boundaries, and what earns repeat bookings.", status: "in_progress", owner: "Anaya", dueDate: "2026-06-30",
+              history: [{id:mk(),date:"2026-04-08",type:"created",note:"Initiative created"}]},
+            { id: mk(), title: "Recognition & Incentive System", desc: "Visible appreciation built into the program — monthly recognition, room credits, feature spots. So curators feel seen for the work, not just paid for it.", status: "not_started", owner: "Bhavya G", dueDate: "2026-07-31",
               history: [{id:mk(),date:"2026-04-18",type:"created",note:"Initiative created"}]}
           ]
         },
         {
           id: mk(),
-          title: "Build a recognisable, aspirational identity for the program",
-          target: 60, current: 22, unit: "% aided awareness",
+          title: "Improve guest engagement and social experience across properties",
+          target: 4.6, current: 4.1, unit: "rating",
           initiatives: [
-            { id: mk(), title: "Curator Creator Guidelines (look, feel, tone, do's and don'ts)", status: "not_started", owner: "Brand Team", dueDate: "2026-06-30",
+            { id: mk(), title: "Activity Playbook Library", desc: "A growing library of community-building activities — morning circles, local-food nights, music jams — each with what-you'll-need, how-to-run-it and lessons from past runs.", status: "in_progress", owner: "Anaya", dueDate: "2026-06-30",
+              history: [{id:mk(),date:"2026-04-08",type:"created",note:"Initiative created"}]},
+            { id: mk(), title: "Curator Community System", desc: "Infrastructure for curators to know and learn from each other — WhatsApp groups, regional pods, shared resources. A solo curator at a remote hostel never feels solo.", status: "not_started", owner: "Bhavya G", dueDate: "2026-07-30",
+              history: [{id:mk(),date:"2026-04-12",type:"created",note:"Initiative created"}]},
+            { id: mk(), title: "Weekly Showcase / Idea Sharing Calls", desc: "A standing 45-minute weekly call where curators bring their best content, one win and one stumble. Builds momentum, surfaces ideas, reduces the central team's load.", status: "on_track", owner: "Anaya", dueDate: "2026-05-31",
+              history: [
+                {id:mk(),date:"2026-04-12",type:"created",note:"Initiative created"},
+                {id:mk(),date:"2026-05-02",type:"status_change",from:"not_started",to:"on_track",note:"Weekly calls running every Friday — getting ~80% attendance from active curators."}
+              ]},
+            { id: mk(), title: "Content Buddy System", desc: "Curator-to-curator pairing for creative feedback. Two curators paired for a month — they bounce ideas, review each other's posts, and pick each other up on slow weeks.", status: "not_started", owner: "Bhavya G", dueDate: "2026-07-30",
               history: [{id:mk(),date:"2026-04-15",type:"created",note:"Initiative created"}]}
+          ]
+        },
+        {
+          id: mk(),
+          title: "Improve curator content consistency and reduce manual follow-up dependency",
+          target: 85, current: 45, unit: "% on weekly cadence",
+          initiatives: [
+            { id: mk(), title: "Content Operating System", desc: "The umbrella system that turns 'making content' from a guessing game into a weekly rhythm. Includes targets, templates, formats and a low-effort fallback for hard weeks.", status: "in_progress", owner: "Anaya", dueDate: "2026-06-30",
+              history: [
+                {id:mk(),date:"2026-04-15",type:"created",note:"Initiative created"},
+                {id:mk(),date:"2026-05-02",type:"status_change",from:"not_started",to:"in_progress",note:"Locked weekly targets and started building the templates library."}
+              ]},
+            { id: mk(), title: "Weekly measurable targets", desc: "A concrete weekly output target — X reels, X videos, X posts, X guest interactions. So curators know what 'doing the job well' looks like by Friday afternoon.", status: "on_track", owner: "Anaya", dueDate: "2026-05-31",
+              history: [
+                {id:mk(),date:"2026-04-18",type:"created",note:"Initiative created"},
+                {id:mk(),date:"2026-04-25",type:"status_change",from:"not_started",to:"on_track",note:"Defined: X reels, X videos, X posts, X guest interactions per week."}
+              ]},
+            { id: mk(), title: "Weekly content templates", desc: "Four ready-to-shoot weekly formats — Hostel Vibe, Guest Story, Activity Reel, Local Recommendation. Removes the 'what should I post?' decision every week.", status: "in_progress", owner: "Anaya", dueDate: "2026-06-15",
+              history: [
+                {id:mk(),date:"2026-04-20",type:"created",note:"Initiative created"},
+                {id:mk(),date:"2026-05-05",type:"status_change",from:"not_started",to:"in_progress",note:"4 weekly formats drafted: Hostel Vibe, Guest Story, Activity Reel, Local Recommendation."}
+              ]},
+            { id: mk(), title: "Low-effort content framework", desc: "Five formats designed for low-energy days — POV trends, room tour, sunset timelapse, café moments, guest reactions. 10 minutes of shooting, still on-brand.", status: "not_started", owner: "Anaya", dueDate: "2026-07-15",
+              history: [{id:mk(),date:"2026-04-22",type:"created",note:"Initiative created"}]},
+            { id: mk(), title: "Plug & Play Creator Toolkit", desc: "A shared library of trending audio, hooks, captions, reel structures and editable templates. Cuts the 'staring at a blank screen' part of curator work.", status: "not_started", owner: "Muskan", dueDate: "2026-07-15",
+              history: [{id:mk(),date:"2026-04-22",type:"created",note:"Initiative created"}]},
+            { id: mk(), title: "Visibility Dashboard", desc: "A real-time view of curator content output and engagement — who's posting, who's silent, who's breaking out. Shifts central-team energy from chasing reports to supporting where it matters.", status: "not_started", owner: "Vikas Nagpal", dueDate: "2026-08-15",
+              history: [{id:mk(),date:"2026-04-25",type:"created",note:"Initiative created"}]},
+            { id: mk(), title: "Curator Onboarding Redesign", desc: "A reimagined first week for curators — why content matters, what success looks like, real examples of past wins. Sets a higher floor for everyone who joins after.", status: "not_started", owner: "Anaya", dueDate: "2026-07-31",
+              history: [{id:mk(),date:"2026-04-25",type:"created",note:"Initiative created"}]}
+          ]
+        }
+      ]
+    },
+    // ── GOAL 3 ─────────────────────────────────────────────────────
+    {
+      id: mk(),
+      title: "Position the Vibe Curator Program as a recognizable hospitality-community movement that strengthens the Zostel brand",
+      desc: "Make the market say \"I want to be part of this.\" Build aspiration, applications, and storytelling around the curator program — and through it, around Zostel itself.",
+      quarter: "Q2 2026", createdAt: "2026-04-01",
+      keyResults: [
+        {
+          id: mk(),
+          title: "Increase visibility and engagement around the \"Zostel vibe\"",
+          target: 6, current: 3.2, unit: "% engagement",
+          initiatives: [
+            { id: mk(), title: "Instagram Content Strategy", desc: "A clear creative direction for Zostel's Instagram around the curator program — pillars, posting cadence, who-creates-what. Moves the channel from 'curator content lives here too' to 'this is where curator culture is built'.", status: "in_progress", owner: "Muskan", dueDate: "2026-06-30",
+              history: [{id:mk(),date:"2026-04-05",type:"created",note:"Initiative created"}]},
+            { id: mk(), title: "LinkedIn Thought Leadership Strategy", desc: "A LinkedIn-native voice that positions Zostel — and the curator program specifically — as a real hospitality movement. Less 'we got an award', more 'here's how we think about community-led travel'.", status: "not_started", owner: "Muskan", dueDate: "2026-07-31",
+              history: [{id:mk(),date:"2026-04-15",type:"created",note:"Initiative created"}]},
+            { id: mk(), title: "Community-Led Campaigns", desc: "Campaigns where the community is the creative — guest-submitted stories, curator-led series, property-driven themes. The kind of momentum a brand team alone can't generate.", status: "not_started", owner: "Bhavya G", dueDate: "2026-08-15",
+              history: [{id:mk(),date:"2026-04-15",type:"created",note:"Initiative created"}]},
+            { id: mk(), title: "Guest Story Collection Process", desc: "A simple, repeatable way to capture the moments that already happen at Zostel — unexpected friendships, impromptu jam sessions, long bus rides. Turns WhatsApp anecdotes into shareable content.", status: "in_progress", owner: "Anaya", dueDate: "2026-06-30",
+              history: [{id:mk(),date:"2026-04-12",type:"created",note:"Initiative created"}]}
+          ]
+        },
+        {
+          id: mk(),
+          title: "Generate consistent destination and property-level storytelling",
+          target: 50, current: 18, unit: "% featured monthly",
+          initiatives: [
+            { id: mk(), title: "\"Day in the Life\" Content Series", desc: "Short-form video series with a real curator at the centre — what their day looks like, what they're proud of, what surprised them this week. Doubles as a recruitment magnet.", status: "on_track", owner: "Anaya", dueDate: "2026-07-15",
+              history: [
+                {id:mk(),date:"2026-04-10",type:"created",note:"Initiative created"},
+                {id:mk(),date:"2026-04-28",type:"status_change",from:"not_started",to:"on_track",note:"First three episodes filmed across Kasol, Coorg and Spiti."}
+              ]},
+            { id: mk(), title: "Property Storytelling Playbook", desc: "A field guide for capturing each property's character — what makes Kasol different from Coorg, beyond the view. Gives content teams a clear angle for every property feature.", status: "not_started", owner: "Anaya", dueDate: "2026-07-15",
+              history: [{id:mk(),date:"2026-04-12",type:"created",note:"Initiative created"}]},
+            { id: mk(), title: "Curator Creator Guidelines", desc: "The visual and tonal rules of the road for curator content — what fits the brand, what doesn't, where to take creative liberties. Keeps the network of voices consistent without flattening them.", status: "not_started", owner: "Muskan", dueDate: "2026-06-30",
+              history: [{id:mk(),date:"2026-04-15",type:"created",note:"Initiative created"}]}
+          ]
+        },
+        {
+          id: mk(),
+          title: "Increase inbound curator applications and brand aspiration",
+          target: 1200, current: 420, unit: "applications/qtr",
+          initiatives: [
+            { id: mk(), title: "Partnership & Collaboration Strategy", desc: "A coordinated plan for partnering with creators, travel media and cultural orgs who already speak to Zostel's audience. Reach without scaling the in-house team 10x.", status: "not_started", owner: "Muskan", dueDate: "2026-08-15",
+              history: [{id:mk(),date:"2026-04-18",type:"created",note:"Initiative created"}]},
+            { id: mk(), title: "Curator Brand Positioning Framework", desc: "The strategic story behind 'why this program' — what it stands for, who it's for, what it gives back. Anchors every piece of curator communication in one consistent narrative.", status: "not_started", owner: "Muskan", dueDate: "2026-06-30",
+              history: [{id:mk(),date:"2026-04-15",type:"created",note:"Initiative created"}]},
+            { id: mk(), title: "Creator-focused recruitment storytelling", desc: "Recruitment content that speaks to creators in their language — what they'll learn, who they'll meet, where it'll take them. Pulls in applicants who already share the program's values.", status: "not_started", owner: "Bhavya G", dueDate: "2026-07-15",
+              history: [{id:mk(),date:"2026-04-20",type:"created",note:"Initiative created"}]}
           ]
         }
       ]
     }
   ];
 
-  // Seed Ideas — loose thoughts from the brainstorm not yet shaped into initiatives
+  // Resolve KR ids for tagging ideas
   const G1 = S.goals[0], G2 = S.goals[1], G3 = S.goals[2];
-  const g1_conflicts_kr = G1.keyResults[1].id;
-  const g1_pmnps_kr     = G1.keyResults[2].id;
-  const g2_retention_kr = G2.keyResults[1].id;
-  const g2_content_kr   = G2.keyResults[4].id;
-  const g3_engage_kr    = G3.keyResults[0].id;
+  const G1_M1 = G1.keyResults[0].id, G1_M2 = G1.keyResults[1].id, G1_M3 = G1.keyResults[2].id;
+  const G2_M1 = G2.keyResults[0].id, G2_M2 = G2.keyResults[1].id, G2_M3 = G2.keyResults[2].id;
+  const G3_M1 = G3.keyResults[0].id, G3_M2 = G3.keyResults[1].id, G3_M3 = G3.keyResults[2].id;
 
   S.ideas = [
-    {
-      id: mk(),
-      text: "Run a structured intro call between property manager and curator BEFORE the curator arrives — align on goals, boundaries, working style, schedules and communication preferences. Cuts surprise and friction in week one.",
-      goalId: G1.id, krId: g1_conflicts_kr,
-      createdAt: "2026-05-08"
-    },
-    {
-      id: mk(),
-      text: "Bring property managers into the curator selection process — share the shortlist of selected curators and let the manager pick the best fit for their property. Makes the manager a co-owner of program success.",
-      goalId: G1.id, krId: g1_pmnps_kr,
-      createdAt: "2026-05-10"
-    },
-    {
-      id: mk(),
-      text: "\"Vibe Curator Superhero\" video series — slightly overacted scenarios showing exactly what a great curator looks like on the ground. Doubles as a recruitment and onboarding asset.",
-      goalId: G3.id, krId: g3_engage_kr,
-      createdAt: "2026-05-12"
-    },
-    {
-      id: mk(),
-      text: "Featured Curator slot on Zostel's main Instagram every month — top-performing curator gets the spotlight. Both a reward for them and a recruitment magnet for the next batch.",
-      goalId: G3.id, krId: null,
-      createdAt: "2026-05-14"
-    },
-    {
-      id: mk(),
-      text: "Weekly curator showcase calls — curators present their best content and share ideas with peers. Builds momentum, surfaces what works, and reduces dependency on the central content team.",
-      goalId: G2.id, krId: g2_content_kr,
-      createdAt: "2026-05-15"
-    },
-    {
-      id: mk(),
-      text: "Make Zostel Credits / XP points / complimentary room nights the core curator currency. Feels Zostel-native, transferable across properties, and fuels travel for the people who build our community.",
-      goalId: G2.id, krId: g2_retention_kr,
-      createdAt: "2026-05-16"
-    }
+    // GOAL 1 — M1: active participation
+    { id: mk(), text: "Shared curator model for nearby properties — one curator covers 2–3 adjacent hostels in the same circuit.", goalId: G1.id, krId: G1_M1, createdAt: "2026-05-04" },
+    { id: mk(), text: "Weekend-only curator deployment — lighter commitment for properties testing the program.", goalId: G1.id, krId: G1_M1, createdAt: "2026-05-06" },
+    { id: mk(), text: "Seasonal curator rotation — different curators for monsoon vs winter to match each property's energy.", goalId: G1.id, krId: G1_M1, createdAt: "2026-05-08" },
+
+    // GOAL 1 — M2: PM satisfaction & trust
+    { id: mk(), text: "Include property managers in curator selection — share shortlist and let them pick the best fit. Makes the manager a co-owner of program success.", goalId: G1.id, krId: G1_M2, createdAt: "2026-05-10" },
+    { id: mk(), text: "Property manager recognition program — visible appreciation for managers championing the Vibe Curator Program.", goalId: G1.id, krId: G1_M2, createdAt: "2026-05-12" },
+    { id: mk(), text: "\"Best Community Property\" awards — quarterly recognition for properties delivering the strongest vibe.", goalId: G1.id, krId: G1_M2, createdAt: "2026-05-14" },
+    { id: mk(), text: "Run a structured intro call between property manager and curator BEFORE the curator arrives — align on goals, boundaries, working style, schedules and communication preferences. Cuts surprise and friction in week one.", goalId: G1.id, krId: G1_M2, createdAt: "2026-05-08" },
+
+    // GOAL 1 — M3: operational misuse / boundaries
+    { id: mk(), text: "Property vibe certification system — properties earn a \"Vibe Verified\" badge after meeting community-experience criteria.", goalId: G1.id, krId: G1_M3, createdAt: "2026-05-15" },
+    { id: mk(), text: "AI-based curator-property matching — algorithm to suggest the best curator fit for each property's profile.", goalId: G1.id, krId: G1_M3, createdAt: "2026-05-17" },
+
+    // GOAL 2 — M1: curator quality, retention
+    { id: mk(), text: "Curator leveling system — explicit progression (Rookie → Pro → Master) with unlockable perks at each stage.", goalId: G2.id, krId: G2_M1, createdAt: "2026-05-05" },
+    { id: mk(), text: "Curator alumni network events — keep past curators connected and use them as program ambassadors.", goalId: G2.id, krId: G2_M1, createdAt: "2026-05-08" },
+    { id: mk(), text: "Curator badges / collectibles — physical pins or digital collectibles earned through milestones.", goalId: G2.id, krId: G2_M1, createdAt: "2026-05-11" },
+    { id: mk(), text: "Make Zostel Credits / XP points / complimentary room nights the core curator currency. Feels Zostel-native, transferable across properties, and fuels travel for the people who build our community.", goalId: G2.id, krId: G2_M1, createdAt: "2026-05-16" },
+
+    // GOAL 2 — M2: guest engagement, social experience
+    { id: mk(), text: "Hostel community rituals — weekly recurring moments (Story Sunday, Music Mondays) that curators run consistently.", goalId: G2.id, krId: G2_M2, createdAt: "2026-05-09" },
+    { id: mk(), text: "Inter-hostel community events — coordinated nights or themed weeks happening simultaneously across properties.", goalId: G2.id, krId: G2_M2, createdAt: "2026-05-12" },
+    { id: mk(), text: "National curator summit — annual gathering where curators across India meet, swap ideas, and celebrate.", goalId: G2.id, krId: G2_M2, createdAt: "2026-05-15" },
+
+    // GOAL 2 — M3: content consistency, follow-up dependency
+    { id: mk(), text: "\"Vibe Curator Superhero\" video series — slightly overacted scenarios showing exactly what a great curator looks like on the ground. Doubles as a recruitment and onboarding asset.", goalId: G2.id, krId: G2_M3, createdAt: "2026-05-12" },
+    { id: mk(), text: "XP / gamification system — earn points for content output, engagement, and consistency.", goalId: G2.id, krId: G2_M3, createdAt: "2026-05-13" },
+    { id: mk(), text: "Automated content reminders — WhatsApp-based nudges with the day's content prompt.", goalId: G2.id, krId: G2_M3, createdAt: "2026-05-15" },
+    { id: mk(), text: "Internal curator leaderboard — public dashboard showing who's putting out the strongest content this week.", goalId: G2.id, krId: G2_M3, createdAt: "2026-05-17" },
+    { id: mk(), text: "Weekly curator showcase calls — curators present their best content and share ideas with peers. Builds momentum, surfaces what works, and reduces dependency on the central content team.", goalId: G2.id, krId: G2_M3, createdAt: "2026-05-15" },
+
+    // GOAL 3 — M1: visibility, engagement
+    { id: mk(), text: "Community documentary series — long-form video pieces capturing real Zostel community stories.", goalId: G3.id, krId: G3_M1, createdAt: "2026-05-06" },
+    { id: mk(), text: "City-wise vibe storytelling campaigns — each city's unique character told through its properties and curators.", goalId: G3.id, krId: G3_M1, createdAt: "2026-05-09" },
+    { id: mk(), text: "\"Travel with Zostel\" creator collaborations — partner with travel creators for authentic on-property content.", goalId: G3.id, krId: G3_M1, createdAt: "2026-05-12" },
+    { id: mk(), text: "Featured Curator slot on Zostel's main Instagram every month — top-performing curator gets the spotlight. Both a reward for them and a recruitment magnet for the next batch.", goalId: G3.id, krId: G3_M1, createdAt: "2026-05-14" },
+
+    // GOAL 3 — M2: destination / property storytelling
+    { id: mk(), text: "Property manager influencer series — feature managers as the human face of each property.", goalId: G3.id, krId: G3_M2, createdAt: "2026-05-11" },
+    { id: mk(), text: "Destination ambassador program — locals who represent the spirit of each Zostel city.", goalId: G3.id, krId: G3_M2, createdAt: "2026-05-14" },
+
+    // GOAL 3 — M3: inbound applications, brand aspiration
+    { id: mk(), text: "Zostel Creator Academy — a structured learning program for aspiring travel creators.", goalId: G3.id, krId: G3_M3, createdAt: "2026-05-13" },
+    { id: mk(), text: "Curator residency program — multi-month embedded stays for top creators across properties.", goalId: G3.id, krId: G3_M3, createdAt: "2026-05-15" },
+    { id: mk(), text: "Travel creator fellowship — paid fellowship for emerging creators to live the Zostel life and create.", goalId: G3.id, krId: G3_M3, createdAt: "2026-05-17" }
   ];
 
-  S.members = extractMembersFromGoals(S.goals);
+  // Team
+  S.members = [
+    { id: mk(), name: "Anaya" },
+    { id: mk(), name: "Bhavya G" },
+    { id: mk(), name: "Harpreet Singh" },
+    { id: mk(), name: "Kartikey Seth" },
+    { id: mk(), name: "Muskan" },
+    { id: mk(), name: "Swapnil Srivastava" },
+    { id: mk(), name: "Vikas Nagpal" }
+  ];
 
   save();
 }
@@ -2269,9 +2323,64 @@ function startEditMeta(field) {
   if (field === 'owner' && input.tagName !== 'SELECT') input.select();
 }
 
+function renderInitDesc(init) {
+  const desc = (init.desc || '').trim();
+  const empty = desc === '';
+  return `<div class="init-desc${empty?' is-empty':''}" id="initDesc"
+    onclick="startEditDesc()"
+    title="${empty?'Add a description':'Click to edit'}">${empty
+      ? '+ Add a description for this initiative…'
+      : esc(desc)}</div>`;
+}
+
+function startEditDesc() {
+  if (!DX) return;
+  const init = findInit(findKR(findGoal(DX.gid), DX.krid), DX.iid);
+  if (!init) return;
+  const block = document.getElementById('initDesc');
+  if (!block) return;
+
+  const editor = document.createElement('div');
+  editor.className = 'init-desc-editor';
+  editor.innerHTML = `
+    <textarea id="descInput" placeholder="What's this initiative about? Why does it matter?"></textarea>
+    <div class="init-desc-actions">
+      <span class="init-desc-hint">Esc to cancel · ⌘/Ctrl+Enter to save</span>
+      <button type="button" class="btn btn-outline btn-sm" id="descCancel">Cancel</button>
+      <button type="button" class="btn btn-primary btn-sm" id="descSave">Save</button>
+    </div>`;
+  block.replaceWith(editor);
+
+  const ta = document.getElementById('descInput');
+  ta.value = init.desc || '';
+  const autosize = () => { ta.style.height = 'auto'; ta.style.height = (ta.scrollHeight + 2) + 'px'; };
+  autosize();
+  ta.addEventListener('input', autosize);
+  ta.focus();
+  ta.setSelectionRange(ta.value.length, ta.value.length);
+
+  const cancel = () => renderDrawerBody(init);
+  ta.addEventListener('keydown', e => {
+    if (e.key === 'Escape') { e.preventDefault(); cancel(); }
+    else if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') { e.preventDefault(); commitDesc(); }
+  });
+  document.getElementById('descCancel').addEventListener('click', cancel);
+  document.getElementById('descSave').addEventListener('click', commitDesc);
+}
+
+function commitDesc() {
+  if (!DX) return;
+  const init = findInit(findKR(findGoal(DX.gid), DX.krid), DX.iid);
+  if (!init) return;
+  init.desc = (document.getElementById('descInput')?.value || '').trim();
+  save();
+  renderDrawerBody(init);
+}
+
 function renderDrawerBody(init) {
   if (pendingStatus == null) pendingStatus = init.status;
   document.getElementById('dBody').innerHTML = `
+    ${renderInitDesc(init)}
     <div class="update-box">
       <div class="update-box-title">Share an Update</div>
       <div style="margin-bottom:10px">
@@ -2505,6 +2614,10 @@ function openInitModal(gid, krid) {
       <label class="form-label">Initiative</label>
       <input class="form-input" id="mInitTitle" placeholder="e.g. Host community-building workshops for property managers" />
     </div>
+    <div class="form-group">
+      <label class="form-label">Description (optional)</label>
+      <textarea class="form-input" id="mInitDesc" rows="2" placeholder="What's this initiative about? Why does it matter?"></textarea>
+    </div>
     <div class="form-row">
       <div class="form-group">
         <label class="form-label">Who's leading it</label>
@@ -2540,13 +2653,14 @@ function saveInit(gid, krid) {
   const g=findGoal(gid), kr=findKR(g,krid); if(!kr) return;
   const title=(document.getElementById('mInitTitle')?.value||'').trim();
   if(!title){ flashError('mInitTitle','Give this step a name so the crew knows what to chase!'); return; }
+  const desc=(document.getElementById('mInitDesc')?.value||'').trim();
   const status=document.getElementById('mInitStatus')?.value||'not_started';
   const owner=(document.getElementById('mInitOwner')?.value||'').trim();
   const dueDate=document.getElementById('mInitDue')?.value||'';
   const note=(document.getElementById('mInitNote')?.value||'').trim();
   const hist=[{id:id(),date:today(),type:'created',note:note||'Step added to the journey!'}];
   if(status!=='not_started') hist.push({id:id(),date:today(),type:'status_change',from:'not_started',to:status,note});
-  kr.initiatives.push({id:id(),title,status,owner,dueDate,history:hist});
+  kr.initiatives.push({id:id(),title,desc,status,owner,dueDate,history:hist});
   save(); closeModal(); render();
 }
 
