@@ -913,24 +913,42 @@
     @container initsList (max-width: 720px) {
       .inits-wrap { display: block; column-gap: 0; }
       .inits-toolbar { grid-column: auto; }
+      /* Narrow layout:
+         Row 1 (always): dot · name (can wrap to multiple lines) · X
+         Row 2 (wraps below): status · owner · due · comments
+         The dot sits on the first line of the name. The X is absolutely
+         pinned so flex-wrap can't push it down. */
       .init-row {
-        display: flex; flex-wrap: wrap; align-items: center;
-        column-gap: 10px; row-gap: 6px;
+        display: flex; flex-wrap: wrap; align-items: flex-start;
+        column-gap: 10px; row-gap: 8px;
         grid-column: auto; grid-template-columns: none;
+        position: relative;
+        padding-right: 44px; /* room for absolute X */
       }
       .init-row::after {
         content: ""; flex-basis: 100%; width: 0; height: 0; order: 1;
       }
-      .init-row > .init-dot { order: 0; grid-column: auto; justify-self: auto; }
+      .init-row > .init-dot {
+        order: 0; grid-column: auto; justify-self: auto;
+        margin-top: 7px; /* aligns dot with first line of (possibly-multi-line) name */
+      }
       .init-row > .init-name {
         order: 0; grid-column: auto;
-        flex: 1 1 auto; white-space: normal; line-height: 1.4;
+        flex: 1 1 0; min-width: 0;
+        white-space: normal; line-height: 1.4;
       }
-      .init-row > .del-btn { order: 0; grid-column: auto; justify-self: auto; opacity: 1; }
+      .init-row > .del-btn {
+        order: 0; grid-column: auto; justify-self: auto;
+        position: absolute; top: 9px; right: 14px;
+        opacity: 1;
+      }
       .init-row > .ir-status,
       .init-row > .ir-owner,
       .init-row > .ir-due,
-      .init-row > .ir-comments { order: 2; grid-column: auto; justify-self: auto; }
+      .init-row > .ir-comments {
+        order: 2; grid-column: auto; justify-self: auto;
+        align-self: center;
+      }
       .init-row > .ir-owner:empty,
       .init-row > .ir-due:empty { display: none; }
     }
