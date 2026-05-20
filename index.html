@@ -831,7 +831,15 @@
        Wide view uses CSS subgrid so every row shares the same 7 columns:
        dot · name · status · owner · due · comments · delete.
        The status column is the same width on every row, so badges line up
-       vertically — same for owner, due, comments. */
+       vertically — same for owner, due, comments.
+       NOTE: container-type sits on the outer .inits-frame, NOT on .inits-wrap
+       itself — container queries silently drop modifications that would
+       affect the queried feature (e.g. changing display on the container).
+       Wrapping cleanly separates the container from the grid. */
+    .inits-frame {
+      container-type: inline-size;
+      container-name: initsList;
+    }
     .inits-wrap {
       border-top: 1px solid var(--border);
       display: grid;
@@ -844,8 +852,6 @@
         auto              /* 6: comments */
         auto;             /* 7: delete */
       column-gap: 16px;
-      container-type: inline-size;
-      container-name: initsList;
     }
     .inits-toolbar {
       grid-column: 1 / -1;
@@ -1767,7 +1773,7 @@ function krCard(g, kr) {
       <button class="btn btn-ghost btn-sm" style="flex-shrink:0" onclick="event.stopPropagation();openKRModal('${g.id}','${kr.id}')">Edit</button>
       <span class="kr-chevron${open?' open':''}">▾</span>
     </div>
-    ${open?`<div class="inits-wrap">
+    ${open?`<div class="inits-frame"><div class="inits-wrap">
       <div class="inits-toolbar">
         <span class="inits-toolbar-label">Initiatives</span>
         <button class="btn btn-primary btn-sm" onclick="openInitModal('${g.id}','${kr.id}')">+ Add Initiative</button>
@@ -1776,7 +1782,7 @@ function krCard(g, kr) {
         ?`<div style="padding:20px;font-size:14px;color:var(--text-muted);text-align:center">No initiatives yet — add the first one to get this journey started!</div>`
         : kr.initiatives.map(i=>initRow(g,kr,i)).join('')
       }
-    </div>`:''}
+    </div></div>`:''}
   </div>`;
 }
 
