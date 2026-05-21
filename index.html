@@ -1458,7 +1458,17 @@
 // access through RLS policies defined in supabase/schema.sql.
 const SUPABASE_URL = 'https://uibmrwqstuzxxbhoamap.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVpYm1yd3FzdHV6eHhiaG9hbWFwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkzODQzNjYsImV4cCI6MjA5NDk2MDM2Nn0.8zRH6HL_OAxrPNIff5A6gSw2Ua3IMq8dftNP_q3Azpw';
-const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+// detectSessionInUrl is OFF — we handle the OAuth callback manually
+// because some browsers (e.g. Orion) block URLSearchParams / similar
+// APIs from reading URLs that contain token-like strings, which would
+// otherwise prevent Supabase's automatic detection from working.
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+  auth: {
+    autoRefreshToken: true,
+    persistSession: true,
+    detectSessionInUrl: false,
+  }
+});
 
 // ═══════════════════════════════════════════
 //  STATE
@@ -3089,31 +3099,109 @@ async function bootApp() {
 // ═══════════════════════════════════════════
 //  BOOT
 // ═══════════════════════════════════════════
-// Use Supabase's INITIAL_SESSION event instead of polling getSession().
-// INITIAL_SESSION fires once after the SDK has finished processing any
-// OAuth callback in the URL — this is more reliable than racing
-// getSession() against the async PKCE code exchange.
-(() => {
-  let booted = false;
 
-  // Helpful diagnostic for browsers that quietly drop URL params or
-  // localStorage during the OAuth redirect chain.
-  const hasOAuthCallback =
-    window.location.search.includes('code=') ||
-    window.location.hash.includes('access_token');
-  console.log('[Compass] Boot · URL has OAuth callback?', hasOAuthCallback);
+// Parse the URL hash / query using raw string operations only.
+// Some browsers (notably Orion) block URLSearchParams / URL.searchParams
+// access for URLs that contain token-like patterns. Raw .split() works.
+function parseAuthCallbackFromUrl() {
+  const href = window.location.href;
+  const hashStart = href.indexOf('#');
+  const hashStr = hashStart >= 0 ? href.slice(hashStart + 1) : '';
+  // Strip any query within the hash too (rare)
+  const cleanHash = hashStr.split('?')[0];
+  const queryStart = href.indexOf('?');
+  const queryStr = (queryStart >= 0 && (hashStart < 0 || queryStart < hashStart))
+    ? href.slice(queryStart + 1, hashStart >= 0 ? hashStart : href.length)
+    : '';
+
+  const parseKV = s => {
+    const o = {};
+    if (!s) return o;
+    for (const pair of s.split('&')) {
+      const eq = pair.indexOf('=');
+      const k = eq < 0 ? pair : pair.slice(0, eq);
+      const v = eq < 0 ? '' : pair.slice(eq + 1);
+      try { o[decodeURIComponent(k)] = decodeURIComponent(v); }
+      catch { o[k] = v; }
+    }
+    return o;
+  };
+  return { hash: parseKV(cleanHash), query: parseKV(queryStr) };
+}
+
+function cleanUrl() {
+  // Remove query + hash so the URL stops looking suspicious to content blockers.
+  const cleaned = window.location.origin + window.location.pathname;
+  try { window.history.replaceState(null, '', cleaned); } catch {}
+}
+
+async function handleOAuthCallbackManually() {
+  const { hash, query } = parseAuthCallbackFromUrl();
+
+  // ── Implicit flow: tokens in URL fragment ──
+  if (hash.access_token && hash.refresh_token) {
+    console.log('[Compass] OAuth callback: implicit flow detected, extracting tokens');
+    cleanUrl(); // ← strip the suspicious URL first so the rest of the page can load normally
+    const { data, error } = await sb.auth.setSession({
+      access_token: hash.access_token,
+      refresh_token: hash.refresh_token,
+    });
+    if (error) {
+      console.error('[Compass] setSession failed:', error);
+      return { error };
+    }
+    return { session: data.session };
+  }
+
+  // ── PKCE flow: code in query ──
+  if (query.code) {
+    console.log('[Compass] OAuth callback: PKCE flow detected, exchanging code');
+    const code = query.code;
+    cleanUrl();
+    const { data, error } = await sb.auth.exchangeCodeForSession(code);
+    if (error) {
+      console.error('[Compass] exchangeCodeForSession failed:', error);
+      return { error };
+    }
+    return { session: data.session };
+  }
+
+  // ── Provider error in callback ──
+  if (hash.error || query.error) {
+    const err = hash.error_description || query.error_description || hash.error || query.error;
+    console.error('[Compass] OAuth provider error:', err);
+    cleanUrl();
+    return { error: { message: err } };
+  }
+
+  return {}; // no callback
+}
+
+(async () => {
+  console.log('[Compass] Boot · URL has OAuth callback?',
+    window.location.search.includes('code=') || window.location.hash.includes('access_token'));
   console.log('[Compass] Boot · localStorage available?', (() => {
     try { localStorage.setItem('_t', '_t'); localStorage.removeItem('_t'); return true; }
     catch { return false; }
   })());
+
+  // Handle OAuth callback manually FIRST (works around Orion's URL-API blocking).
+  const callback = await handleOAuthCallbackManually();
+  if (callback.error) {
+    renderSignInScreen({ error: callback.error.message || 'Sign-in failed. Please try again.' });
+    return;
+  }
+
+  let booted = false;
 
   sb.auth.onAuthStateChange(async (event, session) => {
     console.log('[Compass] Auth event:', event, session ? `(${session.user.email})` : '(no session)');
 
     if (!booted && (event === 'INITIAL_SESSION' || event === 'SIGNED_IN')) {
       booted = true;
-      if (session) {
-        S.session = session;
+      const effectiveSession = session || callback.session;
+      if (effectiveSession) {
+        S.session = effectiveSession;
         await bootApp();
       } else {
         renderSignInScreen();
@@ -3121,26 +3209,23 @@ async function bootApp() {
       return;
     }
 
-    if (event === 'SIGNED_IN' && booted && !S.session) {
-      window.location.reload();
-      return;
-    }
     if (event === 'SIGNED_OUT') {
       window.location.reload();
     }
   });
 
-  // Fallback: if INITIAL_SESSION doesn't fire within 4s (e.g. SDK
-  // hangs on PKCE exchange in a privacy-strict browser), surface the
-  // sign-in screen with an error so the user isn't staring at a blank
-  // page.
+  // Fallback: if INITIAL_SESSION doesn't fire within 4s, force a decision based on
+  // whatever the manual callback gave us. Prevents staring at a blank screen forever.
   setTimeout(() => {
     if (booted) return;
-    console.warn('[Compass] No INITIAL_SESSION event after 4s — falling back to sign-in screen.');
+    console.warn('[Compass] No INITIAL_SESSION event after 4s — using fallback.');
     booted = true;
-    renderSignInScreen({
-      error: 'Sign-in took too long. If your browser blocks third-party storage during OAuth, try again — or use Safari/Chrome.'
-    });
+    if (callback.session) {
+      S.session = callback.session;
+      bootApp();
+    } else {
+      renderSignInScreen();
+    }
   }, 4000);
 })();
 </script>
