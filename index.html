@@ -617,31 +617,41 @@
       gap: 8px;
     }
     .member-row {
-      display: flex; align-items: center; gap: 10px;
-      padding: 10px 12px; border-radius: var(--radius-sm);
+      display: flex; align-items: center; gap: 12px;
+      padding: 11px 14px; border-radius: var(--radius-sm);
       background: var(--bg); border: 1px solid transparent;
       transition: all .15s;
     }
     .member-row:hover { background: var(--primary-light); border-color: var(--primary); }
-    .member-row .mr-remove {
-      width: 28px; height: 28px; padding: 0;
-      display: inline-flex; align-items: center; justify-content: center;
-      background: transparent; border: none; cursor: pointer;
-      color: var(--text-muted); border-radius: 6px;
-      font-size: 13px; opacity: 0; transition: all .15s;
-    }
-    .member-row:hover .mr-remove { opacity: 1; }
-    .member-row .mr-remove:hover { background: var(--danger-light); color: var(--danger); }
+    .member-row.is-me { background: var(--primary-light); border-color: var(--primary); }
     .member-avatar {
-      width: 32px; height: 32px; border-radius: 50%;
+      width: 36px; height: 36px; border-radius: 50%;
       background: var(--primary); color: var(--text);
       display: flex; align-items: center; justify-content: center;
-      font-family: 'Poppins', sans-serif; font-weight: 700; font-size: 13px;
-      flex-shrink: 0;
+      font-family: 'Poppins', sans-serif; font-weight: 700; font-size: 14px;
+      flex-shrink: 0; overflow: hidden;
+    }
+    .member-avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .member-meta {
+      flex: 1; min-width: 0;
+      display: flex; flex-direction: column; gap: 2px;
     }
     .member-name {
-      flex: 1; font-size: 14px; font-weight: 500;
+      font-size: 14px; font-weight: 600; color: var(--text);
+      display: flex; align-items: center; gap: 8px;
       overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    .member-email {
+      font-size: 12.5px; color: var(--text-muted);
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    .member-you {
+      display: inline-flex; align-items: center;
+      font-size: 11px; font-weight: 700; line-height: 1;
+      padding: 0 8px; min-height: 18px; border-radius: 10px;
+      background: var(--primary); color: var(--text);
+      font-family: 'IBM Plex Sans', sans-serif;
+      text-transform: uppercase; letter-spacing: .4px;
     }
     .member-empty {
       font-size: 13.5px; color: var(--text-muted);
@@ -1502,19 +1512,27 @@ const slabel = v => STATUSES.find(s=>s.v===v)?.label || v;
 const db = {
   // Load everything in three parallel queries
   async loadAll() {
-    const [goalsRes, membersRes, ideasRes] = await Promise.all([
+    // The team is now derived from `profiles` — i.e. anyone who has
+    // signed into the app. The standalone `members` table is no longer
+    // used as a UI source (kept in DB for now, harmless).
+    const [goalsRes, profilesRes, ideasRes] = await Promise.all([
       sb.from('goals')
         .select('*, key_results(*, initiatives(*, initiative_history(*)))')
         .order('position'),
-      sb.from('members').select('*').order('name'),
+      sb.from('profiles').select('*').order('display_name'),
       sb.from('ideas').select('*').order('created_at', { ascending: false }),
     ]);
-    if (goalsRes.error)   throw goalsRes.error;
-    if (membersRes.error) throw membersRes.error;
-    if (ideasRes.error)   throw ideasRes.error;
-    S.goals   = (goalsRes.data   || []).map(dbGoalToState);
-    S.members = (membersRes.data || []).map(m => ({ id: m.id, name: m.name }));
-    S.ideas   = (ideasRes.data   || []).map(dbIdeaToState);
+    if (goalsRes.error)    throw goalsRes.error;
+    if (profilesRes.error) throw profilesRes.error;
+    if (ideasRes.error)    throw ideasRes.error;
+    S.goals   = (goalsRes.data || []).map(dbGoalToState);
+    S.members = (profilesRes.data || []).map(p => ({
+      id: p.id,
+      name: p.display_name || p.email || 'Teammate',
+      email: p.email || '',
+      avatar_url: p.avatar_url || '',
+    }));
+    S.ideas   = (ideasRes.data || []).map(dbIdeaToState);
   },
 
   async loadProfile() {
@@ -1635,21 +1653,8 @@ const db = {
     return true;
   },
 
-  // ─── Members ───
-  async addMember(name) {
-    const { data, error } = await sb.from('members').insert({ name }).select().single();
-    if (error) { showDBError(error); return null; }
-    return { id: data.id, name: data.name };
-  },
-  async removeMember(memberId, memberName) {
-    // Clear owner_name on any initiative this person was leading, then delete member.
-    if (memberName) {
-      await sb.from('initiatives').update({ owner_name: '' }).eq('owner_name', memberName);
-    }
-    const { error } = await sb.from('members').delete().eq('id', memberId);
-    if (error) { showDBError(error); return false; }
-    return true;
-  },
+  // Team is derived from `profiles` — no add/remove API; users join
+  // by signing in. (Removing access happens via Supabase auth.users.)
 };
 
 // ─── DB row → state shape transforms ──────────────────────────
@@ -2760,7 +2765,7 @@ function openInitModal(gid, krid) {
       <div class="form-group">
         <label class="form-label">Who's leading it</label>
         <select class="form-input" id="mInitOwner">${ownerOptions('')}</select>
-        ${S.members.length === 0 ? `<div style="font-size:12px;color:var(--text-muted);margin-top:5px">No teammates yet — <a onclick="closeModal();goToSettings()" style="color:var(--primary);cursor:pointer;font-weight:600">add them in Settings</a> to assign a lead.</div>` : ''}
+        ${S.members.length <= 1 ? `<div style="font-size:12px;color:var(--text-muted);margin-top:5px">Only one teammate signed in so far — others will show up here once they log in.</div>` : ''}
       </div>
       <div class="form-group">
         <label class="form-label">By when</label>
@@ -2954,73 +2959,41 @@ function ownerOptions(currentValue = '') {
 }
 
 function renderSettingsPage(el) {
+  const meId = S.session?.user?.id;
+  const team = [...S.members].sort((a,b) => a.name.localeCompare(b.name));
   el.innerHTML = `<div class="fade-up">
     <div class="settings-hero">
       <h2>Settings</h2>
-      <p>Manage who can lead initiatives in Zostel Compass. Add your teammates here once — they'll show up everywhere "Led by" lives.</p>
+      <p>People here are everyone who's signed into Zostel Compass. They show up automatically in every "Led by" dropdown — no manual add needed.</p>
     </div>
 
     <div class="settings-section">
       <div class="settings-section-header">
-        <div class="settings-section-title">Team Members</div>
-        <div class="settings-section-sub">Add the people you work with. Removing someone here will unassign them from any initiative they're currently leading.</div>
+        <div class="settings-section-title">Team</div>
+        <div class="settings-section-sub">Pulled live from sign-in. Ask a teammate to sign in with their Google account and they'll appear here on their next visit.</div>
       </div>
 
-      <div class="member-add">
-        <input id="memberInput" type="text" placeholder="Add a teammate — e.g. Priya Sharma" autocomplete="off" onkeydown="if(event.key==='Enter'){event.preventDefault();addMember()}" />
-        <button class="btn btn-primary btn-sm" type="button" onclick="addMember()">+ Add Member</button>
-      </div>
-
-      ${S.members.length
+      ${team.length
         ? `<div class="member-list">
-            ${[...S.members].sort((a,b)=>a.name.localeCompare(b.name)).map(m => `<div class="member-row">
-              <span class="member-avatar" aria-hidden="true">${esc(m.name.charAt(0).toUpperCase())}</span>
-              <span class="member-name">${esc(m.name)}</span>
-              <button class="mr-remove" type="button" onclick="removeMember('${m.id}')" title="Remove ${esc(m.name)}" aria-label="Remove ${esc(m.name)}">✕</button>
-            </div>`).join('')}
+            ${team.map(m => {
+              const isMe = m.id === meId;
+              const initial = (m.name || '?').charAt(0).toUpperCase();
+              const avatarInner = m.avatar_url
+                ? `<img src="${esc(m.avatar_url)}" alt="" referrerpolicy="no-referrer" />`
+                : esc(initial);
+              return `<div class="member-row${isMe?' is-me':''}">
+                <span class="member-avatar member-avatar-img" aria-hidden="true">${avatarInner}</span>
+                <div class="member-meta">
+                  <div class="member-name">${esc(m.name)}${isMe?' <span class="member-you">You</span>':''}</div>
+                  ${m.email ? `<div class="member-email">${esc(m.email)}</div>` : ''}
+                </div>
+              </div>`;
+            }).join('')}
           </div>`
-        : `<div class="member-empty">No teammates yet — add the first one above to start assigning leads.</div>`
+        : `<div class="member-empty">No one's signed in yet — that's odd, since you must be signed in to see this page!</div>`
       }
     </div>
   </div>`;
-  setTimeout(()=>document.getElementById('memberInput')?.focus(),50);
-}
-
-async function addMember() {
-  const input = document.getElementById('memberInput');
-  const name = (input?.value || '').trim();
-  if (!name) { flashError('memberInput','Type a name to add a teammate.'); return; }
-  if (S.members.some(m => m.name.toLowerCase() === name.toLowerCase())) {
-    flashError('memberInput', `${name} is already on the team.`);
-    return;
-  }
-  const created = await db.addMember(name);
-  if (!created) return;
-  S.members.push(created);
-  if (input) input.value = '';
-  render();
-  setTimeout(()=>document.getElementById('memberInput')?.focus(),50);
-}
-
-async function removeMember(mid) {
-  const m = S.members.find(x => x.id === mid);
-  if (!m) return;
-  let leadingCount = 0;
-  S.goals.forEach(g => g.keyResults.forEach(kr => kr.initiatives.forEach(i => {
-    if (i.owner === m.name) leadingCount++;
-  })));
-  let msg = `Remove ${m.name} from the team?`;
-  if (leadingCount > 0) {
-    msg += `\n\n${m.name} is currently leading ${leadingCount} initiative${leadingCount!==1?'s':''} — they'll be set to unassigned.`;
-  }
-  if (!confirm(msg)) return;
-  const ok = await db.removeMember(mid, m.name);
-  if (!ok) return;
-  S.goals.forEach(g => g.keyResults.forEach(kr => kr.initiatives.forEach(i => {
-    if (i.owner === m.name) i.owner = '';
-  })));
-  S.members = S.members.filter(x => x.id !== mid);
-  render();
 }
 
 function toggleKR(krid) {
