@@ -71,6 +71,50 @@
     .logo-name em { color: var(--primary); font-style: normal; }
     .header-right { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
 
+    /* ── USER MENU ── */
+    .user-menu { position: relative; }
+    .user-menu-trigger {
+      width: 36px; height: 36px; padding: 0;
+      display: inline-flex; align-items: center; justify-content: center;
+      border: none; background: transparent; cursor: pointer;
+      border-radius: 50%; transition: box-shadow .15s;
+    }
+    .user-menu-trigger:hover { box-shadow: 0 0 0 3px var(--primary-light); }
+    .user-menu-trigger:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+    .user-avatar {
+      width: 32px; height: 32px; border-radius: 50%;
+      background: var(--primary); color: var(--text);
+      display: inline-flex; align-items: center; justify-content: center;
+      font-family: 'Poppins', sans-serif; font-weight: 700; font-size: 13px;
+      overflow: hidden;
+    }
+    .user-avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .user-menu-dropdown {
+      position: absolute; right: 0; top: calc(100% + 8px);
+      min-width: 220px; padding: 8px;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius-sm); box-shadow: var(--shadow-md);
+      z-index: 250;
+    }
+    .user-menu-dropdown[hidden] { display: none; }
+    .user-menu-identity {
+      padding: 10px 12px 12px;
+      border-bottom: 1px solid var(--border); margin-bottom: 6px;
+    }
+    .user-menu-name {
+      font-family: 'Poppins', sans-serif; font-weight: 600; font-size: 14px;
+      color: var(--text);
+    }
+    .user-menu-email { font-size: 12.5px; color: var(--text-muted); margin-top: 2px; }
+    .user-menu-item {
+      display: block; width: 100%; text-align: left;
+      padding: 9px 12px; border-radius: 6px;
+      background: transparent; border: none; cursor: pointer;
+      font-family: 'Inter', sans-serif; font-size: 13.5px; font-weight: 500;
+      color: var(--text); transition: background .15s;
+    }
+    .user-menu-item:hover { background: var(--bg); }
+
     .menu-btn {
       display: none;
       width: 40px; height: 40px; padding: 0;
@@ -1208,6 +1252,80 @@
     .form-actions { display: flex; gap: 9px; align-items: center; justify-content: flex-end; margin-top: 20px; }
 
     /* ── EMPTY STATES ── */
+    /* ── SIGN-IN SCREEN ── */
+    .signin-shell {
+      min-height: 100vh;
+      display: flex; align-items: center; justify-content: center;
+      padding: 24px;
+      background:
+        radial-gradient(ellipse at top left, #FFF3D4 0%, transparent 55%),
+        radial-gradient(ellipse at bottom right, #FFEAB6 0%, transparent 55%),
+        var(--bg);
+    }
+    .signin-card {
+      width: 100%; max-width: 420px;
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 38px 32px;
+      box-shadow: var(--shadow-lg);
+      text-align: center;
+    }
+    .signin-logo {
+      width: 60px; height: 60px;
+      border-radius: 16px;
+      background: var(--primary);
+      display: inline-flex; align-items: center; justify-content: center;
+      margin: 0 auto 18px;
+    }
+    .signin-title {
+      font-family: 'Poppins', sans-serif; font-weight: 700;
+      font-size: 26px; margin-bottom: 8px; color: var(--text);
+    }
+    .signin-title em { color: var(--primary); font-style: normal; }
+    .signin-sub {
+      font-size: 15px; color: var(--text-muted);
+      line-height: 1.55; margin-bottom: 22px;
+    }
+    .signin-error {
+      background: var(--danger-light); color: var(--danger);
+      border: 1px solid var(--danger);
+      border-radius: var(--radius-sm);
+      padding: 10px 14px; font-size: 13.5px; font-weight: 500;
+      margin-bottom: 16px;
+    }
+    .signin-google {
+      display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+      width: 100%; min-height: 46px;
+      padding: 0 18px;
+      background: var(--surface); color: var(--text);
+      border: 1.5px solid var(--border); border-radius: 10px;
+      font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 600;
+      cursor: pointer; transition: all .15s;
+      line-height: 1;
+    }
+    .signin-google:hover { border-color: var(--neutral); background: var(--bg); }
+    .signin-google:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+    .signin-foot {
+      font-size: 12.5px; color: var(--text-muted);
+      margin-top: 18px;
+    }
+
+    /* ── APP TOAST (data-layer errors + acks) ── */
+    .app-toast {
+      position: fixed; left: 50%; bottom: 28px;
+      transform: translateX(-50%) translateY(16px);
+      background: var(--text); color: #fff;
+      padding: 11px 18px; border-radius: 100px;
+      font-family: 'Inter', sans-serif; font-size: 13.5px; font-weight: 500;
+      box-shadow: 0 10px 28px rgba(0,0,0,0.18);
+      opacity: 0; pointer-events: none;
+      transition: opacity .25s ease, transform .25s cubic-bezier(.2,.8,.3,1);
+      z-index: 9999; max-width: 92vw; text-align: center;
+    }
+    .app-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+    .app-toast.err { background: var(--danger); }
+
     .empty {
       text-align: center; padding: 40px 20px; color: var(--text-muted);
     }
@@ -1228,6 +1346,7 @@
     ::-webkit-scrollbar-thumb { background: var(--neutral); border-radius: 3px; }
     ::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
   </style>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
@@ -1253,6 +1372,18 @@
   </div>
   <div class="header-right">
     <button class="btn btn-primary btn-sm" type="button" onclick="openGoalModal()">+ New Goal</button>
+    <div class="user-menu" id="userMenu">
+      <button class="user-menu-trigger" type="button" id="userMenuBtn" aria-label="Account menu" aria-haspopup="true" aria-expanded="false">
+        <span class="user-avatar" id="userAvatar" aria-hidden="true"></span>
+      </button>
+      <div class="user-menu-dropdown" id="userMenuDropdown" role="menu" hidden>
+        <div class="user-menu-identity">
+          <div class="user-menu-name" id="userMenuName">—</div>
+          <div class="user-menu-email" id="userMenuEmail"></div>
+        </div>
+        <button class="user-menu-item" type="button" role="menuitem" onclick="signOut()">Sign out</button>
+      </div>
+    </div>
   </div>
 </header>
 
@@ -1311,10 +1442,24 @@
 
 <script>
 // ═══════════════════════════════════════════
+//  SUPABASE CONFIG
+// ═══════════════════════════════════════════
+// Both values are PUBLIC and safe to commit. The anon key only allows
+// access through RLS policies defined in supabase/schema.sql.
+const SUPABASE_URL = 'https://uibmrwqstuzxxbhoamap.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVpYm1yd3FzdHV6eHhiaG9hbWFwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkzODQzNjYsImV4cCI6MjA5NDk2MDM2Nn0.8zRH6HL_OAxrPNIff5A6gSw2Ua3IMq8dftNP_q3Azpw';
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+// ═══════════════════════════════════════════
 //  STATE
 // ═══════════════════════════════════════════
 
-let S = { goals: [], ideas: [], members: [], activeGoalId: null, openKRs: new Set(), view: 'goals' };
+let S = {
+  goals: [], ideas: [], members: [],
+  activeGoalId: null, openKRs: new Set(), view: 'goals',
+  session: null,   // Supabase auth session
+  profile: null,   // Logged-in user's profile row
+};
 let ideaFilter = 'all'; // 'all' | 'unlinked' | <goalId>
 
 // Icon system — Lucide-style inline SVGs. Keep consistent across the app
@@ -1348,34 +1493,225 @@ const STATUSES = [
 const slabel = v => STATUSES.find(s=>s.v===v)?.label || v;
 
 // ═══════════════════════════════════════════
-//  PERSIST
+//  DATA LAYER (Supabase)
 // ═══════════════════════════════════════════
+// All persistence goes through `db`. `S` is the in-memory mirror —
+// every mutation function writes through `db.x()` then updates `S`
+// and re-renders. Sort + shape transforms live in dbXxxToState().
 
-const KEY = 'zostel_okr_v6';
-function save() {
-  try { localStorage.setItem(KEY, JSON.stringify({goals:S.goals, ideas:S.ideas, members:S.members})); }
-  catch(e) { console.warn('[Zostel] Could not save to localStorage:', e); }
-}
-function load() {
-  try {
-    const d = JSON.parse(localStorage.getItem(KEY) || '{}');
-    if (d.goals?.length) {
-      S.goals = d.goals;
-      S.ideas = d.ideas || [];
-      S.members = Array.isArray(d.members) ? d.members : extractMembersFromGoals(d.goals);
-      return;
+const db = {
+  // Load everything in three parallel queries
+  async loadAll() {
+    const [goalsRes, membersRes, ideasRes] = await Promise.all([
+      sb.from('goals')
+        .select('*, key_results(*, initiatives(*, initiative_history(*)))')
+        .order('position'),
+      sb.from('members').select('*').order('name'),
+      sb.from('ideas').select('*').order('created_at', { ascending: false }),
+    ]);
+    if (goalsRes.error)   throw goalsRes.error;
+    if (membersRes.error) throw membersRes.error;
+    if (ideasRes.error)   throw ideasRes.error;
+    S.goals   = (goalsRes.data   || []).map(dbGoalToState);
+    S.members = (membersRes.data || []).map(m => ({ id: m.id, name: m.name }));
+    S.ideas   = (ideasRes.data   || []).map(dbIdeaToState);
+  },
+
+  async loadProfile() {
+    if (!S.session) return null;
+    const { data, error } = await sb.from('profiles').select('*').eq('id', S.session.user.id).single();
+    if (error) { console.warn('Profile load failed:', error); return null; }
+    S.profile = data;
+    return data;
+  },
+
+  // ─── Goals ───
+  async createGoal(f) {
+    const { data, error } = await sb.from('goals').insert({
+      title: f.title, description: f.desc || '',
+      quarter: f.quarter, position: f.position ?? 0,
+    }).select().single();
+    if (error) { showDBError(error); return null; }
+    return dbGoalToState({ ...data, key_results: [] });
+  },
+  async updateGoal(id, f) {
+    const { error } = await sb.from('goals').update({
+      title: f.title, description: f.desc || '', quarter: f.quarter,
+    }).eq('id', id);
+    if (error) { showDBError(error); return false; }
+    return true;
+  },
+  async deleteGoal(id) {
+    const { error } = await sb.from('goals').delete().eq('id', id);
+    if (error) { showDBError(error); return false; }
+    return true;
+  },
+
+  // ─── Key Results ───
+  async createKR(goalId, f) {
+    const { data, error } = await sb.from('key_results').insert({
+      goal_id: goalId, title: f.title,
+      target_value: f.target, current_value: f.current,
+      unit: f.unit, position: f.position ?? 0,
+    }).select().single();
+    if (error) { showDBError(error); return null; }
+    return dbKRToState({ ...data, initiatives: [] });
+  },
+  async updateKR(id, f) {
+    const { error } = await sb.from('key_results').update({
+      title: f.title, target_value: f.target,
+      current_value: f.current, unit: f.unit,
+    }).eq('id', id);
+    if (error) { showDBError(error); return false; }
+    return true;
+  },
+  async deleteKR(id) {
+    const { error } = await sb.from('key_results').delete().eq('id', id);
+    if (error) { showDBError(error); return false; }
+    return true;
+  },
+
+  // ─── Initiatives ───
+  async createInitiative(krId, f) {
+    const { data, error } = await sb.from('initiatives').insert({
+      key_result_id: krId, title: f.title, description: f.desc || '',
+      status: f.status || 'not_started',
+      owner_name: f.owner || '',
+      due_date: f.dueDate || null,
+      position: f.position ?? 0,
+    }).select().single();
+    if (error) { showDBError(error); return null; }
+    return dbInitToState({ ...data, initiative_history: [] });
+  },
+  async updateInitiative(id, f) {
+    const patch = {};
+    if (f.title    !== undefined) patch.title       = f.title;
+    if (f.desc     !== undefined) patch.description = f.desc;
+    if (f.status   !== undefined) patch.status      = f.status;
+    if (f.owner    !== undefined) patch.owner_name  = f.owner;
+    if (f.dueDate  !== undefined) patch.due_date    = f.dueDate || null;
+    const { error } = await sb.from('initiatives').update(patch).eq('id', id);
+    if (error) { showDBError(error); return false; }
+    return true;
+  },
+  async deleteInitiative(id) {
+    const { error } = await sb.from('initiatives').delete().eq('id', id);
+    if (error) { showDBError(error); return false; }
+    return true;
+  },
+
+  // ─── History ───
+  async addHistory(initId, entry) {
+    const author_id   = S.session?.user?.id || null;
+    const author_name = S.profile?.display_name || S.session?.user?.email || '';
+    const { data, error } = await sb.from('initiative_history').insert({
+      initiative_id: initId,
+      type:          entry.type,
+      event_date:    entry.date || new Date().toISOString().slice(0,10),
+      note:          entry.note || null,
+      text:          entry.text || null,
+      from_status:   entry.from || null,
+      to_status:     entry.to   || null,
+      author_id, author_name,
+    }).select().single();
+    if (error) { showDBError(error); return null; }
+    return dbHistoryToState(data);
+  },
+
+  // ─── Ideas ───
+  async createIdea(f) {
+    const { data, error } = await sb.from('ideas').insert({
+      goal_id:       f.goalId || null,
+      key_result_id: f.krId   || null,
+      text:          f.text,
+      created_by:    S.session?.user?.id || null,
+    }).select().single();
+    if (error) { showDBError(error); return null; }
+    return dbIdeaToState(data);
+  },
+  async deleteIdea(id) {
+    const { error } = await sb.from('ideas').delete().eq('id', id);
+    if (error) { showDBError(error); return false; }
+    return true;
+  },
+
+  // ─── Members ───
+  async addMember(name) {
+    const { data, error } = await sb.from('members').insert({ name }).select().single();
+    if (error) { showDBError(error); return null; }
+    return { id: data.id, name: data.name };
+  },
+  async removeMember(memberId, memberName) {
+    // Clear owner_name on any initiative this person was leading, then delete member.
+    if (memberName) {
+      await sb.from('initiatives').update({ owner_name: '' }).eq('owner_name', memberName);
     }
-  } catch(_){}
-  seedData();
+    const { error } = await sb.from('members').delete().eq('id', memberId);
+    if (error) { showDBError(error); return false; }
+    return true;
+  },
+};
+
+// ─── DB row → state shape transforms ──────────────────────────
+function dbGoalToState(g) {
+  return {
+    id: g.id, title: g.title, desc: g.description || '',
+    quarter: g.quarter, createdAt: (g.created_at || '').slice(0, 10),
+    keyResults: (g.key_results || []).sort(byPos).map(dbKRToState),
+  };
 }
-function extractMembersFromGoals(goals) {
-  const owners = new Set();
-  (goals||[]).forEach(g => (g.keyResults||[]).forEach(kr => (kr.initiatives||[]).forEach(i => {
-    if (i.owner) owners.add(i.owner);
-  })));
-  return [...owners].sort((a,b)=>a.localeCompare(b)).map(name => ({
-    id: Date.now().toString(36)+Math.random().toString(36).slice(2,6), name
-  }));
+function dbKRToState(kr) {
+  return {
+    id: kr.id, title: kr.title,
+    target: Number(kr.target_value) || 0,
+    current: Number(kr.current_value) || 0,
+    unit: kr.unit || '',
+    initiatives: (kr.initiatives || []).sort(byPos).map(dbInitToState),
+  };
+}
+function dbInitToState(i) {
+  return {
+    id: i.id, title: i.title, desc: i.description || '',
+    status: i.status, owner: i.owner_name || '', dueDate: i.due_date || '',
+    history: (i.initiative_history || []).sort(byCreated).map(dbHistoryToState),
+  };
+}
+function dbHistoryToState(h) {
+  return {
+    id: h.id, type: h.type, date: h.event_date,
+    note: h.note || undefined, text: h.text || undefined,
+    from: h.from_status || undefined, to: h.to_status || undefined,
+    author_id: h.author_id || undefined,
+    author_name: h.author_name || undefined,
+  };
+}
+function dbIdeaToState(i) {
+  return {
+    id: i.id, text: i.text,
+    goalId: i.goal_id || null, krId: i.key_result_id || null,
+    createdAt: (i.created_at || '').slice(0, 10),
+  };
+}
+const byPos     = (a, b) => (a.position || 0) - (b.position || 0);
+const byCreated = (a, b) => new Date(a.created_at) - new Date(b.created_at);
+
+// ─── Error UI ───
+function showDBError(error) {
+  console.error('[Compass] Supabase error:', error);
+  showToast(error?.message || 'Something went wrong saving your change.', true);
+}
+function showToast(text, isError = false) {
+  let host = document.getElementById('appToast');
+  if (!host) {
+    host = document.createElement('div');
+    host.id = 'appToast';
+    host.className = 'app-toast';
+    document.body.appendChild(host);
+  }
+  host.className = 'app-toast show' + (isError ? ' err' : '');
+  host.textContent = text;
+  clearTimeout(host._t);
+  host._t = setTimeout(() => host.classList.remove('show'), 3500);
 }
 function flashError(inputId, msg) {
   const el = document.getElementById(inputId);
@@ -1393,271 +1729,6 @@ function flashError(inputId, msg) {
   setTimeout(()=>{ el.style.borderColor=''; warn?.remove(); }, 3200);
 }
 
-function seedData() {
-  const mk = () => Date.now().toString(36)+Math.random().toString(36).slice(2,6);
-  S.goals = [
-    // ── GOAL 1 ─────────────────────────────────────────────────────
-    {
-      id: mk(),
-      title: "Increase adoption of the Vibe Curator Program across all Zostel properties",
-      desc: "Get property managers to say \"We want this.\" Build clarity, trust, and clear business value so the Vibe Curator Program becomes the default at every Zostel property.",
-      quarter: "Q2 2026", createdAt: "2026-04-01",
-      keyResults: [
-        {
-          id: mk(),
-          title: "Increase active participation from pilot properties to majority network adoption",
-          target: 75, current: 28, unit: "%",
-          initiatives: [
-            { id: mk(), title: "Property Manager Communication Kit", desc: "A ready-to-share package that explains the program in 10 minutes — what it is, what it'll cost, what it returns. Designed so a manager can decide on the first call.", status: "in_progress", owner: "Harpreet Singh", dueDate: "2026-06-15",
-              history: [
-                {id:mk(),date:"2026-04-05",type:"created",note:"Initiative created"},
-                {id:mk(),date:"2026-04-22",type:"status_change",from:"not_started",to:"in_progress",note:"First draft shared with Manali and Goa managers for feedback."}
-              ]},
-            { id: mk(), title: "Property Onboarding Process", desc: "A standardised path from 'never run a curator program' to 'first curator on-site' in under 4 weeks, with clear handoffs between Programs, Operations and the property team.", status: "not_started", owner: "Swapnil Srivastava", dueDate: "2026-07-15",
-              history: [{id:mk(),date:"2026-04-10",type:"created",note:"Initiative created"}]},
-            { id: mk(), title: "Case Studies from Successful Properties", desc: "Short write-ups and videos from properties already running the program — the wins, the rough patches, and what the manager would do differently next time.", status: "not_started", owner: "Anaya", dueDate: "2026-06-30",
-              history: [{id:mk(),date:"2026-04-12",type:"created",note:"Initiative created"}]},
-            { id: mk(), title: "ROI & Success Metrics Dashboard", desc: "A live dashboard property managers can actually open — bookings, ratings, content output, repeat guests. Makes the program's value a number, not a vibe.", status: "not_started", owner: "Vikas Nagpal", dueDate: "2026-07-15",
-              history: [{id:mk(),date:"2026-04-15",type:"created",note:"Initiative created"}]},
-            { id: mk(), title: "Small Property Adoption Model", desc: "A lighter version of the program for smaller hostels (under 30 beds) — fewer hours, simpler reporting, same vibe. Removes 'we're too small' as a reason to say no.", status: "not_started", owner: "Kartikey Seth", dueDate: "2026-07-30",
-              history: [{id:mk(),date:"2026-04-15",type:"created",note:"Initiative created"}]}
-          ]
-        },
-        {
-          id: mk(),
-          title: "Improve property manager satisfaction and trust in the program",
-          target: 65, current: 32, unit: "NPS",
-          initiatives: [
-            { id: mk(), title: "Shared Alignment Session Before Curator Arrival", desc: "A structured 30-minute call between property manager and curator before the curator arrives — goals, boundaries, working style, schedules, comms preferences. Replaces 'we'll figure it out' with 'we already did'.", status: "in_progress", owner: "Harpreet Singh", dueDate: "2026-06-15",
-              history: [
-                {id:mk(),date:"2026-04-08",type:"created",note:"Initiative created"},
-                {id:mk(),date:"2026-04-28",type:"status_change",from:"not_started",to:"in_progress",note:"Drafting the structured intro-call agenda template — covers goals, boundaries, working style, schedules and comms."}
-              ]},
-            { id: mk(), title: "Property Manager ↔ Curator Collaboration Framework", desc: "Defines how the two roles work together day-to-day — weekly rituals, shared dashboards, who decides what. So collaboration isn't left to chemistry alone.", status: "not_started", owner: "Swapnil Srivastava", dueDate: "2026-07-15",
-              history: [{id:mk(),date:"2026-04-12",type:"created",note:"Initiative created"}]},
-            { id: mk(), title: "Escalation & Support System", desc: "A clear, low-friction path for managers and curators to flag problems — who they talk to, how fast they'll hear back, what gets resolved at each level. Cuts 'I didn't know who to call' from the equation.", status: "not_started", owner: "Harpreet Singh", dueDate: "2026-07-31",
-              history: [{id:mk(),date:"2026-04-12",type:"created",note:"Initiative created"}]},
-            { id: mk(), title: "Property Manager Playbook", desc: "A short, opinionated guide for managers running the program — what to expect, what good looks like, when to nudge. Treats the manager as a program operator, not a bystander.", status: "not_started", owner: "Anaya", dueDate: "2026-06-30",
-              history: [{id:mk(),date:"2026-04-15",type:"created",note:"Initiative created"}]}
-          ]
-        },
-        {
-          id: mk(),
-          title: "Reduce operational misuse and role-boundary conflicts",
-          target: 90, current: 55, unit: "% incident-free",
-          initiatives: [
-            { id: mk(), title: "Program SOPs & Role Clarity Framework", desc: "The source of truth on who-does-what across curators, property managers and central teams. Removes the grey zones that cause friction in week two.", status: "in_progress", owner: "Swapnil Srivastava", dueDate: "2026-06-30",
-              history: [
-                {id:mk(),date:"2026-04-08",type:"created",note:"Initiative created"},
-                {id:mk(),date:"2026-04-30",type:"status_change",from:"not_started",to:"in_progress",note:"Drafting RACI matrix for curator vs property manager responsibilities."}
-              ]},
-            { id: mk(), title: "Curator Responsibility Matrix", desc: "A one-pager mapping every curator activity — content, community moments, guest interactions, reporting — to a clear owner. So nobody wonders 'wait, was that mine?'", status: "not_started", owner: "Swapnil Srivastava", dueDate: "2026-07-15",
-              history: [{id:mk(),date:"2026-04-12",type:"created",note:"Initiative created"}]},
-            { id: mk(), title: "Standardized Participation Guidelines", desc: "Baseline expectations for any property running the program — minimum curator hours, content cadence, community events. So a guest's experience doesn't depend on which hostel they walked into.", status: "not_started", owner: "Harpreet Singh", dueDate: "2026-07-31",
-              history: [{id:mk(),date:"2026-04-15",type:"created",note:"Initiative created"}]}
-          ]
-        }
-      ]
-    },
-    // ── GOAL 2 ─────────────────────────────────────────────────────
-    {
-      id: mk(),
-      title: "Build a scalable, high-quality Vibe Curator ecosystem that consistently delivers strong guest experiences and content output",
-      desc: "Every guest at a Vibe-curated property should walk away saying \"This experience was amazing.\" Consistent curator quality, retention, engagement, and content output across the network.",
-      quarter: "Q2 2026", createdAt: "2026-04-01",
-      keyResults: [
-        {
-          id: mk(),
-          title: "Improve curator quality, retention, and completion rates",
-          target: 85, current: 62, unit: "% completion",
-          initiatives: [
-            { id: mk(), title: "Curator Recruitment Strategy", desc: "A coordinated approach to finding curators — tier-2/3 city creators, niche travel communities, college networks. Targets people who show up for the community, not just the Instagram.", status: "on_track", owner: "Bhavya G", dueDate: "2026-06-30",
-              history: [
-                {id:mk(),date:"2026-04-05",type:"created",note:"Initiative created"},
-                {id:mk(),date:"2026-04-25",type:"status_change",from:"not_started",to:"on_track",note:"Targeting creators in tier-2/3 cities and niche travel community pages — first outreach batch live."}
-              ]},
-            { id: mk(), title: "Selection & Evaluation Framework", desc: "A consistent way to assess applicants beyond 'do they make nice content?' — community instincts, on-property fit, reliability under low supervision.", status: "in_progress", owner: "Bhavya G", dueDate: "2026-06-15",
-              history: [{id:mk(),date:"2026-04-05",type:"created",note:"Initiative created"}]},
-            { id: mk(), title: "Curator Handbook & Training", desc: "The crash course every new curator goes through before stepping on a property — the role, the standards, the rituals, the boundaries, and what earns repeat bookings.", status: "in_progress", owner: "Anaya", dueDate: "2026-06-30",
-              history: [{id:mk(),date:"2026-04-08",type:"created",note:"Initiative created"}]},
-            { id: mk(), title: "Recognition & Incentive System", desc: "Visible appreciation built into the program — monthly recognition, room credits, feature spots. So curators feel seen for the work, not just paid for it.", status: "not_started", owner: "Bhavya G", dueDate: "2026-07-31",
-              history: [{id:mk(),date:"2026-04-18",type:"created",note:"Initiative created"}]}
-          ]
-        },
-        {
-          id: mk(),
-          title: "Improve guest engagement and social experience across properties",
-          target: 4.6, current: 4.1, unit: "rating",
-          initiatives: [
-            { id: mk(), title: "Activity Playbook Library", desc: "A growing library of community-building activities — morning circles, local-food nights, music jams — each with what-you'll-need, how-to-run-it and lessons from past runs.", status: "in_progress", owner: "Anaya", dueDate: "2026-06-30",
-              history: [{id:mk(),date:"2026-04-08",type:"created",note:"Initiative created"}]},
-            { id: mk(), title: "Curator Community System", desc: "Infrastructure for curators to know and learn from each other — WhatsApp groups, regional pods, shared resources. A solo curator at a remote hostel never feels solo.", status: "not_started", owner: "Bhavya G", dueDate: "2026-07-30",
-              history: [{id:mk(),date:"2026-04-12",type:"created",note:"Initiative created"}]},
-            { id: mk(), title: "Weekly Showcase / Idea Sharing Calls", desc: "A standing 45-minute weekly call where curators bring their best content, one win and one stumble. Builds momentum, surfaces ideas, reduces the central team's load.", status: "on_track", owner: "Anaya", dueDate: "2026-05-31",
-              history: [
-                {id:mk(),date:"2026-04-12",type:"created",note:"Initiative created"},
-                {id:mk(),date:"2026-05-02",type:"status_change",from:"not_started",to:"on_track",note:"Weekly calls running every Friday — getting ~80% attendance from active curators."}
-              ]},
-            { id: mk(), title: "Content Buddy System", desc: "Curator-to-curator pairing for creative feedback. Two curators paired for a month — they bounce ideas, review each other's posts, and pick each other up on slow weeks.", status: "not_started", owner: "Bhavya G", dueDate: "2026-07-30",
-              history: [{id:mk(),date:"2026-04-15",type:"created",note:"Initiative created"}]}
-          ]
-        },
-        {
-          id: mk(),
-          title: "Improve curator content consistency and reduce manual follow-up dependency",
-          target: 85, current: 45, unit: "% on weekly cadence",
-          initiatives: [
-            { id: mk(), title: "Content Operating System", desc: "The umbrella system that turns 'making content' from a guessing game into a weekly rhythm. Includes targets, templates, formats and a low-effort fallback for hard weeks.", status: "in_progress", owner: "Anaya", dueDate: "2026-06-30",
-              history: [
-                {id:mk(),date:"2026-04-15",type:"created",note:"Initiative created"},
-                {id:mk(),date:"2026-05-02",type:"status_change",from:"not_started",to:"in_progress",note:"Locked weekly targets and started building the templates library."}
-              ]},
-            { id: mk(), title: "Weekly measurable targets", desc: "A concrete weekly output target — X reels, X videos, X posts, X guest interactions. So curators know what 'doing the job well' looks like by Friday afternoon.", status: "on_track", owner: "Anaya", dueDate: "2026-05-31",
-              history: [
-                {id:mk(),date:"2026-04-18",type:"created",note:"Initiative created"},
-                {id:mk(),date:"2026-04-25",type:"status_change",from:"not_started",to:"on_track",note:"Defined: X reels, X videos, X posts, X guest interactions per week."}
-              ]},
-            { id: mk(), title: "Weekly content templates", desc: "Four ready-to-shoot weekly formats — Hostel Vibe, Guest Story, Activity Reel, Local Recommendation. Removes the 'what should I post?' decision every week.", status: "in_progress", owner: "Anaya", dueDate: "2026-06-15",
-              history: [
-                {id:mk(),date:"2026-04-20",type:"created",note:"Initiative created"},
-                {id:mk(),date:"2026-05-05",type:"status_change",from:"not_started",to:"in_progress",note:"4 weekly formats drafted: Hostel Vibe, Guest Story, Activity Reel, Local Recommendation."}
-              ]},
-            { id: mk(), title: "Low-effort content framework", desc: "Five formats designed for low-energy days — POV trends, room tour, sunset timelapse, café moments, guest reactions. 10 minutes of shooting, still on-brand.", status: "not_started", owner: "Anaya", dueDate: "2026-07-15",
-              history: [{id:mk(),date:"2026-04-22",type:"created",note:"Initiative created"}]},
-            { id: mk(), title: "Plug & Play Creator Toolkit", desc: "A shared library of trending audio, hooks, captions, reel structures and editable templates. Cuts the 'staring at a blank screen' part of curator work.", status: "not_started", owner: "Muskan", dueDate: "2026-07-15",
-              history: [{id:mk(),date:"2026-04-22",type:"created",note:"Initiative created"}]},
-            { id: mk(), title: "Visibility Dashboard", desc: "A real-time view of curator content output and engagement — who's posting, who's silent, who's breaking out. Shifts central-team energy from chasing reports to supporting where it matters.", status: "not_started", owner: "Vikas Nagpal", dueDate: "2026-08-15",
-              history: [{id:mk(),date:"2026-04-25",type:"created",note:"Initiative created"}]},
-            { id: mk(), title: "Curator Onboarding Redesign", desc: "A reimagined first week for curators — why content matters, what success looks like, real examples of past wins. Sets a higher floor for everyone who joins after.", status: "not_started", owner: "Anaya", dueDate: "2026-07-31",
-              history: [{id:mk(),date:"2026-04-25",type:"created",note:"Initiative created"}]}
-          ]
-        }
-      ]
-    },
-    // ── GOAL 3 ─────────────────────────────────────────────────────
-    {
-      id: mk(),
-      title: "Position the Vibe Curator Program as a recognizable hospitality-community movement that strengthens the Zostel brand",
-      desc: "Make the market say \"I want to be part of this.\" Build aspiration, applications, and storytelling around the curator program — and through it, around Zostel itself.",
-      quarter: "Q2 2026", createdAt: "2026-04-01",
-      keyResults: [
-        {
-          id: mk(),
-          title: "Increase visibility and engagement around the \"Zostel vibe\"",
-          target: 6, current: 3.2, unit: "% engagement",
-          initiatives: [
-            { id: mk(), title: "Instagram Content Strategy", desc: "A clear creative direction for Zostel's Instagram around the curator program — pillars, posting cadence, who-creates-what. Moves the channel from 'curator content lives here too' to 'this is where curator culture is built'.", status: "in_progress", owner: "Muskan", dueDate: "2026-06-30",
-              history: [{id:mk(),date:"2026-04-05",type:"created",note:"Initiative created"}]},
-            { id: mk(), title: "LinkedIn Thought Leadership Strategy", desc: "A LinkedIn-native voice that positions Zostel — and the curator program specifically — as a real hospitality movement. Less 'we got an award', more 'here's how we think about community-led travel'.", status: "not_started", owner: "Muskan", dueDate: "2026-07-31",
-              history: [{id:mk(),date:"2026-04-15",type:"created",note:"Initiative created"}]},
-            { id: mk(), title: "Community-Led Campaigns", desc: "Campaigns where the community is the creative — guest-submitted stories, curator-led series, property-driven themes. The kind of momentum a brand team alone can't generate.", status: "not_started", owner: "Bhavya G", dueDate: "2026-08-15",
-              history: [{id:mk(),date:"2026-04-15",type:"created",note:"Initiative created"}]},
-            { id: mk(), title: "Guest Story Collection Process", desc: "A simple, repeatable way to capture the moments that already happen at Zostel — unexpected friendships, impromptu jam sessions, long bus rides. Turns WhatsApp anecdotes into shareable content.", status: "in_progress", owner: "Anaya", dueDate: "2026-06-30",
-              history: [{id:mk(),date:"2026-04-12",type:"created",note:"Initiative created"}]}
-          ]
-        },
-        {
-          id: mk(),
-          title: "Generate consistent destination and property-level storytelling",
-          target: 50, current: 18, unit: "% featured monthly",
-          initiatives: [
-            { id: mk(), title: "\"Day in the Life\" Content Series", desc: "Short-form video series with a real curator at the centre — what their day looks like, what they're proud of, what surprised them this week. Doubles as a recruitment magnet.", status: "on_track", owner: "Anaya", dueDate: "2026-07-15",
-              history: [
-                {id:mk(),date:"2026-04-10",type:"created",note:"Initiative created"},
-                {id:mk(),date:"2026-04-28",type:"status_change",from:"not_started",to:"on_track",note:"First three episodes filmed across Kasol, Coorg and Spiti."}
-              ]},
-            { id: mk(), title: "Property Storytelling Playbook", desc: "A field guide for capturing each property's character — what makes Kasol different from Coorg, beyond the view. Gives content teams a clear angle for every property feature.", status: "not_started", owner: "Anaya", dueDate: "2026-07-15",
-              history: [{id:mk(),date:"2026-04-12",type:"created",note:"Initiative created"}]},
-            { id: mk(), title: "Curator Creator Guidelines", desc: "The visual and tonal rules of the road for curator content — what fits the brand, what doesn't, where to take creative liberties. Keeps the network of voices consistent without flattening them.", status: "not_started", owner: "Muskan", dueDate: "2026-06-30",
-              history: [{id:mk(),date:"2026-04-15",type:"created",note:"Initiative created"}]}
-          ]
-        },
-        {
-          id: mk(),
-          title: "Increase inbound curator applications and brand aspiration",
-          target: 1200, current: 420, unit: "applications/qtr",
-          initiatives: [
-            { id: mk(), title: "Partnership & Collaboration Strategy", desc: "A coordinated plan for partnering with creators, travel media and cultural orgs who already speak to Zostel's audience. Reach without scaling the in-house team 10x.", status: "not_started", owner: "Muskan", dueDate: "2026-08-15",
-              history: [{id:mk(),date:"2026-04-18",type:"created",note:"Initiative created"}]},
-            { id: mk(), title: "Curator Brand Positioning Framework", desc: "The strategic story behind 'why this program' — what it stands for, who it's for, what it gives back. Anchors every piece of curator communication in one consistent narrative.", status: "not_started", owner: "Muskan", dueDate: "2026-06-30",
-              history: [{id:mk(),date:"2026-04-15",type:"created",note:"Initiative created"}]},
-            { id: mk(), title: "Creator-focused recruitment storytelling", desc: "Recruitment content that speaks to creators in their language — what they'll learn, who they'll meet, where it'll take them. Pulls in applicants who already share the program's values.", status: "not_started", owner: "Bhavya G", dueDate: "2026-07-15",
-              history: [{id:mk(),date:"2026-04-20",type:"created",note:"Initiative created"}]}
-          ]
-        }
-      ]
-    }
-  ];
-
-  // Resolve KR ids for tagging ideas
-  const G1 = S.goals[0], G2 = S.goals[1], G3 = S.goals[2];
-  const G1_M1 = G1.keyResults[0].id, G1_M2 = G1.keyResults[1].id, G1_M3 = G1.keyResults[2].id;
-  const G2_M1 = G2.keyResults[0].id, G2_M2 = G2.keyResults[1].id, G2_M3 = G2.keyResults[2].id;
-  const G3_M1 = G3.keyResults[0].id, G3_M2 = G3.keyResults[1].id, G3_M3 = G3.keyResults[2].id;
-
-  S.ideas = [
-    // GOAL 1 — M1: active participation
-    { id: mk(), text: "Shared curator model for nearby properties — one curator covers 2–3 adjacent hostels in the same circuit.", goalId: G1.id, krId: G1_M1, createdAt: "2026-05-04" },
-    { id: mk(), text: "Weekend-only curator deployment — lighter commitment for properties testing the program.", goalId: G1.id, krId: G1_M1, createdAt: "2026-05-06" },
-    { id: mk(), text: "Seasonal curator rotation — different curators for monsoon vs winter to match each property's energy.", goalId: G1.id, krId: G1_M1, createdAt: "2026-05-08" },
-
-    // GOAL 1 — M2: PM satisfaction & trust
-    { id: mk(), text: "Include property managers in curator selection — share shortlist and let them pick the best fit. Makes the manager a co-owner of program success.", goalId: G1.id, krId: G1_M2, createdAt: "2026-05-10" },
-    { id: mk(), text: "Property manager recognition program — visible appreciation for managers championing the Vibe Curator Program.", goalId: G1.id, krId: G1_M2, createdAt: "2026-05-12" },
-    { id: mk(), text: "\"Best Community Property\" awards — quarterly recognition for properties delivering the strongest vibe.", goalId: G1.id, krId: G1_M2, createdAt: "2026-05-14" },
-    { id: mk(), text: "Run a structured intro call between property manager and curator BEFORE the curator arrives — align on goals, boundaries, working style, schedules and communication preferences. Cuts surprise and friction in week one.", goalId: G1.id, krId: G1_M2, createdAt: "2026-05-08" },
-
-    // GOAL 1 — M3: operational misuse / boundaries
-    { id: mk(), text: "Property vibe certification system — properties earn a \"Vibe Verified\" badge after meeting community-experience criteria.", goalId: G1.id, krId: G1_M3, createdAt: "2026-05-15" },
-    { id: mk(), text: "AI-based curator-property matching — algorithm to suggest the best curator fit for each property's profile.", goalId: G1.id, krId: G1_M3, createdAt: "2026-05-17" },
-
-    // GOAL 2 — M1: curator quality, retention
-    { id: mk(), text: "Curator leveling system — explicit progression (Rookie → Pro → Master) with unlockable perks at each stage.", goalId: G2.id, krId: G2_M1, createdAt: "2026-05-05" },
-    { id: mk(), text: "Curator alumni network events — keep past curators connected and use them as program ambassadors.", goalId: G2.id, krId: G2_M1, createdAt: "2026-05-08" },
-    { id: mk(), text: "Curator badges / collectibles — physical pins or digital collectibles earned through milestones.", goalId: G2.id, krId: G2_M1, createdAt: "2026-05-11" },
-    { id: mk(), text: "Make Zostel Credits / XP points / complimentary room nights the core curator currency. Feels Zostel-native, transferable across properties, and fuels travel for the people who build our community.", goalId: G2.id, krId: G2_M1, createdAt: "2026-05-16" },
-
-    // GOAL 2 — M2: guest engagement, social experience
-    { id: mk(), text: "Hostel community rituals — weekly recurring moments (Story Sunday, Music Mondays) that curators run consistently.", goalId: G2.id, krId: G2_M2, createdAt: "2026-05-09" },
-    { id: mk(), text: "Inter-hostel community events — coordinated nights or themed weeks happening simultaneously across properties.", goalId: G2.id, krId: G2_M2, createdAt: "2026-05-12" },
-    { id: mk(), text: "National curator summit — annual gathering where curators across India meet, swap ideas, and celebrate.", goalId: G2.id, krId: G2_M2, createdAt: "2026-05-15" },
-
-    // GOAL 2 — M3: content consistency, follow-up dependency
-    { id: mk(), text: "\"Vibe Curator Superhero\" video series — slightly overacted scenarios showing exactly what a great curator looks like on the ground. Doubles as a recruitment and onboarding asset.", goalId: G2.id, krId: G2_M3, createdAt: "2026-05-12" },
-    { id: mk(), text: "XP / gamification system — earn points for content output, engagement, and consistency.", goalId: G2.id, krId: G2_M3, createdAt: "2026-05-13" },
-    { id: mk(), text: "Automated content reminders — WhatsApp-based nudges with the day's content prompt.", goalId: G2.id, krId: G2_M3, createdAt: "2026-05-15" },
-    { id: mk(), text: "Internal curator leaderboard — public dashboard showing who's putting out the strongest content this week.", goalId: G2.id, krId: G2_M3, createdAt: "2026-05-17" },
-    { id: mk(), text: "Weekly curator showcase calls — curators present their best content and share ideas with peers. Builds momentum, surfaces what works, and reduces dependency on the central content team.", goalId: G2.id, krId: G2_M3, createdAt: "2026-05-15" },
-
-    // GOAL 3 — M1: visibility, engagement
-    { id: mk(), text: "Community documentary series — long-form video pieces capturing real Zostel community stories.", goalId: G3.id, krId: G3_M1, createdAt: "2026-05-06" },
-    { id: mk(), text: "City-wise vibe storytelling campaigns — each city's unique character told through its properties and curators.", goalId: G3.id, krId: G3_M1, createdAt: "2026-05-09" },
-    { id: mk(), text: "\"Travel with Zostel\" creator collaborations — partner with travel creators for authentic on-property content.", goalId: G3.id, krId: G3_M1, createdAt: "2026-05-12" },
-    { id: mk(), text: "Featured Curator slot on Zostel's main Instagram every month — top-performing curator gets the spotlight. Both a reward for them and a recruitment magnet for the next batch.", goalId: G3.id, krId: G3_M1, createdAt: "2026-05-14" },
-
-    // GOAL 3 — M2: destination / property storytelling
-    { id: mk(), text: "Property manager influencer series — feature managers as the human face of each property.", goalId: G3.id, krId: G3_M2, createdAt: "2026-05-11" },
-    { id: mk(), text: "Destination ambassador program — locals who represent the spirit of each Zostel city.", goalId: G3.id, krId: G3_M2, createdAt: "2026-05-14" },
-
-    // GOAL 3 — M3: inbound applications, brand aspiration
-    { id: mk(), text: "Zostel Creator Academy — a structured learning program for aspiring travel creators.", goalId: G3.id, krId: G3_M3, createdAt: "2026-05-13" },
-    { id: mk(), text: "Curator residency program — multi-month embedded stays for top creators across properties.", goalId: G3.id, krId: G3_M3, createdAt: "2026-05-15" },
-    { id: mk(), text: "Travel creator fellowship — paid fellowship for emerging creators to live the Zostel life and create.", goalId: G3.id, krId: G3_M3, createdAt: "2026-05-17" }
-  ];
-
-  // Team
-  S.members = [
-    { id: mk(), name: "Anaya" },
-    { id: mk(), name: "Bhavya G" },
-    { id: mk(), name: "Harpreet Singh" },
-    { id: mk(), name: "Kartikey Seth" },
-    { id: mk(), name: "Muskan" },
-    { id: mk(), name: "Swapnil Srivastava" },
-    { id: mk(), name: "Vikas Nagpal" }
-  ];
-
-  save();
-}
 
 // ═══════════════════════════════════════════
 //  HELPERS
@@ -1699,7 +1770,40 @@ function findInit(kr,iid) { return kr?.initiatives.find(i=>i.id===iid); }
 //  RENDER
 // ═══════════════════════════════════════════
 
-function render() { renderSidebar(); renderMain(); }
+function render() { renderSidebar(); renderMain(); renderUserMenu(); }
+
+function renderUserMenu() {
+  const avatar = document.getElementById('userAvatar');
+  const nameEl = document.getElementById('userMenuName');
+  const emailEl = document.getElementById('userMenuEmail');
+  if (!avatar || !nameEl) return;
+  const u = S.session?.user;
+  const p = S.profile || {};
+  const name = p.display_name || u?.user_metadata?.full_name || u?.email?.split('@')[0] || 'You';
+  const email = p.email || u?.email || '';
+  const photoUrl = p.avatar_url || u?.user_metadata?.avatar_url || '';
+  nameEl.textContent = name;
+  emailEl.textContent = email;
+  avatar.innerHTML = photoUrl
+    ? `<img src="${esc(photoUrl)}" alt="" referrerpolicy="no-referrer" />`
+    : esc((name || '?').charAt(0).toUpperCase());
+}
+
+// User-menu dropdown toggle
+document.addEventListener('click', e => {
+  const trigger = e.target.closest('#userMenuBtn');
+  const dropdown = document.getElementById('userMenuDropdown');
+  const inside = e.target.closest('#userMenuDropdown');
+  if (!dropdown) return;
+  if (trigger) {
+    const showing = !dropdown.hidden;
+    dropdown.hidden = showing;
+    document.getElementById('userMenuBtn')?.setAttribute('aria-expanded', String(!showing));
+  } else if (!inside) {
+    dropdown.hidden = true;
+    document.getElementById('userMenuBtn')?.setAttribute('aria-expanded', 'false');
+  }
+});
 
 function renderSidebar() {
   const ideasBtn = document.getElementById('navIdeasBtn');
@@ -2082,42 +2186,46 @@ function renderIdeaCard(idea) {
   </div>`;
 }
 
-function addIdeaFromForm() {
+async function addIdeaFromForm() {
   const ta = document.getElementById('newIdeaText');
   const text = (ta?.value||'').trim();
   if (!text) { flashError('newIdeaText','What\'s the idea? Type it in to capture it.'); return; }
   const rect = ta?.getBoundingClientRect();
   const gid = document.getElementById('newIdeaGoal')?.value || null;
   const krid = document.getElementById('newIdeaKR')?.value || null;
-  const newIdea = { id:id(), text, goalId:gid||null, krId:krid||null, createdAt:today() };
-  S.ideas.push(newIdea);
+  const newIdea = await db.createIdea({ text, goalId: gid, krId: krid });
+  if (!newIdea) return;
+  S.ideas.unshift(newIdea);
   justAddedIdeaId = newIdea.id;
   if (ta) ta.value = '';
-  save(); render();
+  render();
   setTimeout(()=>document.getElementById('newIdeaText')?.focus(),50);
   celebrateIdea(rect);
   setTimeout(()=>{ justAddedIdeaId = null; }, 2000);
 }
 
-function addQuickIdea(gid) {
+async function addQuickIdea(gid) {
   const input = document.getElementById('goalIdeaInput');
   const text = (input?.value||'').trim();
   if (!text || !input) return;
   const rect = input.getBoundingClientRect();
-  const newIdea = { id:id(), text, goalId:gid, krId:null, createdAt:today() };
-  S.ideas.push(newIdea);
+  const newIdea = await db.createIdea({ text, goalId: gid, krId: null });
+  if (!newIdea) return;
+  S.ideas.unshift(newIdea);
   justAddedIdeaId = newIdea.id;
   input.value = '';
-  save(); render();
+  render();
   setTimeout(()=>document.getElementById('goalIdeaInput')?.focus(),50);
   celebrateIdea(rect);
   setTimeout(()=>{ justAddedIdeaId = null; }, 2000);
 }
 
-function deleteIdea(iid) {
+async function deleteIdea(iid) {
   if (!confirm('Delete this idea?')) return;
+  const ok = await db.deleteIdea(iid);
+  if (!ok) return;
   S.ideas = S.ideas.filter(i=>i.id!==iid);
-  save(); render();
+  render();
 }
 
 function openPromoteModal(iid) {
@@ -2178,7 +2286,7 @@ function openPromoteModal(iid) {
   document.getElementById('pSave').addEventListener('click', ()=>promoteIdea(iid));
 }
 
-function promoteIdea(iid) {
+async function promoteIdea(iid) {
   const idea = S.ideas.find(i=>i.id===iid);
   if (!idea) return;
   const gid = document.getElementById('pGoal')?.value;
@@ -2190,15 +2298,20 @@ function promoteIdea(iid) {
   const owner = (document.getElementById('pOwner')?.value||'').trim();
   const dueDate = document.getElementById('pDue')?.value || '';
 
-  kr.initiatives.push({
-    id: id(),
-    title: idea.text,
-    status: 'not_started',
-    owner, dueDate,
-    history: [{ id:id(), date:today(), type:'created', note:'Promoted from an idea 💡' }]
+  const init = await db.createInitiative(krid, {
+    title: idea.text, desc: '', status: 'not_started',
+    owner, dueDate, position: kr.initiatives.length
   });
+  if (!init) return;
+  const entry = await db.addHistory(init.id, {
+    type: 'created', date: today(), note: 'Promoted from an idea 💡'
+  });
+  if (entry) init.history.push(entry);
+  const ok = await db.deleteIdea(iid);
+  if (!ok) return;
+
+  kr.initiatives.push(init);
   S.ideas = S.ideas.filter(i=>i.id!==iid);
-  save();
   closeModal();
   S.view = 'goals';
   S.activeGoalId = gid;
@@ -2296,13 +2409,15 @@ function startEditMeta(field) {
   }
 
   let done = false;
-  const commit = () => {
+  const commit = async () => {
     if (done) return;
     done = true;
     const v = (input.value || '').trim();
+    const patch = field === 'owner' ? { owner: v } : { dueDate: v };
+    const ok = await db.updateInitiative(init.id, patch);
+    if (!ok) { refreshDrawerMeta(init); return; }
     if (field === 'owner') init.owner = v;
     else if (field === 'due') init.dueDate = v;
-    save();
     refreshDrawerMeta(init);
     renderMain();
   };
@@ -2368,12 +2483,14 @@ function startEditDesc() {
   document.getElementById('descSave').addEventListener('click', commitDesc);
 }
 
-function commitDesc() {
+async function commitDesc() {
   if (!DX) return;
   const init = findInit(findKR(findGoal(DX.gid), DX.krid), DX.iid);
   if (!init) return;
-  init.desc = (document.getElementById('descInput')?.value || '').trim();
-  save();
+  const newDesc = (document.getElementById('descInput')?.value || '').trim();
+  const ok = await db.updateInitiative(init.id, { desc: newDesc });
+  if (!ok) return;
+  init.desc = newDesc;
   renderDrawerBody(init);
 }
 
@@ -2421,7 +2538,7 @@ function stageStatus(newStatus) {
   }
 }
 
-function shareUpdate() {
+async function shareUpdate() {
   if(!DX) return;
   const g=findGoal(DX.gid), kr=findKR(g,DX.krid), init=findInit(kr,DX.iid);
   if(!init) return;
@@ -2431,14 +2548,22 @@ function shareUpdate() {
 
   if (statusChanged) {
     const old = init.status;
+    const ok = await db.updateInitiative(init.id, { status: pendingStatus });
+    if (!ok) return;
+    const entry = await db.addHistory(init.id, {
+      type: 'status_change', date: today(),
+      from: old, to: pendingStatus, note: text
+    });
     init.status = pendingStatus;
-    init.history.push({ id:id(), date:today(), type:'status_change', from:old, to:pendingStatus, note:text });
+    if (entry) init.history.push(entry);
   } else if (text) {
-    init.history.push({ id:id(), date:today(), type:'comment', text });
+    const entry = await db.addHistory(init.id, {
+      type: 'comment', date: today(), text
+    });
+    if (entry) init.history.push(entry);
   }
   if (document.getElementById('commentInput')) document.getElementById('commentInput').value = '';
   pendingStatus = init.status;
-  save();
   refreshDrawerMeta(init);
   renderDrawerBody(init);
   renderMain();
@@ -2462,9 +2587,12 @@ function renderTimeline(init) {
     } else {
       body=`<div class="tl-text" style="color:var(--text-muted)">${esc(item.note||'Step added to the journey!')}</div>`;
     }
+    const meta = item.author_name
+      ? `${esc(item.author_name)} · ${fmtDateLong(item.date)}`
+      : fmtDateLong(item.date);
     return `<div class="tl-item">
       <div class="tl-icon ${cls}">${icon}</div>
-      <div class="tl-body"><div class="tl-date">${fmtDateLong(item.date)}</div>${body}</div>
+      <div class="tl-body"><div class="tl-date">${meta}</div>${body}</div>
     </div>`;
   }).join('');
 }
@@ -2522,27 +2650,32 @@ function openGoalModal(gid) {
   document.getElementById('mGoalDelete')?.addEventListener('click', ()=>{ deleteGoal(g.id); closeModal(); });
 }
 
-function saveGoal(gid) {
+async function saveGoal(gid) {
   const title=(document.getElementById('mGoalTitle')?.value||'').trim();
   if(!title){ flashError('mGoalTitle','Give your adventure a name to set off!'); return; }
   const desc=(document.getElementById('mGoalDesc')?.value||'').trim();
   const quarter=document.getElementById('mGoalQ')?.value||'Q2 2026';
   if(gid) {
     const g=findGoal(gid); if(!g) return;
+    const ok = await db.updateGoal(gid, { title, desc, quarter });
+    if (!ok) return;
     g.title=title; g.desc=desc; g.quarter=quarter;
   } else {
-    const g={id:id(),title,desc,quarter,createdAt:today(),keyResults:[]};
-    S.goals.push(g);
-    S.activeGoalId=g.id;
+    const created = await db.createGoal({ title, desc, quarter, position: S.goals.length });
+    if (!created) return;
+    S.goals.push(created);
+    S.activeGoalId = created.id;
   }
-  save(); closeModal(); render();
+  closeModal(); render();
 }
 
-function deleteGoal(gid) {
+async function deleteGoal(gid) {
   if(!confirm('Delete this goal and all its measures and initiatives?')) return;
+  const ok = await db.deleteGoal(gid);
+  if (!ok) return;
   S.goals=S.goals.filter(g=>g.id!==gid);
   if(S.activeGoalId===gid) S.activeGoalId=null;
-  save(); render();
+  render();
 }
 
 // KR MODAL
@@ -2581,7 +2714,7 @@ function openKRModal(gid, krid) {
   document.getElementById('mKRDelete')?.addEventListener('click', ()=>{ deleteKR(gid, krid); closeModal(); });
 }
 
-function saveKR(gid, krid) {
+async function saveKR(gid, krid) {
   const g=findGoal(gid); if(!g) return;
   const title=(document.getElementById('mKRTitle')?.value||'').trim();
   if(!title){ flashError('mKRTitle','Tell us what this signpost marks!'); return; }
@@ -2590,20 +2723,25 @@ function saveKR(gid, krid) {
   const unit=(document.getElementById('mKRUnit')?.value||'').trim()||'%';
   if(krid) {
     const kr=findKR(g,krid); if(!kr) return;
+    const ok = await db.updateKR(krid, { title, current: cur, target, unit });
+    if (!ok) return;
     kr.title=title; kr.current=cur; kr.target=target; kr.unit=unit;
   } else {
-    const kr={id:id(),title,current:cur,target,unit,initiatives:[]};
+    const kr = await db.createKR(gid, { title, current: cur, target, unit, position: g.keyResults.length });
+    if (!kr) return;
     g.keyResults.push(kr);
     S.openKRs.add(kr.id);
   }
-  save(); closeModal(); render();
+  closeModal(); render();
 }
 
-function deleteKR(gid, krid) {
+async function deleteKR(gid, krid) {
   const g=findGoal(gid); if(!g) return;
+  const ok = await db.deleteKR(krid);
+  if (!ok) return;
   g.keyResults=g.keyResults.filter(k=>k.id!==krid);
   S.openKRs.delete(krid);
-  save(); render();
+  render();
 }
 
 // INITIATIVE MODAL
@@ -2649,7 +2787,7 @@ function openInitModal(gid, krid) {
   document.getElementById('mInitCancel')?.addEventListener('click', closeModal);
 }
 
-function saveInit(gid, krid) {
+async function saveInit(gid, krid) {
   const g=findGoal(gid), kr=findKR(g,krid); if(!kr) return;
   const title=(document.getElementById('mInitTitle')?.value||'').trim();
   if(!title){ flashError('mInitTitle','Give this step a name so the crew knows what to chase!'); return; }
@@ -2658,17 +2796,37 @@ function saveInit(gid, krid) {
   const owner=(document.getElementById('mInitOwner')?.value||'').trim();
   const dueDate=document.getElementById('mInitDue')?.value||'';
   const note=(document.getElementById('mInitNote')?.value||'').trim();
-  const hist=[{id:id(),date:today(),type:'created',note:note||'Step added to the journey!'}];
-  if(status!=='not_started') hist.push({id:id(),date:today(),type:'status_change',from:'not_started',to:status,note});
-  kr.initiatives.push({id:id(),title,desc,status,owner,dueDate,history:hist});
-  save(); closeModal(); render();
+
+  const init = await db.createInitiative(krid, {
+    title, desc, status, owner, dueDate, position: kr.initiatives.length
+  });
+  if (!init) return;
+
+  // History: 'created' first, then optional status_change if starting status != not_started
+  const createdEntry = await db.addHistory(init.id, {
+    type: 'created', date: today(), note: note || 'Initiative created'
+  });
+  if (createdEntry) init.history.push(createdEntry);
+
+  if (status !== 'not_started') {
+    const sc = await db.addHistory(init.id, {
+      type: 'status_change', date: today(),
+      from: 'not_started', to: status, note
+    });
+    if (sc) init.history.push(sc);
+  }
+
+  kr.initiatives.push(init);
+  closeModal(); render();
 }
 
-function deleteInit(gid, krid, iid) {
+async function deleteInit(gid, krid, iid) {
   if(!confirm('Delete this initiative?')) return;
   const g=findGoal(gid), kr=findKR(g,krid); if(!kr) return;
+  const ok = await db.deleteInitiative(iid);
+  if (!ok) return;
   kr.initiatives=kr.initiatives.filter(i=>i.id!==iid);
-  save(); render();
+  render();
 }
 
 // ═══════════════════════════════════════════
@@ -2828,7 +2986,7 @@ function renderSettingsPage(el) {
   setTimeout(()=>document.getElementById('memberInput')?.focus(),50);
 }
 
-function addMember() {
+async function addMember() {
   const input = document.getElementById('memberInput');
   const name = (input?.value || '').trim();
   if (!name) { flashError('memberInput','Type a name to add a teammate.'); return; }
@@ -2836,13 +2994,15 @@ function addMember() {
     flashError('memberInput', `${name} is already on the team.`);
     return;
   }
-  S.members.push({ id: id(), name });
+  const created = await db.addMember(name);
+  if (!created) return;
+  S.members.push(created);
   if (input) input.value = '';
-  save(); render();
+  render();
   setTimeout(()=>document.getElementById('memberInput')?.focus(),50);
 }
 
-function removeMember(mid) {
+async function removeMember(mid) {
   const m = S.members.find(x => x.id === mid);
   if (!m) return;
   let leadingCount = 0;
@@ -2854,11 +3014,13 @@ function removeMember(mid) {
     msg += `\n\n${m.name} is currently leading ${leadingCount} initiative${leadingCount!==1?'s':''} — they'll be set to unassigned.`;
   }
   if (!confirm(msg)) return;
+  const ok = await db.removeMember(mid, m.name);
+  if (!ok) return;
   S.goals.forEach(g => g.keyResults.forEach(kr => kr.initiatives.forEach(i => {
     if (i.owner === m.name) i.owner = '';
   })));
   S.members = S.members.filter(x => x.id !== mid);
-  save(); render();
+  render();
 }
 
 function toggleKR(krid) {
@@ -2888,11 +3050,88 @@ document.addEventListener('keydown',e=>{
 });
 
 // ═══════════════════════════════════════════
+//  AUTH GATE
+// ═══════════════════════════════════════════
+
+function renderSignInScreen(opts = {}) {
+  const err = opts.error ? `<div class="signin-error">${esc(opts.error)}</div>` : '';
+  document.body.innerHTML = `
+    <div class="signin-shell">
+      <div class="signin-card">
+        <div class="signin-logo" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="9"/>
+            <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/>
+          </svg>
+        </div>
+        <h1 class="signin-title">Zostel <em>Compass</em></h1>
+        <p class="signin-sub">A goal-tracking workspace for the team.<br/>Sign in with your work email to continue.</p>
+        ${err}
+        <button class="signin-google" type="button" onclick="signInWithGoogle()">
+          <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true">
+            <path fill="#4285F4" d="M17.64 9.205c0-.639-.057-1.252-.164-1.841H9v3.481h4.844a4.14 4.14 0 0 1-1.796 2.716v2.259h2.908c1.702-1.567 2.684-3.875 2.684-6.615z"/>
+            <path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.583-5.036-3.71H.957v2.332A8.997 8.997 0 0 0 9 18z"/>
+            <path fill="#FBBC05" d="M3.964 10.71A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.042l3.007-2.332z"/>
+            <path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z"/>
+          </svg>
+          Continue with Google
+        </button>
+        <p class="signin-foot">Only members of the Zostel workspace can sign in.</p>
+      </div>
+    </div>`;
+}
+
+async function signInWithGoogle() {
+  const { error } = await sb.auth.signInWithOAuth({
+    provider: 'google',
+    options: { redirectTo: window.location.origin + window.location.pathname }
+  });
+  if (error) renderSignInScreen({ error: error.message });
+}
+
+async function signOut() {
+  await sb.auth.signOut();
+  // onAuthStateChange will fire SIGNED_OUT and re-render the sign-in screen.
+}
+
+async function bootApp() {
+  // Called after we know we have a valid session.
+  try {
+    await Promise.all([db.loadProfile(), db.loadAll()]);
+  } catch (e) {
+    showDBError(e);
+    return;
+  }
+  render();
+  setupAuthSubscription();
+}
+
+function setupAuthSubscription() {
+  if (window._authSubscribed) return;
+  window._authSubscribed = true;
+  sb.auth.onAuthStateChange((event, session) => {
+    if (event === 'SIGNED_OUT' || !session) {
+      window.location.reload();
+    }
+  });
+}
+
+// ═══════════════════════════════════════════
 //  BOOT
 // ═══════════════════════════════════════════
 
-load();
-render();
+(async () => {
+  const { data: { session } } = await sb.auth.getSession();
+  if (!session) {
+    renderSignInScreen();
+    sb.auth.onAuthStateChange((event, sess) => {
+      if (event === 'SIGNED_IN' && sess) window.location.reload();
+    });
+    return;
+  }
+  S.session = session;
+  await bootApp();
+})();
 </script>
 </body>
 </html>
