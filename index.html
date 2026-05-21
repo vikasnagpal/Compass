@@ -1194,6 +1194,7 @@
     .badge-on_track     { background: var(--green-light); color: var(--green); }
     .badge-at_risk      { background: var(--warning-light); color: var(--warning); }
     .badge-blocked      { background: var(--danger-light); color: var(--danger); }
+    .badge-on_hold      { background: #E6E4DE; color: #5A5852; }
     .badge-completed    { background: var(--green-light); color: var(--green); }
 
     .dot-not_started  { background: #B0ADA6; }
@@ -1201,6 +1202,7 @@
     .dot-on_track     { background: var(--green); }
     .dot-at_risk      { background: var(--warning); }
     .dot-blocked      { background: var(--danger); }
+    .dot-on_hold      { background: #8C8A83; }
     .dot-completed    { background: var(--green); }
 
     /* ── OVERLAY + DRAWER ── */
@@ -1750,9 +1752,23 @@ const STATUSES = [
   { v:'on_track',    label:'On Track',    emoji:'●' },
   { v:'at_risk',     label:'At Risk',     emoji:'⚠' },
   { v:'blocked',     label:'Blocked',     emoji:'✕' },
+  { v:'on_hold',     label:'On Hold',     emoji:'⏸' },
   { v:'completed',   label:'Completed',   emoji:'✓' },
 ];
 const slabel = v => STATUSES.find(s=>s.v===v)?.label || v;
+
+// "Not Started" is only honest if the initiative has never been touched.
+// Once any status change, comment, or edit lands in the trail, the picker
+// hides it — users must pick On Hold instead of regressing.
+function hasActivity(init) {
+  if (!init || !init.history) return false;
+  return init.history.some(h => h.type !== 'created');
+}
+function pickableStatuses(init) {
+  const all = STATUSES;
+  if (hasActivity(init)) return all.filter(s => s.v !== 'not_started');
+  return all;
+}
 
 // ═══════════════════════════════════════════
 //  DATA LAYER (Supabase)
@@ -2399,8 +2415,15 @@ function fmtNum(n) {
   return n;
 }
 function goalProgress(g) {
+  // On-hold initiatives are paused work — they shouldn't drag the
+  // percentage down. Exclude them from the denominator entirely so
+  // the bar reflects only the work the team is actively pursuing.
   let tot=0,good=0;
-  g.keyResults.forEach(kr=>kr.initiatives.forEach(i=>{tot++;if(i.status==='completed'||i.status==='on_track')good++;}));
+  g.keyResults.forEach(kr=>kr.initiatives.forEach(i=>{
+    if (i.status === 'on_hold') return;
+    tot++;
+    if (i.status === 'completed' || i.status === 'on_track') good++;
+  }));
   return tot?Math.round(good/tot*100):0;
 }
 function krProgress(kr) {
@@ -2561,17 +2584,19 @@ function renderMyWorkPage(el) {
       }
     }
   }
-  const open      = rows.filter(r => r.init.status !== 'completed');
+  // Paused (on_hold) gets its own section — they're deliberately not in flight.
+  const paused    = rows.filter(r => r.init.status === 'on_hold');
   const completed = rows.filter(r => r.init.status === 'completed');
+  const live      = rows.filter(r => r.init.status !== 'completed' && r.init.status !== 'on_hold');
   const today = new Date().toISOString().slice(0,10);
-  const overdue   = open.filter(r => r.init.dueDate && r.init.dueDate < today);
-  const atRisk    = open.filter(r => r.init.status === 'at_risk' || r.init.status === 'blocked');
+  const overdue   = live.filter(r => r.init.dueDate && r.init.dueDate < today);
+  const atRisk    = live.filter(r => r.init.status === 'at_risk' || r.init.status === 'blocked');
 
   const rowHTML = (r) => {
     const init = r.init;
-    const isOpen = init.status !== 'completed';
-    const overdueFlag = isOpen && init.dueDate && init.dueDate < today;
-    const staleDays   = isOpen ? daysSinceLastActivity(init) : null;
+    const isLive = init.status !== 'completed' && init.status !== 'on_hold';
+    const overdueFlag = isLive && init.dueDate && init.dueDate < today;
+    const staleDays   = isLive ? daysSinceLastActivity(init) : null;
     const isStale     = staleDays != null && staleDays >= 14 && !overdueFlag;
     const dueClass = overdueFlag ? 'mw-due overdue' : 'mw-due';
     const flagChip = overdueFlag
@@ -2603,15 +2628,17 @@ function renderMyWorkPage(el) {
       <p>Every initiative you're leading, gathered in one place — so nothing falls off your pack.</p>
     </div>
     <div class="mw-stats">
-      <div class="mw-stat"><div class="mw-stat-val">${open.length}</div><div class="mw-stat-lab">Open</div></div>
+      <div class="mw-stat"><div class="mw-stat-val">${live.length}</div><div class="mw-stat-lab">In flight</div></div>
       <div class="mw-stat"><div class="mw-stat-val" style="color:var(--danger)">${overdue.length}</div><div class="mw-stat-lab">Overdue</div></div>
       <div class="mw-stat"><div class="mw-stat-val" style="color:var(--danger)">${atRisk.length}</div><div class="mw-stat-lab">Need a Hand</div></div>
+      ${paused.length ? `<div class="mw-stat"><div class="mw-stat-val" style="color:var(--text-muted)">${paused.length}</div><div class="mw-stat-lab">Paused</div></div>` : ''}
       <div class="mw-stat"><div class="mw-stat-val" style="color:var(--green)">${completed.length}</div><div class="mw-stat-lab">Done</div></div>
     </div>
     ${!rows.length
       ? `<div class="empty"><div class="empty-icon">🛤️</div><h3>Nothing on your plate yet</h3><p>When teammates assign initiatives to you, they'll show up here.</p></div>`
       : `${overdue.length ? section('Overdue', overdue, '') : ''}
-         ${section('In flight', open.filter(r => !(r.init.dueDate && r.init.dueDate < today)), "You're all caught up — nice work.")}
+         ${section('In flight', live.filter(r => !(r.init.dueDate && r.init.dueDate < today)), "You're all caught up — nice work.")}
+         ${paused.length ? section('Paused', paused, '') : ''}
          ${completed.length ? section('Recently done', completed.slice(0,10), '') : ''}`}
   </div>`;
 }
@@ -2779,9 +2806,11 @@ function daysSinceLastActivity(init) {
 function initRow(g, kr, init) {
   const coms=init.history.filter(h=>h.type==='comment').length;
   const today = new Date().toISOString().slice(0,10);
-  const isOpen = init.status !== 'completed';
-  const overdueFlag = isOpen && init.dueDate && init.dueDate < today;
-  const staleDays   = isOpen ? daysSinceLastActivity(init) : null;
+  // On-hold is a deliberate pause — the clock stops. Don't shame paused
+  // work with overdue or stale chips; the team chose to park it.
+  const isLive = init.status !== 'completed' && init.status !== 'on_hold';
+  const overdueFlag = isLive && init.dueDate && init.dueDate < today;
+  const staleDays   = isLive ? daysSinceLastActivity(init) : null;
   const isStale     = staleDays != null && staleDays >= 14 && !overdueFlag;
   const dueText = init.dueDate
     ? `${icon('calendar')} ${overdueFlag?'Overdue · ':''}${fmtDate(init.dueDate)}`
@@ -3451,7 +3480,7 @@ function renderDrawerBody(init) {
       <div style="margin-bottom:10px">
         <div class="form-label" style="margin-bottom:8px">Status</div>
         <div class="status-pills" id="statusPills">
-          ${STATUSES.map(s=>`<button type="button" class="status-pill badge-${s.v}${pendingStatus===s.v?' active':''}"
+          ${pickableStatuses(init).map(s=>`<button type="button" class="status-pill badge-${s.v}${pendingStatus===s.v?' active':''}"
             data-status="${s.v}" onclick="stageStatus('${s.v}')">${s.emoji} ${s.label}</button>`).join('')}
         </div>
         <div class="status-pending-hint" id="statusPendingHint" style="${pendingStatus!==init.status?'':'display:none'}">
@@ -4130,6 +4159,19 @@ function renderHelpPage(el) {
         <li><strong>Whenever inspiration strikes</strong> — drop the idea in the Ideas wall. No formality, no measure required.</li>
         <li><strong>Every week</strong> — open each initiative, update its status, share a one-line note. The Activity Trail tells the story over time.</li>
         <li><strong>End of quarter</strong> — look at what shipped, what stalled, what changed. Plan the next leg from real ground truth.</li>
+      </ul>
+    </div>
+
+    <div class="help-section">
+      <div class="help-section-title">What each status really means</div>
+      <div class="help-section-sub">The shorter the language, the harder it works. Pick the one that's honest, not the one that looks best.</div>
+      <ul class="help-list">
+        <li><span class="badge badge-not_started">Not Started</span> — no one has touched it yet. Once you share even one update, this option disappears for that initiative.</li>
+        <li><span class="badge badge-on_track">On Track</span> — work is moving, you'll hit the date.</li>
+        <li><span class="badge badge-at_risk">At Risk</span> — slippage is possible. Worth a conversation this week.</li>
+        <li><span class="badge badge-blocked">Blocked</span> — actively stuck waiting on someone or something outside the team. Needs help to unblock.</li>
+        <li><span class="badge badge-on_hold">On Hold</span> — the team deliberately paused this. The due-date clock and the stale-warning chip both stop. Pick this instead of regressing to Not Started.</li>
+        <li><span class="badge badge-completed">Completed</span> — done. Move on.</li>
       </ul>
     </div>
 

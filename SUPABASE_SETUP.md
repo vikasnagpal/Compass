@@ -132,6 +132,9 @@ Editor. They are idempotent — running twice is safe.
 2. `supabase/migration-002.sql` — adds goal owner / lifecycle (active/closed +
    score + reflection) and idea lifecycle states (captured / parked / rejected
    / promoted), plus the link from a promoted idea back to its initiative.
+3. `supabase/migration-003.sql` — adds `on_hold` as a valid initiative status,
+   for work that was started and then deliberately paused (distinct from
+   `not_started` "never touched" and `blocked` "involuntarily stuck").
 
 Open each file in the repo, copy the contents into a new SQL Editor query, and
 hit **Run**.
