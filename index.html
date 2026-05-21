@@ -2611,7 +2611,7 @@ function renderMyWorkPage(el) {
     ${!rows.length
       ? `<div class="empty"><div class="empty-icon">🛤️</div><h3>Nothing on your plate yet</h3><p>When teammates assign initiatives to you, they'll show up here.</p></div>`
       : `${overdue.length ? section('Overdue', overdue, '') : ''}
-         ${section('In flight', open.filter(r => !(r.init.dueDate && r.init.dueDate < today)), 'You\\'re all caught up — nice work.')}
+         ${section('In flight', open.filter(r => !(r.init.dueDate && r.init.dueDate < today)), "You're all caught up — nice work.")}
          ${completed.length ? section('Recently done', completed.slice(0,10), '') : ''}`}
   </div>`;
 }
