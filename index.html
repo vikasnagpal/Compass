@@ -3055,55 +3055,93 @@ function renderSignInScreen(opts = {}) {
 }
 
 async function signInWithGoogle() {
-  const { error } = await sb.auth.signInWithOAuth({
+  console.log('[Compass] Sign-in initiated. Current URL:', window.location.href);
+  const { data, error } = await sb.auth.signInWithOAuth({
     provider: 'google',
     options: { redirectTo: window.location.origin + window.location.pathname }
   });
-  if (error) renderSignInScreen({ error: error.message });
+  if (error) {
+    console.error('[Compass] signInWithOAuth error:', error);
+    renderSignInScreen({ error: error.message });
+  } else {
+    console.log('[Compass] OAuth redirect URL:', data?.url);
+  }
 }
 
 async function signOut() {
+  console.log('[Compass] Signing out…');
   await sb.auth.signOut();
-  // onAuthStateChange will fire SIGNED_OUT and re-render the sign-in screen.
+  // onAuthStateChange will fire SIGNED_OUT and reload.
 }
 
 async function bootApp() {
-  // Called after we know we have a valid session.
+  // Called once we have a valid session.
   try {
     await Promise.all([db.loadProfile(), db.loadAll()]);
   } catch (e) {
+    console.error('[Compass] Data load failed:', e);
     showDBError(e);
     return;
   }
   render();
-  setupAuthSubscription();
-}
-
-function setupAuthSubscription() {
-  if (window._authSubscribed) return;
-  window._authSubscribed = true;
-  sb.auth.onAuthStateChange((event, session) => {
-    if (event === 'SIGNED_OUT' || !session) {
-      window.location.reload();
-    }
-  });
 }
 
 // ═══════════════════════════════════════════
 //  BOOT
 // ═══════════════════════════════════════════
+// Use Supabase's INITIAL_SESSION event instead of polling getSession().
+// INITIAL_SESSION fires once after the SDK has finished processing any
+// OAuth callback in the URL — this is more reliable than racing
+// getSession() against the async PKCE code exchange.
+(() => {
+  let booted = false;
 
-(async () => {
-  const { data: { session } } = await sb.auth.getSession();
-  if (!session) {
-    renderSignInScreen();
-    sb.auth.onAuthStateChange((event, sess) => {
-      if (event === 'SIGNED_IN' && sess) window.location.reload();
+  // Helpful diagnostic for browsers that quietly drop URL params or
+  // localStorage during the OAuth redirect chain.
+  const hasOAuthCallback =
+    window.location.search.includes('code=') ||
+    window.location.hash.includes('access_token');
+  console.log('[Compass] Boot · URL has OAuth callback?', hasOAuthCallback);
+  console.log('[Compass] Boot · localStorage available?', (() => {
+    try { localStorage.setItem('_t', '_t'); localStorage.removeItem('_t'); return true; }
+    catch { return false; }
+  })());
+
+  sb.auth.onAuthStateChange(async (event, session) => {
+    console.log('[Compass] Auth event:', event, session ? `(${session.user.email})` : '(no session)');
+
+    if (!booted && (event === 'INITIAL_SESSION' || event === 'SIGNED_IN')) {
+      booted = true;
+      if (session) {
+        S.session = session;
+        await bootApp();
+      } else {
+        renderSignInScreen();
+      }
+      return;
+    }
+
+    if (event === 'SIGNED_IN' && booted && !S.session) {
+      window.location.reload();
+      return;
+    }
+    if (event === 'SIGNED_OUT') {
+      window.location.reload();
+    }
+  });
+
+  // Fallback: if INITIAL_SESSION doesn't fire within 4s (e.g. SDK
+  // hangs on PKCE exchange in a privacy-strict browser), surface the
+  // sign-in screen with an error so the user isn't staring at a blank
+  // page.
+  setTimeout(() => {
+    if (booted) return;
+    console.warn('[Compass] No INITIAL_SESSION event after 4s — falling back to sign-in screen.');
+    booted = true;
+    renderSignInScreen({
+      error: 'Sign-in took too long. If your browser blocks third-party storage during OAuth, try again — or use Safari/Chrome.'
     });
-    return;
-  }
-  S.session = session;
-  await bootApp();
+  }, 4000);
 })();
 </script>
 </body>
