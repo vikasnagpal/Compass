@@ -1212,6 +1212,7 @@
     }
     .tl-icon.comment-ic  { background: var(--primary-light); border-color: var(--primary); }
     .tl-icon.status-ic   { background: var(--green-light); border-color: var(--green); }
+    .tl-icon.edited-ic   { background: #F3EEDD; border-color: var(--primary-dark); color: var(--primary-dark); }
     .tl-icon.created-ic  { background: #F0EFED; border-color: var(--neutral); }
     .tl-body {
       flex: 1; background: var(--bg); border: 1px solid var(--border);
@@ -1322,6 +1323,54 @@
     }
 
     /* ── APP TOAST (data-layer errors + acks) ── */
+    /* ── UNDO TOAST ── */
+    .undo-toast {
+      position: fixed; left: 50%; bottom: 28px;
+      transform: translateX(-50%) translateY(16px);
+      background: var(--text); color: #fff;
+      padding: 8px 8px 8px 18px; border-radius: 100px;
+      display: inline-flex; align-items: center; gap: 12px;
+      font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 500;
+      box-shadow: 0 10px 28px rgba(0,0,0,0.22);
+      opacity: 0; pointer-events: none;
+      transition: opacity .25s ease, transform .25s cubic-bezier(.2,.8,.3,1);
+      z-index: 9999; max-width: 92vw;
+    }
+    .undo-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); pointer-events: auto; }
+    .undo-toast-text { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .undo-toast-btn {
+      display: inline-flex; align-items: center;
+      background: var(--primary); color: var(--text);
+      border: none; border-radius: 100px;
+      padding: 0 14px; min-height: 30px;
+      font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 700;
+      cursor: pointer; transition: background .15s;
+      flex-shrink: 0;
+    }
+    .undo-toast-btn:hover { background: var(--primary-dark); }
+    .undo-toast-progress {
+      position: absolute; left: 0; bottom: 0; height: 2px;
+      background: var(--primary); border-radius: 0 0 100px 100px;
+      transform-origin: left;
+      animation: undo-countdown linear forwards;
+      pointer-events: none;
+    }
+    @keyframes undo-countdown { from { transform: scaleX(1); } to { transform: scaleX(0); } }
+
+    /* ── BUTTON BUSY STATE ── */
+    .btn.is-busy, .btn-busy {
+      cursor: wait; opacity: .85; pointer-events: none;
+    }
+    .btn-spinner {
+      display: inline-block;
+      width: 1em; height: 1em;
+      border: 2px solid currentColor; border-top-color: transparent;
+      border-radius: 50%;
+      animation: btn-spin .7s linear infinite;
+      vertical-align: -0.18em; flex-shrink: 0;
+    }
+    @keyframes btn-spin { to { transform: rotate(360deg); } }
+
     .app-toast {
       position: fixed; left: 50%; bottom: 28px;
       transform: translateX(-50%) translateY(16px);
@@ -1715,6 +1764,193 @@ function showDBError(error) {
   console.error('[Compass] Supabase error:', error);
   showToast(error?.message || 'Something went wrong saving your change.', true);
 }
+// ═══════════════════════════════════════════
+//  REALTIME (live multi-user sync)
+// ═══════════════════════════════════════════
+// Supabase streams INSERT / UPDATE / DELETE events from each table we
+// subscribe to. We mirror those changes into the in-memory `S` so the
+// UI updates without anyone needing to refresh. Echo of our own writes
+// is detected by checking whether the row is already in S.
+
+let _rerenderRAF = null;
+function scheduleRerender() {
+  if (_rerenderRAF) return;
+  _rerenderRAF = requestAnimationFrame(() => {
+    _rerenderRAF = null;
+    render();
+  });
+}
+
+function findKRById(id) {
+  for (const g of S.goals) {
+    const kr = g.keyResults.find(k => k.id === id);
+    if (kr) return { goal: g, kr };
+  }
+  return null;
+}
+function findInitById(id) {
+  for (const g of S.goals) {
+    for (const kr of g.keyResults) {
+      const init = kr.initiatives.find(i => i.id === id);
+      if (init) return { goal: g, kr, init };
+    }
+  }
+  return null;
+}
+
+function onGoalChange({ eventType, new: row, old: oldRow }) {
+  if (eventType === 'INSERT') {
+    if (S.goals.find(g => g.id === row.id)) return;
+    S.goals.push(dbGoalToState({ ...row, key_results: [] }));
+    scheduleRerender();
+  } else if (eventType === 'UPDATE') {
+    const g = S.goals.find(g => g.id === row.id);
+    if (!g) return;
+    g.title = row.title;
+    g.desc = row.description || '';
+    g.quarter = row.quarter;
+    scheduleRerender();
+  } else if (eventType === 'DELETE') {
+    const id = oldRow?.id; if (!id) return;
+    const wasActive = S.activeGoalId === id;
+    S.goals = S.goals.filter(g => g.id !== id);
+    if (wasActive) {
+      S.activeGoalId = null;
+      showToast('A goal you were viewing was deleted.');
+    }
+    scheduleRerender();
+  }
+}
+
+function onKRChange({ eventType, new: row, old: oldRow }) {
+  if (eventType === 'INSERT') {
+    const g = S.goals.find(g => g.id === row.goal_id); if (!g) return;
+    if (g.keyResults.find(k => k.id === row.id)) return;
+    g.keyResults.push(dbKRToState({ ...row, initiatives: [] }));
+    scheduleRerender();
+  } else if (eventType === 'UPDATE') {
+    const found = findKRById(row.id); if (!found) return;
+    const { kr } = found;
+    kr.title = row.title;
+    kr.target = Number(row.target_value) || 0;
+    kr.current = Number(row.current_value) || 0;
+    kr.unit = row.unit || '';
+    scheduleRerender();
+  } else if (eventType === 'DELETE') {
+    const id = oldRow?.id; if (!id) return;
+    for (const g of S.goals) {
+      const idx = g.keyResults.findIndex(k => k.id === id);
+      if (idx >= 0) { g.keyResults.splice(idx, 1); break; }
+    }
+    S.openKRs.delete(id);
+    scheduleRerender();
+  }
+}
+
+function onInitChange({ eventType, new: row, old: oldRow }) {
+  if (eventType === 'INSERT') {
+    const found = findKRById(row.key_result_id); if (!found) return;
+    if (found.kr.initiatives.find(i => i.id === row.id)) return;
+    found.kr.initiatives.push(dbInitToState({ ...row, initiative_history: [] }));
+    scheduleRerender();
+  } else if (eventType === 'UPDATE') {
+    const found = findInitById(row.id); if (!found) return;
+    const { init } = found;
+    init.title = row.title;
+    init.desc = row.description || '';
+    init.status = row.status;
+    init.owner = row.owner_name || '';
+    init.dueDate = row.due_date || '';
+    if (DX && DX.iid === row.id) {
+      refreshDrawerMeta(init);
+      renderDrawerBody(init);
+    }
+    scheduleRerender();
+  } else if (eventType === 'DELETE') {
+    const id = oldRow?.id; if (!id) return;
+    for (const g of S.goals) for (const kr of g.keyResults) {
+      const idx = kr.initiatives.findIndex(i => i.id === id);
+      if (idx >= 0) {
+        kr.initiatives.splice(idx, 1);
+        if (DX && DX.iid === id) {
+          closeDrawer();
+          showToast('This initiative was deleted by someone.');
+        }
+        scheduleRerender();
+        return;
+      }
+    }
+  }
+}
+
+function onHistoryChange({ eventType, new: row }) {
+  // Only INSERT — history rows aren't edited/deleted in our app.
+  if (eventType !== 'INSERT') return;
+  const found = findInitById(row.initiative_id); if (!found) return;
+  if (found.init.history.find(h => h.id === row.id)) return;
+  found.init.history.push(dbHistoryToState(row));
+  if (DX && DX.iid === row.initiative_id) {
+    renderDrawerBody(found.init);
+  }
+  scheduleRerender();
+}
+
+function onIdeaChange({ eventType, new: row, old: oldRow }) {
+  if (eventType === 'INSERT') {
+    if (S.ideas.find(i => i.id === row.id)) return;
+    S.ideas.unshift(dbIdeaToState(row));
+    scheduleRerender();
+  } else if (eventType === 'DELETE') {
+    const id = oldRow?.id; if (!id) return;
+    S.ideas = S.ideas.filter(i => i.id !== id);
+    scheduleRerender();
+  }
+  // UPDATE on ideas is rare; skip
+}
+
+function onProfileChange({ eventType, new: row, old: oldRow }) {
+  if (eventType === 'INSERT') {
+    if (S.members.find(m => m.id === row.id)) return;
+    S.members.push({
+      id: row.id,
+      name: row.display_name || row.email || 'Teammate',
+      email: row.email || '',
+      avatar_url: row.avatar_url || '',
+    });
+    scheduleRerender();
+  } else if (eventType === 'UPDATE') {
+    const m = S.members.find(m => m.id === row.id);
+    if (m) {
+      m.name = row.display_name || row.email || 'Teammate';
+      m.email = row.email || '';
+      m.avatar_url = row.avatar_url || '';
+    }
+    if (row.id === S.session?.user?.id) S.profile = row;
+    scheduleRerender();
+  } else if (eventType === 'DELETE') {
+    const id = oldRow?.id; if (!id) return;
+    S.members = S.members.filter(m => m.id !== id);
+    scheduleRerender();
+  }
+}
+
+function setupRealtime() {
+  if (window._rtChannel) {
+    try { sb.removeChannel(window._rtChannel); } catch (e) {}
+  }
+  const channel = sb.channel('compass-room')
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'goals' },              onGoalChange)
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'key_results' },        onKRChange)
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'initiatives' },        onInitChange)
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'initiative_history' }, onHistoryChange)
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'ideas' },              onIdeaChange)
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'profiles' },           onProfileChange)
+    .subscribe(status => {
+      console.log('[Compass] Realtime channel status:', status);
+    });
+  window._rtChannel = channel;
+}
+
 function showToast(text, isError = false) {
   let host = document.getElementById('appToast');
   if (!host) {
@@ -1727,6 +1963,117 @@ function showToast(text, isError = false) {
   host.textContent = text;
   clearTimeout(host._t);
   host._t = setTimeout(() => host.classList.remove('show'), 3500);
+}
+
+// ─── Undo-on-delete toast manager ───
+// Pattern: on delete, hide from UI immediately, show a 5s toast with
+// an "Undo" button. The actual DB delete only fires when the timer
+// expires. Clicking Undo cancels the timer and restores the UI.
+// Reloading the page during the window will commit the delete via the
+// beforeunload handler (best effort).
+let _pendingUndo = null; // { hideToast, commit, undo, timer }
+
+function flushPendingUndo() {
+  if (!_pendingUndo) return;
+  const p = _pendingUndo;
+  _pendingUndo = null;
+  clearTimeout(p.timer);
+  p.hideToast();
+  // Commit synchronously-ish; can't await before unload reliably
+  try { p.commit(); } catch (e) { console.error('[Compass] Flush commit failed:', e); }
+}
+
+function ensureUndoHost() {
+  let host = document.getElementById('undoToast');
+  if (!host) {
+    host = document.createElement('div');
+    host.id = 'undoToast';
+    host.className = 'undo-toast';
+    host.setAttribute('role', 'status');
+    host.setAttribute('aria-live', 'polite');
+    document.body.appendChild(host);
+  }
+  return host;
+}
+
+function showUndoToast(message, undo, commit, durationMs = 5000) {
+  // If a previous pending delete exists, commit it first.
+  if (_pendingUndo) {
+    const prev = _pendingUndo; _pendingUndo = null;
+    clearTimeout(prev.timer);
+    prev.hideToast();
+    try { prev.commit(); } catch (e) { console.error('[Compass] Prev commit failed:', e); }
+  }
+
+  const host = ensureUndoHost();
+  host.innerHTML = `
+    <span class="undo-toast-text"></span>
+    <button type="button" class="undo-toast-btn">Undo</button>
+    <span class="undo-toast-progress" style="animation-duration:${durationMs}ms"></span>
+  `;
+  host.querySelector('.undo-toast-text').textContent = message;
+
+  const hide = () => host.classList.remove('show');
+  // trigger show via rAF so the entrance transition runs
+  requestAnimationFrame(() => host.classList.add('show'));
+
+  const timer = setTimeout(async () => {
+    if (_pendingUndo?.timer !== timer) return;
+    _pendingUndo = null;
+    hide();
+    try { await commit(); }
+    catch (e) {
+      console.error('[Compass] Delete commit failed:', e);
+      // commit failed — try to undo so UI matches DB
+      try { undo(); } catch (e2) {}
+      showToast('Could not delete — restored.', true);
+    }
+  }, durationMs);
+
+  host.querySelector('.undo-toast-btn').addEventListener('click', () => {
+    if (_pendingUndo?.timer !== timer) return;
+    clearTimeout(timer);
+    _pendingUndo = null;
+    hide();
+    try { undo(); } catch (e) { console.error('[Compass] Undo failed:', e); }
+  });
+
+  _pendingUndo = { hideToast: hide, commit, undo, timer };
+}
+
+// Make sure pending deletes commit if user navigates away
+window.addEventListener('beforeunload', flushPendingUndo);
+
+// ─── Button busy / double-submit guard ───
+// Wraps an async mutation so the triggering button shows a spinner
+// and ignores subsequent clicks until the await resolves.
+async function withButtonBusy(button, fn) {
+  if (!button || button.disabled || button._busy) {
+    return fn ? (button?._busy ? undefined : fn()) : undefined;
+  }
+  button._busy = true;
+  const origHTML = button.innerHTML;
+  const origDisabled = button.disabled;
+  // Extract the human label (strip tags from origHTML) for the spinner state
+  const tmp = document.createElement('div');
+  tmp.innerHTML = origHTML;
+  const label = (tmp.textContent || '').trim() || 'Saving…';
+  button.disabled = true;
+  button.classList.add('is-busy');
+  button.innerHTML = `<span class="btn-spinner" aria-hidden="true"></span><span>${esc(label)}</span>`;
+  try {
+    return await fn();
+  } catch (e) {
+    console.error('[Compass] Mutation threw:', e);
+    showToast(e?.message || 'Something went wrong.', true);
+  } finally {
+    button._busy = false;
+    if (button.isConnected) {
+      button.innerHTML = origHTML;
+      button.disabled = origDisabled;
+      button.classList.remove('is-busy');
+    }
+  }
 }
 function flashError(inputId, msg) {
   const el = document.getElementById(inputId);
@@ -2108,7 +2455,7 @@ function renderIdeasPage(el) {
             <option value="">Pick a goal first…</option>
           </select>
         </div>
-        <button class="btn btn-primary btn-sm" type="button" onclick="addIdeaFromForm()">+ Add Idea</button>
+        <button class="btn btn-primary btn-sm" type="button" onclick="withButtonBusy(this, addIdeaFromForm)">+ Add Idea</button>
       </div>
       <span class="idea-capture-hint">Tip: Just type and hit Enter to capture a loose idea instantly.</span>
     </div>
@@ -2235,18 +2582,24 @@ async function addQuickIdea(gid) {
   setTimeout(()=>{ justAddedIdeaId = null; }, 2000);
 }
 
-async function deleteIdea(iid) {
-  if (!confirm('Delete this idea?')) return;
-  const ok = await db.deleteIdea(iid);
-  if (!ok) return;
-  S.ideas = S.ideas.filter(i=>i.id!==iid);
+function deleteIdea(iid) {
+  const idx = S.ideas.findIndex(i => i.id === iid);
+  if (idx < 0) return;
+  const snapshot = S.ideas[idx];
+  // Optimistic hide
+  S.ideas.splice(idx, 1);
   render();
+  showUndoToast(
+    'Idea deleted',
+    () => { S.ideas.splice(idx, 0, snapshot); render(); },
+    () => db.deleteIdea(iid),
+  );
 }
 
 function openPromoteModal(iid) {
   const idea = S.ideas.find(i=>i.id===iid);
   if (!idea) return;
-  if (!S.goals.length) { alert('Add a goal first — initiatives need a measure to live under.'); return; }
+  if (!S.goals.length) { showToast('Add a goal first — initiatives need a measure to live under.', true); return; }
 
   showModal(`
     <div class="modal-title">${icon('arrowUpRight','icon-lg')} Turn into Initiative</div>
@@ -2298,7 +2651,8 @@ function openPromoteModal(iid) {
   goalSel.addEventListener('change', fillKR);
 
   document.getElementById('pCancel').addEventListener('click', closeModal);
-  document.getElementById('pSave').addEventListener('click', ()=>promoteIdea(iid));
+  const pSaveBtn = document.getElementById('pSave');
+  pSaveBtn?.addEventListener('click', () => withButtonBusy(pSaveBtn, () => promoteIdea(iid)));
 }
 
 async function promoteIdea(iid) {
@@ -2306,7 +2660,7 @@ async function promoteIdea(iid) {
   if (!idea) return;
   const gid = document.getElementById('pGoal')?.value;
   const krid = document.getElementById('pKR')?.value;
-  if (!krid) { alert('Pick a measure for this initiative to live under.'); return; }
+  if (!krid) { showToast('Pick a measure for this initiative to live under.', true); return; }
   const g = findGoal(gid), kr = findKR(g, krid);
   if (!kr) return;
 
@@ -2349,7 +2703,7 @@ function renderGoalIdeasSection(g) {
     </div>
     <div class="goal-ideas-quick">
       <input type="text" id="goalIdeaInput" placeholder="${esc(pickPrompt(GOAL_CAPTURE_PROMPTS))}" onkeydown="if(event.key==='Enter'){event.preventDefault();addQuickIdea('${g.id}')}" />
-      <button class="btn btn-primary btn-sm" type="button" onclick="addQuickIdea('${g.id}')">Add</button>
+      <button class="btn btn-primary btn-sm" type="button" onclick="withButtonBusy(this, ()=>addQuickIdea('${g.id}'))">Add</button>
     </div>
     ${list.length
       ? `<div class="goal-ideas-list">
@@ -2428,12 +2782,19 @@ function startEditMeta(field) {
     if (done) return;
     done = true;
     const v = (input.value || '').trim();
+    const oldValue = field === 'owner' ? (init.owner || '') : (init.dueDate || '');
+    if (v === oldValue) { refreshDrawerMeta(init); return; }
     const patch = field === 'owner' ? { owner: v } : { dueDate: v };
     const ok = await db.updateInitiative(init.id, patch);
     if (!ok) { refreshDrawerMeta(init); return; }
     if (field === 'owner') init.owner = v;
     else if (field === 'due') init.dueDate = v;
+    // Log the edit to the Activity Trail
+    const note = formatEditNote(field, oldValue, v);
+    const entry = await db.addHistory(init.id, { type: 'edited', date: today(), note });
+    if (entry) init.history.push(entry);
     refreshDrawerMeta(init);
+    renderDrawerBody(init);
     renderMain();
   };
   const cancel = () => {
@@ -2495,7 +2856,23 @@ function startEditDesc() {
     else if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') { e.preventDefault(); commitDesc(); }
   });
   document.getElementById('descCancel').addEventListener('click', cancel);
-  document.getElementById('descSave').addEventListener('click', commitDesc);
+  const descSaveBtn = document.getElementById('descSave');
+  descSaveBtn?.addEventListener('click', () => withButtonBusy(descSaveBtn, commitDesc));
+}
+
+function formatEditNote(field, oldValue, newValue) {
+  if (field === 'owner') {
+    if (!oldValue && newValue) return `Set lead to ${newValue}`;
+    if (oldValue && !newValue) return `Cleared lead (was ${oldValue})`;
+    return `Changed lead from ${oldValue} to ${newValue}`;
+  }
+  if (field === 'due') {
+    const fmt = d => d ? fmtDate(d) : '';
+    if (!oldValue && newValue) return `Set due date to ${fmt(newValue)}`;
+    if (oldValue && !newValue) return `Cleared due date (was ${fmt(oldValue)})`;
+    return `Changed due date from ${fmt(oldValue)} to ${fmt(newValue)}`;
+  }
+  return 'Updated initiative';
 }
 
 async function commitDesc() {
@@ -2503,9 +2880,17 @@ async function commitDesc() {
   const init = findInit(findKR(findGoal(DX.gid), DX.krid), DX.iid);
   if (!init) return;
   const newDesc = (document.getElementById('descInput')?.value || '').trim();
+  const oldDesc = init.desc || '';
+  if (newDesc === oldDesc) { renderDrawerBody(init); return; }
   const ok = await db.updateInitiative(init.id, { desc: newDesc });
   if (!ok) return;
   init.desc = newDesc;
+  // Log to Activity Trail
+  const note = oldDesc
+    ? (newDesc ? 'Updated the description' : 'Cleared the description')
+    : 'Added a description';
+  const entry = await db.addHistory(init.id, { type: 'edited', date: today(), note });
+  if (entry) init.history.push(entry);
   renderDrawerBody(init);
 }
 
@@ -2531,7 +2916,7 @@ function renderDrawerBody(init) {
           onkeydown="if((event.ctrlKey||event.metaKey)&&event.key==='Enter')shareUpdate()"></textarea>
         <div class="comment-box-foot">
           <span class="comment-hint">Ctrl+Enter to share</span>
-          <button class="btn btn-primary btn-sm" type="button" onclick="shareUpdate()">Share Update</button>
+          <button class="btn btn-primary btn-sm" type="button" onclick="withButtonBusy(this, shareUpdate)">Share Update</button>
         </div>
       </div>
     </div>
@@ -2599,8 +2984,11 @@ function renderTimeline(init) {
         <span style="margin:0 7px;color:var(--text-muted)">→</span>
         <span class="badge badge-${item.to}">${slabel(item.to)}</span>
       </div>${item.note?`<div class="tl-text" style="color:var(--text-muted)">${esc(item.note)}</div>`:''}`;
+    } else if(item.type==='edited') {
+      cls='edited-ic'; icon='✎';
+      body=`<div class="tl-text" style="color:var(--text-muted)">${esc(item.note||'Edited initiative')}</div>`;
     } else {
-      body=`<div class="tl-text" style="color:var(--text-muted)">${esc(item.note||'Step added to the journey!')}</div>`;
+      body=`<div class="tl-text" style="color:var(--text-muted)">${esc(item.note||'Initiative created')}</div>`;
     }
     const meta = item.author_name
       ? `${esc(item.author_name)} · ${fmtDateLong(item.date)}`
@@ -2660,7 +3048,8 @@ function openGoalModal(gid) {
     </div>
   `);
   setTimeout(()=>document.getElementById('mGoalTitle')?.focus(),50);
-  document.getElementById('mGoalSave')?.addEventListener('click', ()=>saveGoal(g?.id||''));
+  const goalSaveBtn = document.getElementById('mGoalSave');
+  goalSaveBtn?.addEventListener('click', () => withButtonBusy(goalSaveBtn, () => saveGoal(g?.id||'')));
   document.getElementById('mGoalCancel')?.addEventListener('click', closeModal);
   document.getElementById('mGoalDelete')?.addEventListener('click', ()=>{ deleteGoal(g.id); closeModal(); });
 }
@@ -2684,13 +3073,23 @@ async function saveGoal(gid) {
   closeModal(); render();
 }
 
-async function deleteGoal(gid) {
-  if(!confirm('Delete this goal and all its measures and initiatives?')) return;
-  const ok = await db.deleteGoal(gid);
-  if (!ok) return;
-  S.goals=S.goals.filter(g=>g.id!==gid);
-  if(S.activeGoalId===gid) S.activeGoalId=null;
+function deleteGoal(gid) {
+  const idx = S.goals.findIndex(g => g.id === gid);
+  if (idx < 0) return;
+  const snapshot = S.goals[idx];
+  const wasActive = S.activeGoalId === gid;
+  S.goals.splice(idx, 1);
+  if (wasActive) S.activeGoalId = null;
   render();
+  showUndoToast(
+    `Goal "${snapshot.title}" deleted`,
+    () => {
+      S.goals.splice(idx, 0, snapshot);
+      if (wasActive) S.activeGoalId = gid;
+      render();
+    },
+    () => db.deleteGoal(gid),
+  );
 }
 
 // KR MODAL
@@ -2724,7 +3123,8 @@ function openKRModal(gid, krid) {
     </div>
   `);
   setTimeout(()=>document.getElementById('mKRTitle')?.focus(),50);
-  document.getElementById('mKRSave')?.addEventListener('click', ()=>saveKR(gid, kr?.id||''));
+  const krSaveBtn = document.getElementById('mKRSave');
+  krSaveBtn?.addEventListener('click', () => withButtonBusy(krSaveBtn, () => saveKR(gid, kr?.id||'')));
   document.getElementById('mKRCancel')?.addEventListener('click', closeModal);
   document.getElementById('mKRDelete')?.addEventListener('click', ()=>{ deleteKR(gid, krid); closeModal(); });
 }
@@ -2750,13 +3150,24 @@ async function saveKR(gid, krid) {
   closeModal(); render();
 }
 
-async function deleteKR(gid, krid) {
-  const g=findGoal(gid); if(!g) return;
-  const ok = await db.deleteKR(krid);
-  if (!ok) return;
-  g.keyResults=g.keyResults.filter(k=>k.id!==krid);
+function deleteKR(gid, krid) {
+  const g = findGoal(gid); if (!g) return;
+  const idx = g.keyResults.findIndex(k => k.id === krid);
+  if (idx < 0) return;
+  const snapshot = g.keyResults[idx];
+  const wasOpen = S.openKRs.has(krid);
+  g.keyResults.splice(idx, 1);
   S.openKRs.delete(krid);
   render();
+  showUndoToast(
+    `Measure "${snapshot.title}" deleted`,
+    () => {
+      g.keyResults.splice(idx, 0, snapshot);
+      if (wasOpen) S.openKRs.add(krid);
+      render();
+    },
+    () => db.deleteKR(krid),
+  );
 }
 
 // INITIATIVE MODAL
@@ -2798,7 +3209,8 @@ function openInitModal(gid, krid) {
     </div>
   `);
   setTimeout(()=>document.getElementById('mInitTitle')?.focus(),50);
-  document.getElementById('mInitSave')?.addEventListener('click', ()=>saveInit(gid, krid));
+  const initSaveBtn = document.getElementById('mInitSave');
+  initSaveBtn?.addEventListener('click', () => withButtonBusy(initSaveBtn, () => saveInit(gid, krid)));
   document.getElementById('mInitCancel')?.addEventListener('click', closeModal);
 }
 
@@ -2835,13 +3247,20 @@ async function saveInit(gid, krid) {
   closeModal(); render();
 }
 
-async function deleteInit(gid, krid, iid) {
-  if(!confirm('Delete this initiative?')) return;
-  const g=findGoal(gid), kr=findKR(g,krid); if(!kr) return;
-  const ok = await db.deleteInitiative(iid);
-  if (!ok) return;
-  kr.initiatives=kr.initiatives.filter(i=>i.id!==iid);
+function deleteInit(gid, krid, iid) {
+  const g = findGoal(gid), kr = findKR(g, krid); if (!kr) return;
+  const idx = kr.initiatives.findIndex(i => i.id === iid);
+  if (idx < 0) return;
+  const snapshot = kr.initiatives[idx];
+  const wasInDrawer = DX && DX.iid === iid;
+  kr.initiatives.splice(idx, 1);
+  if (wasInDrawer) closeDrawer();
   render();
+  showUndoToast(
+    `Initiative "${snapshot.title}" deleted`,
+    () => { kr.initiatives.splice(idx, 0, snapshot); render(); },
+    () => db.deleteInitiative(iid),
+  );
 }
 
 // ═══════════════════════════════════════════
@@ -3003,7 +3422,44 @@ function renderSettingsPage(el) {
         : `<div class="member-empty">No one's signed in yet — that's odd, since you must be signed in to see this page!</div>`
       }
     </div>
+
+    <div class="settings-section">
+      <div class="settings-section-header">
+        <div class="settings-section-title">Workspace data</div>
+        <div class="settings-section-sub">Download a snapshot of everything in this workspace — goals, measures, initiatives, history, ideas, and the team list — as a JSON file. Useful for month-end reports, backups, or board reviews.</div>
+      </div>
+      <button class="btn btn-outline" type="button" onclick="exportWorkspace()">⬇ Export workspace as JSON</button>
+    </div>
   </div>`;
+}
+
+function exportWorkspace() {
+  const data = {
+    exported_at: new Date().toISOString(),
+    workspace: 'Zostel Compass',
+    exported_by: { id: S.session?.user?.id, email: S.session?.user?.email, name: S.profile?.display_name },
+    counts: {
+      goals: S.goals.length,
+      measures: S.goals.reduce((a,g) => a + g.keyResults.length, 0),
+      initiatives: S.goals.reduce((a,g) => a + g.keyResults.reduce((b,kr) => b + kr.initiatives.length, 0), 0),
+      ideas: S.ideas.length,
+      team: S.members.length,
+    },
+    goals: S.goals,
+    ideas: S.ideas,
+    team: S.members,
+  };
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  const stamp = new Date().toISOString().slice(0,10);
+  a.href = url;
+  a.download = `compass-${stamp}.json`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+  showToast(`Exported ${data.counts.goals} goals, ${data.counts.initiatives} initiatives.`);
 }
 
 function toggleKR(krid) {
@@ -3100,6 +3556,7 @@ async function bootApp() {
     return;
   }
   render();
+  setupRealtime();
 }
 
 // ═══════════════════════════════════════════
