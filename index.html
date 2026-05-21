@@ -888,39 +888,146 @@
       padding: 0 11px; min-height: 24px;
       border-radius: 20px; line-height: 1;
     }
+    /* Back link — slim, unobtrusive, replaces the redundant breadcrumb */
+    .gd-back {
+      margin-bottom: 14px; font-size: 13px;
+    }
+    .gd-back a {
+      color: var(--text-muted); cursor: pointer;
+      text-decoration: none; padding: 4px 0;
+      transition: color .15s;
+    }
+    .gd-back a:hover, .gd-back a:focus { color: var(--text); }
+
     .gd-header {
-      display: flex; align-items: flex-start; gap: 12px;
-      justify-content: space-between; flex-wrap: wrap;
+      display: flex; align-items: flex-start; gap: 8px;
+      justify-content: space-between;
     }
-    .gd-main { flex: 1 1 280px; min-width: 0; }
-    .gd-actions {
-      display: flex; gap: 7px; flex-shrink: 0; flex-wrap: wrap;
-      justify-content: flex-end;
-    }
-    @media (max-width: 720px) {
-      .gd-header { flex-direction: column; }
-      .gd-main { flex: 1 1 auto; width: 100%; }
-      .gd-actions {
-        width: 100%; justify-content: flex-start;
-        order: 2; /* render actions BELOW the title block on mobile */
-      }
-      .gd-actions .btn { flex: 1 1 auto; }
-    }
-    .gd-reflection {
-      margin-top: 14px; padding: 12px 14px;
-      background: var(--green-light);
-      border-left: 3px solid var(--green);
-      border-radius: 6px;
-      font-size: 14px; line-height: 1.55;
-      color: var(--text);
-    }
-    .gd-reflection strong { color: var(--green); font-weight: 700; }
-    .goal-detail-box.is-closed { opacity: .92; }
-    .goal-detail-box.is-closed .gd-title { color: var(--text-muted); }
+    .gd-main { flex: 1 1 auto; min-width: 0; }
     .gd-title {
-      font-size: 22px; font-weight: 700; margin-bottom: 6px;
+      font-size: 22px; font-weight: 700;
+      margin-bottom: 10px;
       line-height: 1.3; overflow-wrap: anywhere;
     }
+    .gd-desc {
+      font-size: 14.5px; color: var(--text-muted);
+      line-height: 1.6; margin-bottom: 0;
+    }
+
+    /* Kebab overflow menu (replaces the row of buttons) */
+    .gd-menu-wrap { position: relative; flex-shrink: 0; }
+    .gd-menu-btn {
+      width: 36px; height: 36px; padding: 0;
+      display: inline-flex; align-items: center; justify-content: center;
+      background: transparent; border: 1px solid transparent;
+      border-radius: 8px; cursor: pointer;
+      color: var(--text-muted); transition: background .15s, color .15s, border-color .15s;
+    }
+    .gd-menu-btn:hover { background: var(--bg); color: var(--text); border-color: var(--border); }
+    .gd-menu-btn:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+    .gd-menu-btn .icon { width: 18px; height: 18px; }
+    .gd-menu {
+      position: absolute; right: 0; top: calc(100% + 6px);
+      min-width: 220px; padding: 6px;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius-sm); box-shadow: var(--shadow-md);
+      z-index: 250;
+    }
+    .gd-menu[hidden] { display: none; }
+    .gd-menu-item {
+      display: flex; align-items: center; gap: 10px;
+      width: 100%; text-align: left;
+      padding: 9px 12px; border-radius: 6px;
+      background: transparent; border: none; cursor: pointer;
+      font-family: 'Inter', sans-serif; font-size: 13.5px; font-weight: 500;
+      color: var(--text); transition: background .15s;
+    }
+    .gd-menu-item:hover { background: var(--bg); }
+    .gd-menu-item .icon { width: 16px; height: 16px; color: var(--text-muted); flex-shrink: 0; }
+    .gd-menu-item.gd-menu-danger { color: var(--danger); }
+    .gd-menu-item.gd-menu-danger .icon { color: var(--danger); }
+    .gd-menu-item.gd-menu-danger:hover { background: var(--danger-light); }
+    .gd-menu-sep {
+      height: 1px; background: var(--border);
+      margin: 4px 8px;
+    }
+
+    /* Progress row — the centerpiece of the goal page */
+    .gd-progress-row {
+      margin-top: 22px; padding-top: 20px;
+      border-top: 1px solid var(--border);
+    }
+    .gd-progress-meta {
+      display: flex; align-items: baseline; justify-content: space-between;
+      margin-bottom: 8px;
+    }
+    .gd-progress-label {
+      font-size: 12px; font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase; letter-spacing: .8px;
+    }
+    .gd-progress-pct {
+      font-family: 'IBM Plex Sans', sans-serif;
+      font-size: 22px; font-weight: 600; line-height: 1;
+    }
+    .gd-progress-track {
+      width: 100%; height: 8px; border-radius: 4px;
+      background: var(--bg); overflow: hidden;
+    }
+    .gd-progress-fill {
+      height: 100%; border-radius: 4px;
+      transition: width .4s ease;
+    }
+    .gd-progress-fill.g { background: var(--green); }
+    .gd-progress-fill.y { background: var(--primary); }
+    .gd-progress-fill.r { background: var(--danger); }
+    .gd-progress-hint {
+      margin-top: 8px; font-size: 12.5px;
+      color: var(--text-muted);
+    }
+
+    /* Polished stats card — equal columns with subtle dividers */
+    .gd-stats {
+      display: grid; grid-template-columns: repeat(4, 1fr);
+      margin-top: 18px; padding: 14px 0 4px;
+      border-top: 1px solid var(--border);
+    }
+    .gd-stat {
+      text-align: left; padding: 4px 14px;
+      position: relative;
+    }
+    .gd-stat:not(:last-child)::after {
+      content: ''; position: absolute;
+      right: 0; top: 8px; bottom: 8px;
+      width: 1px; background: var(--border);
+    }
+    .gd-stat:first-child { padding-left: 0; }
+    .gd-stat:last-child { padding-right: 0; }
+    .gd-stat-val {
+      font-family: 'IBM Plex Sans', sans-serif; font-size: 26px;
+      font-weight: 500; line-height: 1.1;
+    }
+    .gd-stat-lab {
+      font-size: 11px; font-weight: 600;
+      color: var(--text-muted); text-transform: uppercase;
+      letter-spacing: .8px; margin-top: 4px;
+    }
+
+    /* Reflection callout (when a goal is closed) */
+    .gd-reflection {
+      margin-top: 14px; padding: 14px 16px;
+      background: var(--green-light);
+      border-radius: 10px;
+      font-size: 14.5px; line-height: 1.6;
+      color: var(--text); font-style: italic;
+      display: flex; gap: 10px; align-items: flex-start;
+    }
+    .gd-reflection .icon {
+      flex-shrink: 0; width: 16px; height: 16px;
+      color: var(--green); margin-top: 3px;
+    }
+    .goal-detail-box.is-closed { opacity: .92; }
+    .goal-detail-box.is-closed .gd-title { color: var(--text-muted); }
     .goal-card-owner {
       font-size: 13px; color: var(--text-muted);
       margin-bottom: 12px; margin-top: -8px;
@@ -928,13 +1035,17 @@
     }
     .goal-card.is-closed { opacity: .72; }
     .goal-card.is-closed .goal-card-title { color: var(--text-muted); }
-    .gd-desc { font-size: 15px; color: var(--text-muted); line-height: 1.65; margin-bottom: 16px; }
-    .gd-stats { display: flex; gap: 26px; flex-wrap: wrap; }
-    .gd-stat-val {
-      font-family: 'IBM Plex Sans', sans-serif; font-size: 28px;
-      font-weight: 500; line-height: 1.1;
+
+    @media (max-width: 560px) {
+      .gd-title { font-size: 19px; }
+      .gd-stats { grid-template-columns: repeat(2, 1fr); row-gap: 14px; }
+      .gd-stat:nth-child(2)::after { display: none; } /* break the divider between rows */
+      .gd-stat:nth-child(3), .gd-stat:nth-child(4) {
+        padding-top: 12px; border-top: 1px solid var(--border);
+      }
+      .gd-stat:nth-child(3) { padding-left: 0; }
+      .gd-progress-pct { font-size: 20px; }
     }
-    .gd-stat-lab { font-size: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: .5px; }
 
     /* ── MY WORK ── */
     .mw-stats {
@@ -1757,6 +1868,12 @@ const ICON_PATHS = {
   settings:     '<path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/>',
   help:         '<circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/>',
   arrowUpRight: '<path d="M7 7h10v10"/><path d="M7 17 17 7"/>',
+  edit:         '<path d="M17 3a2.85 2.85 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/>',
+  trash:        '<path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>',
+  flag:         '<path d="M4 22V4"/><path d="M4 4h12l-2 4 2 4H4"/>',
+  refresh:      '<path d="M3 12a9 9 0 0 1 15.5-6.3L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-15.5 6.3L3 16"/><path d="M3 21v-5h5"/>',
+  quote:        '<path d="M3 21c0-6 4-9 6-9V7H3v8c0 2 .5 4 0 6z"/><path d="M15 21c0-6 4-9 6-9V7h-6v8c0 2 .5 4 0 6z"/>',
+  'arrow-right':'<path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>',
 };
 function icon(name, cls = '') {
   const path = ICON_PATHS[name]; if (!path) return '';
@@ -2492,6 +2609,29 @@ document.addEventListener('click', e => {
   }
 });
 
+// Goal-detail overflow menu toggle
+function toggleGoalMenu(e) {
+  if (e) e.stopPropagation();
+  const menu = document.getElementById('gdMenu');
+  const btn = document.getElementById('gdMenuBtn');
+  if (!menu || !btn) return;
+  const showing = !menu.hidden;
+  menu.hidden = showing;
+  btn.setAttribute('aria-expanded', String(!showing));
+}
+function closeGoalMenu() {
+  const menu = document.getElementById('gdMenu');
+  const btn = document.getElementById('gdMenuBtn');
+  if (menu) menu.hidden = true;
+  if (btn) btn.setAttribute('aria-expanded', 'false');
+}
+document.addEventListener('click', e => {
+  const menu = document.getElementById('gdMenu');
+  if (!menu || menu.hidden) return;
+  if (e.target.closest('#gdMenu') || e.target.closest('#gdMenuBtn')) return;
+  closeGoalMenu();
+});
+
 function renderSidebar() {
   const ideasBtn = document.getElementById('navIdeasBtn');
   const ideasCount = document.getElementById('navIdeasCount');
@@ -2724,11 +2864,20 @@ function renderGoalDetail(el, g) {
   const iC=g.keyResults.reduce((a,k)=>a+k.initiatives.length,0);
   const done=g.keyResults.reduce((a,k)=>a+k.initiatives.filter(i=>i.status==='completed').length,0);
   const p=goalProgress(g);
+  const pColorVar = p>=70?'var(--green)':p>=40?'var(--primary)':'var(--danger)';
+  const menuItems = g.status==='active'
+    ? `<button class="gd-menu-item" type="button" role="menuitem" onclick="closeGoalMenu();openGoalModal('${g.id}')">${icon('edit','icon-sm')} Edit goal</button>
+       <button class="gd-menu-item" type="button" role="menuitem" onclick="closeGoalMenu();openCloseGoalModal('${g.id}')">${icon('flag','icon-sm')} Close out this goal</button>
+       <button class="gd-menu-item" type="button" role="menuitem" onclick="closeGoalMenu();openCarryForwardModal('${g.id}')">${icon('arrow-right','icon-sm')} Clone to next quarter</button>
+       <div class="gd-menu-sep"></div>
+       <button class="gd-menu-item gd-menu-danger" type="button" role="menuitem" onclick="closeGoalMenu();deleteGoal('${g.id}')">${icon('trash','icon-sm')} Delete goal</button>`
+    : `<button class="gd-menu-item" type="button" role="menuitem" onclick="closeGoalMenu();openGoalModal('${g.id}')">${icon('edit','icon-sm')} Edit goal</button>
+       <button class="gd-menu-item" type="button" role="menuitem" onclick="closeGoalMenu();reopenGoal('${g.id}')">${icon('refresh','icon-sm')} Reopen goal</button>
+       <div class="gd-menu-sep"></div>
+       <button class="gd-menu-item gd-menu-danger" type="button" role="menuitem" onclick="closeGoalMenu();deleteGoal('${g.id}')">${icon('trash','icon-sm')} Delete goal</button>`;
   el.innerHTML = `<div class="fade-up">
-    <div class="breadcrumb">
-      <a onclick="selectGoal(null)">All Goals</a>
-      <span class="breadcrumb-sep">›</span>
-      <span>${esc(g.title)}</span>
+    <div class="gd-back">
+      <a onclick="selectGoal(null)" role="link" tabindex="0">← All goals</a>
     </div>
     <div class="goal-detail-box${g.status==='closed'?' is-closed':''}">
       <div class="gd-header">
@@ -2740,22 +2889,28 @@ function renderGoalDetail(el, g) {
           </div>
           <div class="gd-title">${esc(g.title)}</div>
           ${g.desc?`<div class="gd-desc">${esc(g.desc)}</div>`:''}
-          ${g.status==='closed' && g.reflection?`<div class="gd-reflection"><strong>Reflection · </strong>${esc(g.reflection)}</div>`:''}
+          ${g.status==='closed' && g.reflection?`<div class="gd-reflection">${icon('quote','icon-sm')} ${esc(g.reflection)}</div>`:''}
         </div>
-        <div class="gd-actions">
-          <button class="btn btn-ghost btn-sm" onclick="openGoalModal('${g.id}')">Edit</button>
-          ${g.status==='active'
-            ? `<button class="btn btn-ghost btn-sm" onclick="openCloseGoalModal('${g.id}')">Close goal</button>
-               <button class="btn btn-ghost btn-sm" onclick="openCarryForwardModal('${g.id}')">Clone to next quarter</button>`
-            : `<button class="btn btn-ghost btn-sm" onclick="reopenGoal('${g.id}')">Reopen</button>`}
-          <button class="btn btn-danger btn-sm" onclick="deleteGoal('${g.id}')">Delete</button>
+        <div class="gd-menu-wrap">
+          <button class="gd-menu-btn" type="button" id="gdMenuBtn" aria-label="Goal actions" aria-haspopup="true" aria-expanded="false" onclick="toggleGoalMenu(event)">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg>
+          </button>
+          <div class="gd-menu" id="gdMenu" role="menu" hidden>${menuItems}</div>
         </div>
       </div>
+      <div class="gd-progress-row">
+        <div class="gd-progress-meta">
+          <span class="gd-progress-label">Progress</span>
+          <span class="gd-progress-pct" style="color:${pColorVar}">${p}%</span>
+        </div>
+        <div class="gd-progress-track"><div class="gd-progress-fill ${progColor(p)}" style="width:${p}%"></div></div>
+        <div class="gd-progress-hint">${p}% of initiatives on track or done</div>
+      </div>
       <div class="gd-stats">
-        <div><div class="gd-stat-val">${g.keyResults.length}</div><div class="gd-stat-lab">Measures</div></div>
-        <div><div class="gd-stat-val">${iC}</div><div class="gd-stat-lab">Initiatives</div></div>
-        <div><div class="gd-stat-val" style="color:var(--green)">${done}</div><div class="gd-stat-lab">Done</div></div>
-        <div><div class="gd-stat-val" style="color:${p>=70?'var(--green)':p>=40?'var(--primary)':'var(--danger)'}">${p}%</div><div class="gd-stat-lab">Progress</div></div>
+        <div class="gd-stat"><div class="gd-stat-val">${g.keyResults.length}</div><div class="gd-stat-lab">Measures</div></div>
+        <div class="gd-stat"><div class="gd-stat-val">${iC}</div><div class="gd-stat-lab">Initiatives</div></div>
+        <div class="gd-stat"><div class="gd-stat-val" style="color:${done>0?'var(--green)':'var(--text-muted)'}">${done}</div><div class="gd-stat-lab">Done</div></div>
+        <div class="gd-stat"><div class="gd-stat-val" style="color:var(--text-muted)">${iC-done}</div><div class="gd-stat-lab">In flight</div></div>
       </div>
     </div>
     <div class="sec-header">
