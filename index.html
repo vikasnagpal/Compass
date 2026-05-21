@@ -3068,7 +3068,13 @@ async function signInWithGoogle() {
   console.log('[Compass] Sign-in initiated. Current URL:', window.location.href);
   const { data, error } = await sb.auth.signInWithOAuth({
     provider: 'google',
-    options: { redirectTo: window.location.origin + window.location.pathname }
+    options: {
+      redirectTo: window.location.origin + window.location.pathname,
+      // Always show Google's account picker so a returning user (especially
+      // after sign-out) consciously chooses which account — and can switch
+      // accounts without juggling cookies in another tab.
+      queryParams: { prompt: 'select_account' },
+    }
   });
   if (error) {
     console.error('[Compass] signInWithOAuth error:', error);
