@@ -470,10 +470,28 @@
     }
     .idea-date { font-size: 12px; color: var(--text-muted); flex-shrink: 0; }
     .idea-actions {
-      display: flex; gap: 6px; align-items: center;
+      display: flex; gap: 6px; align-items: center; flex-wrap: wrap;
       padding-top: 10px; border-top: 1px solid var(--border);
     }
-    .idea-actions > .btn { flex: 1; justify-content: center; }
+    .idea-actions > .btn { flex: 1; justify-content: center; min-width: 100px; }
+    .btn-link {
+      background: transparent; border: none; cursor: pointer;
+      color: var(--text-muted); font-size: 12.5px;
+      padding: 6px 8px; border-radius: 6px;
+      transition: background .15s, color .15s;
+    }
+    .btn-link:hover { background: var(--bg-soft); color: var(--text); }
+    .idea-status-chip {
+      display: inline-flex; align-items: center; gap: 4px;
+      font-size: 11.5px; font-weight: 600;
+      padding: 3px 9px; border-radius: 12px;
+      background: var(--bg-soft); color: var(--text-muted);
+    }
+    .idea-status-chip.status-parked   { background: #FFF3D6; color: #A86A00; }
+    .idea-status-chip.status-promoted { background: var(--green-light); color: var(--green); }
+    .idea-status-chip.status-rejected { background: var(--danger-light); color: var(--danger); }
+    .idea-card.status-promoted, .idea-card.status-rejected { opacity: .75; }
+    .idea-card.status-rejected .idea-text { text-decoration: line-through; }
 
     .btn-icon-only {
       width: 30px; height: 30px; padding: 0;
@@ -851,7 +869,48 @@
     .breadcrumb a { color: var(--text-muted); text-decoration: none; cursor: pointer; }
     .breadcrumb a:hover { color: var(--primary); }
     .breadcrumb-sep { color: var(--neutral); }
+    .gd-chips {
+      display: flex; align-items: center; gap: 8px;
+      flex-wrap: wrap; margin-bottom: 10px;
+    }
+    .goal-owner-chip {
+      display: inline-flex; align-items: center; gap: 5px;
+      font-size: 12px; font-weight: 600; color: var(--text);
+      background: var(--bg); border: 1px solid var(--border);
+      padding: 0 10px; min-height: 24px;
+      border-radius: 20px; line-height: 1;
+    }
+    .goal-owner-chip .icon { color: var(--text-muted); }
+    .goal-closed-chip {
+      display: inline-flex; align-items: center;
+      font-size: 12px; font-weight: 700; color: var(--green);
+      background: var(--green-light); border: 1px solid var(--green);
+      padding: 0 11px; min-height: 24px;
+      border-radius: 20px; line-height: 1;
+    }
+    .gd-actions {
+      display: flex; gap: 7px; flex-shrink: 0; flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+    .gd-reflection {
+      margin-top: 14px; padding: 12px 14px;
+      background: var(--green-light);
+      border-left: 3px solid var(--green);
+      border-radius: 6px;
+      font-size: 14px; line-height: 1.55;
+      color: var(--text);
+    }
+    .gd-reflection strong { color: var(--green); font-weight: 700; }
+    .goal-detail-box.is-closed { opacity: .92; }
+    .goal-detail-box.is-closed .gd-title { color: var(--text-muted); }
     .gd-title { font-size: 22px; font-weight: 700; margin-bottom: 6px; }
+    .goal-card-owner {
+      font-size: 13px; color: var(--text-muted);
+      margin-bottom: 12px; margin-top: -8px;
+      display: inline-flex; align-items: center; gap: 5px;
+    }
+    .goal-card.is-closed { opacity: .72; }
+    .goal-card.is-closed .goal-card-title { color: var(--text-muted); }
     .gd-desc { font-size: 15px; color: var(--text-muted); line-height: 1.65; margin-bottom: 16px; }
     .gd-stats { display: flex; gap: 26px; flex-wrap: wrap; }
     .gd-stat-val {
@@ -859,6 +918,109 @@
       font-weight: 500; line-height: 1.1;
     }
     .gd-stat-lab { font-size: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: .5px; }
+
+    /* ── MY WORK ── */
+    .mw-stats {
+      display: flex; gap: 26px; flex-wrap: wrap;
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 14px; padding: 18px 22px; margin-bottom: 20px;
+    }
+    .mw-stat-val {
+      font-family: 'IBM Plex Sans', sans-serif; font-size: 26px;
+      font-weight: 500; line-height: 1.1;
+    }
+    .mw-stat-lab { font-size: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: .5px; }
+    .mw-section { margin-bottom: 26px; }
+    .mw-section-head {
+      display: flex; align-items: center; gap: 10px;
+      margin: 0 4px 10px 4px;
+    }
+    .mw-section-title {
+      font-size: 14px; font-weight: 700; color: var(--text);
+      text-transform: uppercase; letter-spacing: .6px;
+    }
+    .mw-count {
+      display: inline-block; font-size: 12px; font-weight: 600;
+      background: var(--bg-soft); color: var(--text-muted);
+      padding: 2px 9px; border-radius: 10px; margin-left: 4px;
+    }
+    .mw-list {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 12px; overflow: hidden;
+    }
+    .mw-row {
+      display: grid;
+      grid-template-columns: auto 1fr auto auto;
+      align-items: center; gap: 14px;
+      padding: 13px 16px; cursor: pointer;
+      border-bottom: 1px solid var(--border);
+      transition: background .12s;
+    }
+    .mw-row:last-child { border-bottom: none; }
+    .mw-row:hover { background: var(--bg-soft); }
+    .mw-main { min-width: 0; }
+    .mw-title { font-size: 15px; font-weight: 600; color: var(--text); margin-bottom: 3px; }
+    .mw-path { font-size: 12px; color: var(--text-muted); }
+    .mw-sep { opacity: .5; margin: 0 4px; }
+    .mw-status { flex-shrink: 0; }
+    .mw-due {
+      display: inline-flex; align-items: center; gap: 4px;
+      font-size: 12.5px; color: var(--text-muted);
+      white-space: nowrap;
+    }
+    .mw-due.overdue { color: var(--danger); font-weight: 600; }
+    .mw-empty {
+      padding: 18px; text-align: center;
+      font-size: 14px; color: var(--text-muted);
+      background: var(--card); border: 1px dashed var(--border); border-radius: 12px;
+    }
+
+    /* ── ARCHIVE ── */
+    .arch-quarter { margin-bottom: 26px; }
+    .arch-quarter-head {
+      font-size: 14px; font-weight: 700; color: var(--text);
+      text-transform: uppercase; letter-spacing: .6px;
+      margin: 0 4px 10px 4px;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .arch-quarter-count {
+      font-size: 12px; font-weight: 600;
+      background: var(--bg-soft); color: var(--text-muted);
+      padding: 2px 9px; border-radius: 10px;
+    }
+    .arch-list { display: flex; flex-direction: column; gap: 10px; }
+    .arch-row {
+      display: flex; align-items: flex-start; gap: 18px;
+      padding: 16px 20px; cursor: pointer;
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 12px;
+      transition: border-color .15s, transform .15s;
+    }
+    .arch-row:hover { border-color: var(--primary); transform: translateY(-1px); }
+    .arch-main { flex: 1; min-width: 0; }
+    .arch-title { font-size: 16px; font-weight: 600; color: var(--text); margin-bottom: 6px; }
+    .arch-meta {
+      display: flex; gap: 10px; align-items: center; flex-wrap: wrap;
+      font-size: 12.5px; color: var(--text-muted);
+    }
+    .arch-owner { display: inline-flex; align-items: center; gap: 4px; }
+    .arch-reflection {
+      margin-top: 10px; font-size: 13.5px; font-style: italic;
+      color: var(--text-muted); line-height: 1.55;
+      padding-left: 10px; border-left: 2px solid var(--green);
+    }
+    .arch-stats { display: flex; gap: 20px; flex-shrink: 0; }
+    .arch-stat-val {
+      font-family: 'IBM Plex Sans', sans-serif; font-size: 20px;
+      font-weight: 500; line-height: 1.1; text-align: center;
+    }
+    .arch-stat-lab { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: .5px; text-align: center; }
+    @media (max-width: 720px) {
+      .arch-row { flex-direction: column; gap: 12px; }
+      .arch-stats { width: 100%; justify-content: space-between; }
+      .mw-row { grid-template-columns: auto 1fr; }
+      .mw-status, .mw-due { grid-column: 2; padding-left: 0; }
+    }
 
     /* ── KR CARD ── */
     .kr-card {
@@ -961,6 +1123,16 @@
     }
     .init-row:hover .del-btn { opacity: 1; }
     .del-btn:hover { background: var(--danger-light); color: var(--danger); }
+    .init-row > .ir-due.overdue { color: var(--danger); font-weight: 600; }
+    .flag-chip {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 18px; height: 18px; border-radius: 50%;
+      font-size: 11px; font-weight: 800; line-height: 1;
+      margin-right: 6px; flex-shrink: 0;
+      vertical-align: middle;
+    }
+    .flag-chip.flag-overdue { background: var(--danger-light); color: var(--danger); }
+    .flag-chip.flag-stale   { background: #FFF3D6; color: #A86A00; }
 
     /* When the initiatives list gets narrow, drop the subgrid alignment and
        fall back to a 2-line layout: name + delete on top, attributes below. */
@@ -1061,6 +1233,10 @@
     .drawer-meta {
       display: flex; gap: 8px; flex-wrap: wrap;
       align-items: center; margin-top: 12px;
+    }
+    .drawer-toolbar {
+      margin-top: 10px;
+      display: flex; gap: 6px; align-items: center; flex-wrap: wrap;
     }
     .chip {
       display: inline-flex; align-items: center; gap: 4px;
@@ -1462,10 +1638,22 @@
 
     <div class="sidebar-divider"></div>
 
+    <button class="nav-ideas-btn" id="navMyWorkBtn" type="button" onclick="goToMyWork()">
+      <svg class="icon icon-lg" viewBox="0 0 24 24" aria-hidden="true"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      <span>My work</span>
+      <span class="nav-ideas-count" id="navMyWorkCount">0</span>
+    </button>
+
     <button class="nav-ideas-btn" id="navIdeasBtn" type="button" onclick="goToIdeas()">
       <svg class="icon icon-lg" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg>
       <span>Ideas</span>
       <span class="nav-ideas-count" id="navIdeasCount">0</span>
+    </button>
+
+    <button class="nav-ideas-btn" id="navArchiveBtn" type="button" onclick="goToArchive()">
+      <svg class="icon icon-lg" viewBox="0 0 24 24" aria-hidden="true"><rect width="20" height="5" x="2" y="3" rx="1"/><path d="M4 8v11a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8"/><path d="M10 12h4"/></svg>
+      <span>Archive</span>
+      <span class="nav-ideas-count" id="navArchiveCount">0</span>
     </button>
 
     <div class="sidebar-footer">
@@ -1494,6 +1682,9 @@
     <div class="drawer-crumb" id="dCrumb"></div>
     <div class="drawer-title" id="dTitle"></div>
     <div class="drawer-meta" id="dMeta"></div>
+    <div class="drawer-toolbar">
+      <button class="btn-link" type="button" onclick="openMoveInitModal()" title="Move this initiative to a different goal or measure">↪ Move to another measure</button>
+    </div>
   </div>
   <div class="drawer-body" id="dBody"></div>
 </div>
@@ -1531,7 +1722,7 @@ let S = {
   session: null,   // Supabase auth session
   profile: null,   // Logged-in user's profile row
 };
-let ideaFilter = 'all'; // 'all' | 'unlinked' | <goalId>
+let ideaFilter = 'active'; // 'active' | 'all' | 'unlinked' | 'parked' | 'promoted' | 'rejected' | <goalId>
 
 // Icon system — Lucide-style inline SVGs. Keep consistent across the app
 // (modal titles, sidebar, chips, help pillars). 🧭 belongs to the product
@@ -1606,17 +1797,26 @@ const db = {
 
   // ─── Goals ───
   async createGoal(f) {
-    const { data, error } = await sb.from('goals').insert({
+    const insertRow = {
       title: f.title, description: f.desc || '',
       quarter: f.quarter, position: f.position ?? 0,
-    }).select().single();
+      owner_name: f.owner || '',
+    };
+    const { data, error } = await sb.from('goals').insert(insertRow).select().single();
     if (error) { showDBError(error); return null; }
     return dbGoalToState({ ...data, key_results: [] });
   },
   async updateGoal(id, f) {
-    const { error } = await sb.from('goals').update({
-      title: f.title, description: f.desc || '', quarter: f.quarter,
-    }).eq('id', id);
+    const patch = {};
+    if (f.title       !== undefined) patch.title       = f.title;
+    if (f.desc        !== undefined) patch.description = f.desc;
+    if (f.quarter     !== undefined) patch.quarter     = f.quarter;
+    if (f.owner       !== undefined) patch.owner_name  = f.owner;
+    if (f.status      !== undefined) patch.status      = f.status;
+    if (f.closed_at   !== undefined) patch.closed_at   = f.closed_at;
+    if (f.score       !== undefined) patch.score       = f.score;
+    if (f.reflection  !== undefined) patch.reflection  = f.reflection;
+    const { error } = await sb.from('goals').update(patch).eq('id', id);
     if (error) { showDBError(error); return false; }
     return true;
   },
@@ -1664,11 +1864,13 @@ const db = {
   },
   async updateInitiative(id, f) {
     const patch = {};
-    if (f.title    !== undefined) patch.title       = f.title;
-    if (f.desc     !== undefined) patch.description = f.desc;
-    if (f.status   !== undefined) patch.status      = f.status;
-    if (f.owner    !== undefined) patch.owner_name  = f.owner;
-    if (f.dueDate  !== undefined) patch.due_date    = f.dueDate || null;
+    if (f.title    !== undefined) patch.title         = f.title;
+    if (f.desc     !== undefined) patch.description   = f.desc;
+    if (f.status   !== undefined) patch.status        = f.status;
+    if (f.owner    !== undefined) patch.owner_name    = f.owner;
+    if (f.dueDate  !== undefined) patch.due_date      = f.dueDate || null;
+    if (f.krId     !== undefined) patch.key_result_id = f.krId;
+    if (f.position !== undefined) patch.position      = f.position;
     const { error } = await sb.from('initiatives').update(patch).eq('id', id);
     if (error) { showDBError(error); return false; }
     return true;
@@ -1713,6 +1915,18 @@ const db = {
     if (error) { showDBError(error); return false; }
     return true;
   },
+  async updateIdea(id, f) {
+    const patch = {};
+    if (f.text                 !== undefined) patch.text                   = f.text;
+    if (f.status               !== undefined) patch.status                 = f.status;
+    if (f.statusNote           !== undefined) patch.status_note            = f.statusNote;
+    if (f.promotedInitiativeId !== undefined) patch.promoted_initiative_id = f.promotedInitiativeId;
+    if (f.goalId               !== undefined) patch.goal_id                = f.goalId || null;
+    if (f.krId                 !== undefined) patch.key_result_id          = f.krId   || null;
+    const { error } = await sb.from('ideas').update(patch).eq('id', id);
+    if (error) { showDBError(error); return false; }
+    return true;
+  },
 
   // Team is derived from `profiles` — no add/remove API; users join
   // by signing in. (Removing access happens via Supabase auth.users.)
@@ -1723,6 +1937,11 @@ function dbGoalToState(g) {
   return {
     id: g.id, title: g.title, desc: g.description || '',
     quarter: g.quarter, createdAt: (g.created_at || '').slice(0, 10),
+    owner: g.owner_name || '',
+    status: g.status || 'active',
+    closedAt: g.closed_at || null,
+    score: (g.score === null || g.score === undefined) ? null : Number(g.score),
+    reflection: g.reflection || '',
     keyResults: (g.key_results || []).sort(byPos).map(dbKRToState),
   };
 }
@@ -1756,6 +1975,9 @@ function dbIdeaToState(i) {
     id: i.id, text: i.text,
     goalId: i.goal_id || null, krId: i.key_result_id || null,
     createdAt: (i.created_at || '').slice(0, 10),
+    status: i.status || 'captured',
+    statusNote: i.status_note || '',
+    promotedInitiativeId: i.promoted_initiative_id || null,
   };
 }
 const byPos     = (a, b) => (a.position || 0) - (b.position || 0);
@@ -1811,6 +2033,11 @@ function onGoalChange({ eventType, new: row, old: oldRow }) {
     g.title = row.title;
     g.desc = row.description || '';
     g.quarter = row.quarter;
+    g.owner = row.owner_name || '';
+    g.status = row.status || 'active';
+    g.closedAt = row.closed_at || null;
+    g.score = (row.score === null || row.score === undefined) ? null : Number(row.score);
+    g.reflection = row.reflection || '';
     scheduleRerender();
   } else if (eventType === 'DELETE') {
     const id = oldRow?.id; if (!id) return;
@@ -1857,12 +2084,28 @@ function onInitChange({ eventType, new: row, old: oldRow }) {
     scheduleRerender();
   } else if (eventType === 'UPDATE') {
     const found = findInitById(row.id); if (!found) return;
-    const { init } = found;
+    const { kr: oldKR, init } = found;
     init.title = row.title;
     init.desc = row.description || '';
     init.status = row.status;
     init.owner = row.owner_name || '';
     init.dueDate = row.due_date || '';
+    // Handle move between measures
+    if (row.key_result_id && row.key_result_id !== oldKR.id) {
+      const dest = findKRById(row.key_result_id);
+      if (dest) {
+        oldKR.initiatives = oldKR.initiatives.filter(i => i.id !== row.id);
+        if (!dest.kr.initiatives.find(i => i.id === row.id)) {
+          dest.kr.initiatives.push(init);
+        }
+        // If user has this initiative open in drawer, update crumb context
+        if (DX && DX.iid === row.id) {
+          DX.gid = dest.goal.id; DX.krid = dest.kr.id;
+          const cr = document.getElementById('dCrumb');
+          if (cr) cr.textContent = `${dest.goal.title}  ›  ${dest.kr.title}`;
+        }
+      }
+    }
     if (DX && DX.iid === row.id) {
       refreshDrawerMeta(init);
       renderDrawerBody(init);
@@ -1902,12 +2145,17 @@ function onIdeaChange({ eventType, new: row, old: oldRow }) {
     if (S.ideas.find(i => i.id === row.id)) return;
     S.ideas.unshift(dbIdeaToState(row));
     scheduleRerender();
+  } else if (eventType === 'UPDATE') {
+    const idx = S.ideas.findIndex(i => i.id === row.id);
+    if (idx >= 0) {
+      S.ideas[idx] = dbIdeaToState(row);
+      scheduleRerender();
+    }
   } else if (eventType === 'DELETE') {
     const id = oldRow?.id; if (!id) return;
     S.ideas = S.ideas.filter(i => i.id !== id);
     scheduleRerender();
   }
-  // UPDATE on ideas is rare; skip
 }
 
 function onProfileChange({ eventType, new: row, old: oldRow }) {
@@ -2100,6 +2348,41 @@ function flashError(inputId, msg) {
 
 const id = () => Date.now().toString(36)+Math.random().toString(36).slice(2,6);
 const today = () => new Date().toISOString().slice(0,10);
+
+// ── Quarter helpers ──
+// Compass uses calendar quarters. Update these helpers if Zostel ever
+// switches to a fiscal year that doesn't start in January.
+function quarterOf(date = new Date()) {
+  return Math.floor(date.getMonth() / 3) + 1;
+}
+function currentQuarterLabel(date = new Date()) {
+  return `Q${quarterOf(date)} ${date.getFullYear()}`;
+}
+function shiftQuarter(label, deltaQuarters) {
+  const m = /^Q([1-4]) (\d{4})$/.exec(label || '');
+  if (!m) return currentQuarterLabel();
+  let q = Number(m[1]) - 1 + deltaQuarters;
+  let y = Number(m[2]);
+  while (q < 0)  { q += 4; y -= 1; }
+  while (q > 3)  { q -= 4; y += 1; }
+  return `Q${q + 1} ${y}`;
+}
+// Returns the quarter options to show in the goal modal: the previous
+// quarter, the current quarter, and the next three. Always includes a
+// goal's own quarter (e.g. an old closed goal whose quarter is in the
+// past, so editors can still see + keep it).
+function quarterOptions(includeQuarter) {
+  const cur = currentQuarterLabel();
+  const opts = [
+    shiftQuarter(cur, -1),
+    cur,
+    shiftQuarter(cur, 1),
+    shiftQuarter(cur, 2),
+    shiftQuarter(cur, 3),
+  ];
+  if (includeQuarter && !opts.includes(includeQuarter)) opts.unshift(includeQuarter);
+  return opts;
+}
 const esc = s => String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 
 function fmtDate(s) {
@@ -2173,15 +2456,24 @@ function renderSidebar() {
   const ideasBtn = document.getElementById('navIdeasBtn');
   const ideasCount = document.getElementById('navIdeasCount');
   if (ideasBtn) ideasBtn.classList.toggle('active', S.view === 'ideas');
-  if (ideasCount) ideasCount.textContent = S.ideas.length;
+  if (ideasCount) ideasCount.textContent = S.ideas.filter(i => (i.status||'captured') === 'captured' || (i.status||'captured') === 'parked').length;
+  const myWorkBtn = document.getElementById('navMyWorkBtn');
+  const myWorkCount = document.getElementById('navMyWorkCount');
+  if (myWorkBtn) myWorkBtn.classList.toggle('active', S.view === 'mywork');
+  if (myWorkCount) myWorkCount.textContent = countMyInitiatives();
+  const archiveBtn = document.getElementById('navArchiveBtn');
+  const archiveCount = document.getElementById('navArchiveCount');
+  if (archiveBtn) archiveBtn.classList.toggle('active', S.view === 'archive');
+  if (archiveCount) archiveCount.textContent = S.goals.filter(g => g.status === 'closed').length;
   const helpBtn = document.getElementById('navHelpBtn');
   if (helpBtn) helpBtn.classList.toggle('active', S.view === 'help');
   const settingsBtn = document.getElementById('navSettingsBtn');
   if (settingsBtn) settingsBtn.classList.toggle('active', S.view === 'settings');
 
   const el = document.getElementById('sidebarList');
-  if(!S.goals.length) { el.innerHTML='<p style="font-size:13px;color:var(--text-muted);padding:4px 8px">No goals yet — let\'s set one.</p>'; return; }
-  el.innerHTML = S.goals.map(g=>{
+  const activeGoals = S.goals.filter(g => g.status !== 'closed');
+  if(!activeGoals.length) { el.innerHTML='<p style="font-size:13px;color:var(--text-muted);padding:4px 8px">No active goals — let\'s set one.</p>'; return; }
+  el.innerHTML = activeGoals.map(g=>{
     const p=goalProgress(g), krC=g.keyResults.length;
     const iC=g.keyResults.reduce((a,k)=>a+k.initiatives.length,0);
     const isActive = S.view === 'goals' && g.id === S.activeGoalId;
@@ -2195,9 +2487,11 @@ function renderSidebar() {
 
 function renderMain() {
   const el = document.getElementById('mainContent');
-  if(S.view === 'help') { renderHelpPage(el); return; }
+  if(S.view === 'help')     { renderHelpPage(el);     return; }
   if(S.view === 'settings') { renderSettingsPage(el); return; }
-  if(S.view === 'ideas') { renderIdeasPage(el); return; }
+  if(S.view === 'ideas')    { renderIdeasPage(el);    return; }
+  if(S.view === 'mywork')   { renderMyWorkPage(el);   return; }
+  if(S.view === 'archive')  { renderArchivePage(el);  return; }
   if(S.activeGoalId) {
     const g = findGoal(S.activeGoalId);
     if(g) { renderGoalDetail(el,g); return; }
@@ -2206,8 +2500,9 @@ function renderMain() {
 }
 
 function renderDashboard(el) {
-  const total = S.goals.length;
-  const allInits = S.goals.flatMap(g=>g.keyResults.flatMap(k=>k.initiatives));
+  const activeGoals = S.goals.filter(g => g.status !== 'closed');
+  const total = activeGoals.length;
+  const allInits = activeGoals.flatMap(g=>g.keyResults.flatMap(k=>k.initiatives));
   const done = allInits.filter(i=>i.status==='completed').length;
   const risk = allInits.filter(i=>i.status==='at_risk'||i.status==='blocked').length;
 
@@ -2224,7 +2519,7 @@ function renderDashboard(el) {
       <button class="btn btn-primary btn-sm" onclick="openGoalModal()">+ New Goal</button>
     </div>
     ${!total ? `<div class="empty"><div class="empty-icon">🌄</div><h3>The horizon is clear</h3><p>What's the first goal worth chasing? Let's set it together.</p><button class="btn btn-primary" onclick="openGoalModal()">+ Set Your First Goal</button></div>`
-    : `<div class="goals-grid">${S.goals.map(goalCard).join('')}</div>`}
+    : `<div class="goals-grid">${activeGoals.map(goalCard).join('')}</div>`}
   </div>`;
 }
 
@@ -2232,11 +2527,12 @@ function goalCard(g) {
   const p=goalProgress(g), iC=g.keyResults.reduce((a,k)=>a+k.initiatives.length,0);
   const done=g.keyResults.reduce((a,k)=>a+k.initiatives.filter(i=>i.status==='completed').length,0);
   const risk=g.keyResults.reduce((a,k)=>a+k.initiatives.filter(i=>i.status==='at_risk'||i.status==='blocked').length,0);
-  return `<div class="goal-card" onclick="selectGoal('${g.id}')">
+  return `<div class="goal-card${g.status==='closed'?' is-closed':''}" onclick="selectGoal('${g.id}')">
     <div class="goal-card-top">
       <div class="goal-card-title">${esc(g.title)}</div>
       <span class="q-chip">${esc(g.quarter)}</span>
     </div>
+    ${g.owner?`<div class="goal-card-owner">${icon('user')} <span>${esc(g.owner)}</span></div>`:''}
     <div class="goal-card-nums">
       <div class="num-stat"><strong>${g.keyResults.length}</strong><span>Measures</span></div>
       <div class="num-stat"><strong>${iC}</strong><span>Initiatives</span></div>
@@ -2245,6 +2541,138 @@ function goalCard(g) {
     </div>
     <div class="prog-bar"><div class="prog-fill ${progColor(p)}" style="width:${p}%"></div></div>
     <div class="prog-note">${p}% of initiatives on track or done</div>
+  </div>`;
+}
+
+function renderMyWorkPage(el) {
+  const me = S.profile?.display_name || '';
+  if (!me) {
+    el.innerHTML = `<div class="fade-up"><div class="empty"><div class="empty-icon">👋</div><h3>Sign in to see your work</h3><p>Once you're signed in, this page will gather all the initiatives you're leading.</p></div></div>`;
+    return;
+  }
+  // Collect my open initiatives across active goals
+  const rows = [];
+  for (const g of S.goals) {
+    if (g.status === 'closed') continue;
+    for (const kr of g.keyResults) {
+      for (const init of kr.initiatives) {
+        if (init.owner !== me) continue;
+        rows.push({ g, kr, init });
+      }
+    }
+  }
+  const open      = rows.filter(r => r.init.status !== 'completed');
+  const completed = rows.filter(r => r.init.status === 'completed');
+  const today = new Date().toISOString().slice(0,10);
+  const overdue   = open.filter(r => r.init.dueDate && r.init.dueDate < today);
+  const atRisk    = open.filter(r => r.init.status === 'at_risk' || r.init.status === 'blocked');
+
+  const rowHTML = (r) => {
+    const init = r.init;
+    const isOpen = init.status !== 'completed';
+    const overdueFlag = isOpen && init.dueDate && init.dueDate < today;
+    const staleDays   = isOpen ? daysSinceLastActivity(init) : null;
+    const isStale     = staleDays != null && staleDays >= 14 && !overdueFlag;
+    const dueClass = overdueFlag ? 'mw-due overdue' : 'mw-due';
+    const flagChip = overdueFlag
+      ? `<span class="flag-chip flag-overdue" title="Past its due date">!</span>`
+      : (isStale ? `<span class="flag-chip flag-stale" title="No activity in ${staleDays} days">~</span>` : '');
+    return `<div class="mw-row" onclick="openDrawer('${r.g.id}','${r.kr.id}','${init.id}')">
+      <div class="init-dot dot-${init.status}"></div>
+      <div class="mw-main">
+        <div class="mw-title">${flagChip}${esc(init.title)}</div>
+        <div class="mw-path"><span>${esc(r.g.title)}</span> <span class="mw-sep">›</span> <span>${esc(r.kr.title)}</span></div>
+      </div>
+      <div class="mw-status"><span class="badge badge-${init.status}">${slabel(init.status)}</span></div>
+      <div class="${dueClass}">${init.dueDate?`${icon('calendar')} ${fmtDate(init.dueDate)}${overdueFlag?' · overdue':''}`:''}</div>
+    </div>`;
+  };
+
+  const section = (title, list, emptyMsg) => `
+    <div class="mw-section">
+      <div class="mw-section-head">
+        <div class="mw-section-title">${title} <span class="mw-count">${list.length}</span></div>
+      </div>
+      ${list.length ? `<div class="mw-list">${list.map(rowHTML).join('')}</div>`
+                    : `<div class="mw-empty">${emptyMsg}</div>`}
+    </div>`;
+
+  el.innerHTML = `<div class="fade-up">
+    <div class="banner">
+      <h2>Your trail today, ${esc(me.split(' ')[0])} 🥾</h2>
+      <p>Every initiative you're leading, gathered in one place — so nothing falls off your pack.</p>
+    </div>
+    <div class="mw-stats">
+      <div class="mw-stat"><div class="mw-stat-val">${open.length}</div><div class="mw-stat-lab">Open</div></div>
+      <div class="mw-stat"><div class="mw-stat-val" style="color:var(--danger)">${overdue.length}</div><div class="mw-stat-lab">Overdue</div></div>
+      <div class="mw-stat"><div class="mw-stat-val" style="color:var(--danger)">${atRisk.length}</div><div class="mw-stat-lab">Need a Hand</div></div>
+      <div class="mw-stat"><div class="mw-stat-val" style="color:var(--green)">${completed.length}</div><div class="mw-stat-lab">Done</div></div>
+    </div>
+    ${!rows.length
+      ? `<div class="empty"><div class="empty-icon">🛤️</div><h3>Nothing on your plate yet</h3><p>When teammates assign initiatives to you, they'll show up here.</p></div>`
+      : `${overdue.length ? section('Overdue', overdue, '') : ''}
+         ${section('In flight', open.filter(r => !(r.init.dueDate && r.init.dueDate < today)), 'You\\'re all caught up — nice work.')}
+         ${completed.length ? section('Recently done', completed.slice(0,10), '') : ''}`}
+  </div>`;
+}
+
+function renderArchivePage(el) {
+  const closed = S.goals.filter(g => g.status === 'closed')
+    .sort((a,b) => (b.closedAt||'').localeCompare(a.closedAt||''));
+
+  // Group by quarter for easier scanning
+  const groups = {};
+  for (const g of closed) {
+    const q = g.quarter || 'Unscheduled';
+    if (!groups[q]) groups[q] = [];
+    groups[q].push(g);
+  }
+  const quarterKeys = Object.keys(groups).sort((a,b) => {
+    // Sort newest quarter first by parsing "Q# YYYY"
+    const ma = /^Q([1-4]) (\d{4})$/.exec(a);
+    const mb = /^Q([1-4]) (\d{4})$/.exec(b);
+    if (!ma || !mb) return a.localeCompare(b);
+    const va = Number(mb[2]) * 4 + Number(mb[1]);
+    const vb = Number(ma[2]) * 4 + Number(ma[1]);
+    return va - vb;
+  });
+
+  const goalRow = (g) => {
+    const iC = g.keyResults.reduce((a,k)=>a+k.initiatives.length,0);
+    const done = g.keyResults.reduce((a,k)=>a+k.initiatives.filter(i=>i.status==='completed').length,0);
+    const scoreTxt = g.score != null ? `${Math.round(g.score*100)}%` : '—';
+    return `<div class="arch-row" onclick="selectGoal('${g.id}')">
+      <div class="arch-main">
+        <div class="arch-title">${esc(g.title)}</div>
+        <div class="arch-meta">
+          <span class="q-chip">${esc(g.quarter)}</span>
+          ${g.owner?`<span class="arch-owner">${icon('user')} ${esc(g.owner)}</span>`:''}
+          ${g.closedAt?`<span>Closed ${fmtDate(g.closedAt.slice(0,10))}</span>`:''}
+        </div>
+        ${g.reflection?`<div class="arch-reflection">"${esc(g.reflection)}"</div>`:''}
+      </div>
+      <div class="arch-stats">
+        <div><div class="arch-stat-val">${g.keyResults.length}</div><div class="arch-stat-lab">Measures</div></div>
+        <div><div class="arch-stat-val">${iC}</div><div class="arch-stat-lab">Initiatives</div></div>
+        <div><div class="arch-stat-val" style="color:var(--green)">${done}</div><div class="arch-stat-lab">Done</div></div>
+        <div><div class="arch-stat-val">${scoreTxt}</div><div class="arch-stat-lab">Score</div></div>
+      </div>
+    </div>`;
+  };
+
+  el.innerHTML = `<div class="fade-up">
+    <div class="banner">
+      <h2>The trail behind us 🏔️</h2>
+      <p>Every goal we've closed out, with the lessons we picked up along the way. Click any goal to revisit the full story.</p>
+    </div>
+    ${!closed.length
+      ? `<div class="empty"><div class="empty-icon">📦</div><h3>No closed goals yet</h3><p>When you wrap up a goal, it'll move here — along with its score and reflection.</p></div>`
+      : quarterKeys.map(q => `
+          <div class="arch-quarter">
+            <div class="arch-quarter-head">${esc(q)} <span class="arch-quarter-count">${groups[q].length} closed</span></div>
+            <div class="arch-list">${groups[q].map(goalRow).join('')}</div>
+          </div>`).join('')
+    }
   </div>`;
 }
 
@@ -2258,15 +2686,24 @@ function renderGoalDetail(el, g) {
       <span class="breadcrumb-sep">›</span>
       <span>${esc(g.title)}</span>
     </div>
-    <div class="goal-detail-box">
+    <div class="goal-detail-box${g.status==='closed'?' is-closed':''}">
       <div style="display:flex;align-items:flex-start;gap:12px;justify-content:space-between">
         <div style="flex:1;min-width:0">
-          <span class="q-chip" style="margin-bottom:10px">${esc(g.quarter)}</span>
+          <div class="gd-chips">
+            <span class="q-chip">${esc(g.quarter)}</span>
+            ${g.status==='closed'?`<span class="goal-closed-chip">Closed${g.score!=null?` · ${Math.round(g.score*100)}%`:''}</span>`:''}
+            ${g.owner?`<span class="goal-owner-chip">${icon('user')} ${esc(g.owner)}</span>`:''}
+          </div>
           <div class="gd-title">${esc(g.title)}</div>
           ${g.desc?`<div class="gd-desc">${esc(g.desc)}</div>`:''}
+          ${g.status==='closed' && g.reflection?`<div class="gd-reflection"><strong>Reflection · </strong>${esc(g.reflection)}</div>`:''}
         </div>
-        <div style="display:flex;gap:7px;flex-shrink:0">
+        <div class="gd-actions">
           <button class="btn btn-ghost btn-sm" onclick="openGoalModal('${g.id}')">Edit</button>
+          ${g.status==='active'
+            ? `<button class="btn btn-ghost btn-sm" onclick="openCloseGoalModal('${g.id}')">Close goal</button>
+               <button class="btn btn-ghost btn-sm" onclick="openCarryForwardModal('${g.id}')">Clone to next quarter</button>`
+            : `<button class="btn btn-ghost btn-sm" onclick="reopenGoal('${g.id}')">Reopen</button>`}
           <button class="btn btn-danger btn-sm" onclick="deleteGoal('${g.id}')">Delete</button>
         </div>
       </div>
@@ -2326,14 +2763,39 @@ function krCard(g, kr) {
   </div>`;
 }
 
+// Days since last activity on this initiative (status change or comment). null if none.
+function daysSinceLastActivity(init) {
+  if (!init.history || !init.history.length) return null;
+  let latest = 0;
+  for (const h of init.history) {
+    if (!h.date) continue;
+    const t = new Date(h.date).getTime();
+    if (t > latest) latest = t;
+  }
+  if (!latest) return null;
+  return Math.floor((Date.now() - latest) / 86400000);
+}
+
 function initRow(g, kr, init) {
   const coms=init.history.filter(h=>h.type==='comment').length;
-  return `<div class="init-row" onclick="openDrawer('${g.id}','${kr.id}','${init.id}')">
+  const today = new Date().toISOString().slice(0,10);
+  const isOpen = init.status !== 'completed';
+  const overdueFlag = isOpen && init.dueDate && init.dueDate < today;
+  const staleDays   = isOpen ? daysSinceLastActivity(init) : null;
+  const isStale     = staleDays != null && staleDays >= 14 && !overdueFlag;
+  const dueText = init.dueDate
+    ? `${icon('calendar')} ${overdueFlag?'Overdue · ':''}${fmtDate(init.dueDate)}`
+    : '';
+  const dueClass = overdueFlag ? 'ir-due overdue' : 'ir-due';
+  const flagChip = overdueFlag
+    ? `<span class="flag-chip flag-overdue" title="Past its due date">!</span>`
+    : (isStale ? `<span class="flag-chip flag-stale" title="No activity in ${staleDays} days">~</span>` : '');
+  return `<div class="init-row${overdueFlag?' is-overdue':''}${isStale?' is-stale':''}" onclick="openDrawer('${g.id}','${kr.id}','${init.id}')">
     <div class="init-dot dot-${init.status}"></div>
-    <div class="init-name">${esc(init.title)}</div>
+    <div class="init-name">${flagChip}${esc(init.title)}</div>
     <div class="ir-status"><span class="badge badge-${init.status}">${slabel(init.status)}</span></div>
     <div class="ir-owner">${init.owner?`${icon('user')} ${esc(init.owner)}`:''}</div>
-    <div class="ir-due">${init.dueDate?`${icon('calendar')} ${fmtDate(init.dueDate)}`:''}</div>
+    <div class="${dueClass}">${dueText}</div>
     <div class="ir-comments">${icon('message')} ${coms}</div>
     <button class="del-btn" onclick="event.stopPropagation();deleteInit('${g.id}','${kr.id}','${init.id}')" title="Delete">✕</button>
   </div>`;
@@ -2496,23 +2958,36 @@ function updateIdeaKROptions() {
 }
 
 function renderIdeaFilters() {
-  if (!S.goals.length) return '';
-  const counts = {
-    all: S.ideas.length,
-    unlinked: S.ideas.filter(i=>!i.goalId).length,
+  if (!S.ideas.length && !S.goals.length) return '';
+  // Active = captured | parked (anything still actionable)
+  const isActive = i => {
+    const st = i.status || 'captured';
+    return st === 'captured' || st === 'parked';
   };
-  S.goals.forEach(g => { counts[g.id] = S.ideas.filter(i=>i.goalId===g.id).length; });
+  const counts = {
+    active:   S.ideas.filter(isActive).length,
+    parked:   S.ideas.filter(i => i.status === 'parked').length,
+    promoted: S.ideas.filter(i => i.status === 'promoted').length,
+    rejected: S.ideas.filter(i => i.status === 'rejected').length,
+    all:      S.ideas.length,
+    unlinked: S.ideas.filter(i => !i.goalId && isActive(i)).length,
+  };
+  S.goals.forEach(g => {
+    counts[g.id] = S.ideas.filter(i => i.goalId === g.id && isActive(i)).length;
+  });
+
+  const chip = (key, label, n) => `<button class="idea-filter${ideaFilter===key?' active':''}" type="button" onclick="setIdeaFilter('${key}')"><span class="idea-filter-label">${label}</span><span class="idea-filter-count">${n}</span></button>`;
 
   const chips = [];
-  chips.push(`<button class="idea-filter${ideaFilter==='all'?' active':''}" type="button" onclick="setIdeaFilter('all')"><span class="idea-filter-label">All ideas</span><span class="idea-filter-count">${counts.all}</span></button>`);
-  if (counts.unlinked > 0) {
-    chips.push(`<button class="idea-filter${ideaFilter==='unlinked'?' active':''}" type="button" onclick="setIdeaFilter('unlinked')"><span class="idea-filter-label">Loose ideas</span><span class="idea-filter-count">${counts.unlinked}</span></button>`);
-  }
+  chips.push(chip('active', 'Active', counts.active));
+  if (counts.unlinked > 0) chips.push(chip('unlinked', 'Loose ideas', counts.unlinked));
   S.goals.forEach(g => {
-    if (counts[g.id] > 0) {
-      chips.push(`<button class="idea-filter${ideaFilter===g.id?' active':''}" type="button" onclick="setIdeaFilter('${g.id}')"><span class="idea-filter-label">${esc(g.title)}</span><span class="idea-filter-count">${counts[g.id]}</span></button>`);
-    }
+    if (counts[g.id] > 0) chips.push(chip(g.id, esc(g.title), counts[g.id]));
   });
+  if (counts.parked > 0)   chips.push(chip('parked',   'Parked',     counts.parked));
+  if (counts.promoted > 0) chips.push(chip('promoted', 'Promoted',   counts.promoted));
+  if (counts.rejected > 0) chips.push(chip('rejected', 'Rejected',   counts.rejected));
+  chips.push(chip('all',    'All',       counts.all));
   return `<div class="idea-filters">${chips.join('')}</div>`;
 }
 
@@ -2520,8 +2995,17 @@ function setIdeaFilter(f) { ideaFilter = f; renderMain(); }
 
 function renderIdeasGrid() {
   let list = S.ideas;
-  if (ideaFilter === 'unlinked') list = list.filter(i=>!i.goalId);
-  else if (ideaFilter !== 'all') list = list.filter(i=>i.goalId===ideaFilter);
+  const isActive = i => {
+    const st = i.status || 'captured';
+    return st === 'captured' || st === 'parked';
+  };
+  if      (ideaFilter === 'active')   list = list.filter(isActive);
+  else if (ideaFilter === 'unlinked') list = list.filter(i => !i.goalId && isActive(i));
+  else if (ideaFilter === 'parked')   list = list.filter(i => i.status === 'parked');
+  else if (ideaFilter === 'promoted') list = list.filter(i => i.status === 'promoted');
+  else if (ideaFilter === 'rejected') list = list.filter(i => i.status === 'rejected');
+  else if (ideaFilter === 'all')      { /* no-op */ }
+  else                                list = list.filter(i => i.goalId === ideaFilter && isActive(i));
 
   list = [...list].sort((a,b)=>(b.createdAt||'').localeCompare(a.createdAt||''));
 
@@ -2530,23 +3014,62 @@ function renderIdeasGrid() {
   return `<div class="ideas-grid">${list.map(renderIdeaCard).join('')}</div>`;
 }
 
+function ideaStatusLabel(st) {
+  if (st === 'parked')   return '🅿️ Parked';
+  if (st === 'promoted') return '🚀 Promoted';
+  if (st === 'rejected') return '🗑️ Rejected';
+  return '';
+}
+
 function renderIdeaCard(idea) {
   const g = idea.goalId ? findGoal(idea.goalId) : null;
   const kr = (g && idea.krId) ? findKR(g, idea.krId) : null;
   const fresh = idea.id === justAddedIdeaId ? ' fresh' : '';
-  return `<div class="idea-card${fresh}">
+  const st = idea.status || 'captured';
+  const stChip = st !== 'captured' ? `<span class="idea-status-chip status-${st}">${ideaStatusLabel(st)}</span>` : '';
+  let actions;
+  if (st === 'promoted') {
+    // Show link to the promoted initiative if we can find it
+    let goLink = '';
+    if (idea.promotedInitiativeId) {
+      // Find the initiative
+      outer: for (const gg of S.goals) {
+        for (const k of gg.keyResults) {
+          const found = k.initiatives.find(i => i.id === idea.promotedInitiativeId);
+          if (found) {
+            goLink = `<button class="btn btn-outline btn-sm" type="button" onclick="openDrawer('${gg.id}','${k.id}','${found.id}')">Open initiative →</button>`;
+            break outer;
+          }
+        }
+      }
+    }
+    actions = `${goLink}
+      <button class="btn-link" type="button" onclick="setIdeaStatus('${idea.id}','captured')" title="Move back to active">Un-promote</button>`;
+  } else if (st === 'parked') {
+    actions = `<button class="btn btn-outline btn-sm" type="button" onclick="openPromoteModal('${idea.id}')">↗ Turn into initiative</button>
+      <button class="btn-link" type="button" onclick="setIdeaStatus('${idea.id}','captured')">Un-park</button>
+      <button class="btn-link" type="button" onclick="setIdeaStatus('${idea.id}','rejected')">Reject</button>`;
+  } else if (st === 'rejected') {
+    actions = `<button class="btn-link" type="button" onclick="setIdeaStatus('${idea.id}','captured')">Restore</button>
+      <button class="btn-icon-only" type="button" onclick="deleteIdea('${idea.id}')" title="Delete idea" aria-label="Delete idea">✕</button>`;
+  } else {
+    // captured
+    actions = `<button class="btn btn-outline btn-sm" type="button" onclick="openPromoteModal('${idea.id}')">↗ Turn into initiative</button>
+      <button class="btn-link" type="button" onclick="setIdeaStatus('${idea.id}','parked')" title="Save for later">Park</button>
+      <button class="btn-link" type="button" onclick="setIdeaStatus('${idea.id}','rejected')" title="Not pursuing">Reject</button>
+      <button class="btn-icon-only" type="button" onclick="deleteIdea('${idea.id}')" title="Delete idea" aria-label="Delete idea">✕</button>`;
+  }
+  return `<div class="idea-card status-${st}${fresh}">
     <div class="idea-text">${esc(idea.text)}</div>
     <div class="idea-meta">
+      ${stChip}
       ${g
         ? `<span class="idea-link-chip" title="${esc(g.title)}${kr?' › '+esc(kr.title):''}">${icon('goal')} ${esc(g.title)}${kr?` › ${esc(kr.title)}`:''}</span>`
         : `<span class="idea-loose-chip">💭 Loose idea</span>`
       }
       <span class="idea-date">${fmtDate(idea.createdAt)}</span>
     </div>
-    <div class="idea-actions">
-      <button class="btn btn-outline btn-sm" type="button" onclick="openPromoteModal('${idea.id}')">↗ Turn into initiative</button>
-      <button class="btn-icon-only" type="button" onclick="deleteIdea('${idea.id}')" title="Delete idea" aria-label="Delete idea">✕</button>
-    </div>
+    <div class="idea-actions">${actions}</div>
   </div>`;
 }
 
@@ -2678,11 +3201,16 @@ async function promoteIdea(iid) {
     type: 'created', date: today(), note: 'Promoted from an idea 💡'
   });
   if (entry) init.history.push(entry);
-  const ok = await db.deleteIdea(iid);
+  // Mark idea as promoted and link to the new initiative (keep history)
+  const ok = await db.updateIdea(iid, {
+    status: 'promoted',
+    promotedInitiativeId: init.id,
+  });
   if (!ok) return;
 
   kr.initiatives.push(init);
-  S.ideas = S.ideas.filter(i=>i.id!==iid);
+  idea.status = 'promoted';
+  idea.promotedInitiativeId = init.id;
   closeModal();
   S.view = 'goals';
   S.activeGoalId = gid;
@@ -2690,8 +3218,26 @@ async function promoteIdea(iid) {
   render();
 }
 
+async function setIdeaStatus(iid, status, note) {
+  const idea = S.ideas.find(i=>i.id===iid);
+  if (!idea) return;
+  const patch = { status };
+  if (note !== undefined) patch.statusNote = note;
+  const ok = await db.updateIdea(iid, patch);
+  if (!ok) return;
+  idea.status = status;
+  if (note !== undefined) idea.statusNote = note;
+  // If un-promoting, clear the link
+  if (status !== 'promoted') idea.promotedInitiativeId = null;
+  render();
+}
+
 function renderGoalIdeasSection(g) {
-  const list = S.ideas.filter(i=>i.goalId===g.id);
+  const list = S.ideas.filter(i => {
+    if (i.goalId !== g.id) return false;
+    const st = i.status || 'captured';
+    return st === 'captured' || st === 'parked';
+  });
   const sorted = [...list].sort((a,b)=>(b.createdAt||'').localeCompare(a.createdAt||''));
   const visible = sorted.slice(0,5);
   return `<div class="goal-ideas-card">
@@ -3039,8 +3585,12 @@ function openGoalModal(gid) {
       <div class="form-group">
         <label class="form-label">Quarter</label>
         <select class="form-input" id="mGoalQ">
-          ${['Q1 2026','Q2 2026','Q3 2026','Q4 2026'].map(q=>`<option${q===(g?.quarter||'Q2 2026')?' selected':''}>${q}</option>`).join('')}
+          ${quarterOptions(g?.quarter).map(q=>`<option${q===(g?.quarter||currentQuarterLabel())?' selected':''}>${q}</option>`).join('')}
         </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Owner</label>
+        <select class="form-input" id="mGoalOwner">${ownerOptions(g?.owner||'')}</select>
       </div>
     </div>
     <div class="form-actions">
@@ -3056,18 +3606,225 @@ function openGoalModal(gid) {
   document.getElementById('mGoalDelete')?.addEventListener('click', ()=>{ deleteGoal(g.id); closeModal(); });
 }
 
+// ═══════════════════════════════════════════
+//  GOAL LIFECYCLE: close / reopen / carry-forward
+// ═══════════════════════════════════════════
+
+function openCloseGoalModal(gid) {
+  const g = findGoal(gid); if (!g) return;
+  const suggestedScore = (goalProgress(g) / 100).toFixed(2);
+  showModal(`
+    <div class="modal-title">Close goal</div>
+    <div class="form-group">
+      <label class="form-label">Goal</label>
+      <div style="font-size:14px;font-weight:600;color:var(--text)">${esc(g.title)}</div>
+      <div style="font-size:13px;color:var(--text-muted);margin-top:3px">${esc(g.quarter)} · ${g.keyResults.length} measures · ${g.keyResults.reduce((a,k)=>a+k.initiatives.length,0)} initiatives</div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Final score (0–1.0)</label>
+      <input class="form-input" id="mCloseScore" type="number" step="0.05" min="0" max="1" value="${suggestedScore}" placeholder="0.7" />
+      <div style="font-size:12px;color:var(--text-muted);margin-top:4px">OKR convention: 0.7+ is great, 0.4–0.6 is on the right track, &lt;0.4 missed the mark. Stretch goals at 0.6–0.7 often beat committed goals at 1.0.</div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Reflection (optional)</label>
+      <textarea class="form-input" id="mCloseReflection" rows="3" placeholder="What worked, what we'd do differently, where we land going into next quarter…"></textarea>
+    </div>
+    <div class="form-actions">
+      <button type="button" class="btn btn-outline" id="mCloseCancel">Cancel</button>
+      <button type="button" class="btn btn-primary" id="mCloseConfirm">Close goal</button>
+    </div>
+  `);
+  setTimeout(()=>document.getElementById('mCloseScore')?.focus(),50);
+  document.getElementById('mCloseCancel')?.addEventListener('click', closeModal);
+  const btn = document.getElementById('mCloseConfirm');
+  btn?.addEventListener('click', () => withButtonBusy(btn, () => closeGoal(gid)));
+}
+
+async function closeGoal(gid) {
+  const g = findGoal(gid); if (!g) return;
+  const scoreStr = (document.getElementById('mCloseScore')?.value || '').trim();
+  const score = scoreStr === '' ? null : Math.max(0, Math.min(1, parseFloat(scoreStr) || 0));
+  const reflection = (document.getElementById('mCloseReflection')?.value || '').trim();
+  const ok = await db.updateGoal(gid, {
+    status: 'closed',
+    closed_at: new Date().toISOString(),
+    score,
+    reflection,
+  });
+  if (!ok) return;
+  g.status = 'closed';
+  g.closedAt = new Date().toISOString();
+  g.score = score;
+  g.reflection = reflection;
+  closeModal();
+  showToast(`Goal closed${score !== null ? ` at ${Math.round(score*100)}%` : ''} — see it in Archive.`);
+  S.activeGoalId = null;
+  render();
+}
+
+async function reopenGoal(gid) {
+  const g = findGoal(gid); if (!g) return;
+  const ok = await db.updateGoal(gid, {
+    status: 'active', closed_at: null, score: null, reflection: ''
+  });
+  if (!ok) return;
+  g.status = 'active'; g.closedAt = null; g.score = null; g.reflection = '';
+  render();
+  showToast('Goal reopened.');
+}
+
+function openCarryForwardModal(gid) {
+  const g = findGoal(gid); if (!g) return;
+  const nextQ = shiftQuarter(g.quarter, 1);
+  showModal(`
+    <div class="modal-title">Clone to a new quarter</div>
+    <div class="form-group">
+      <label class="form-label">Cloning</label>
+      <div style="font-size:14px;font-weight:600">${esc(g.title)}</div>
+      <div style="font-size:13px;color:var(--text-muted);margin-top:3px">${g.keyResults.length} measures will be copied. Current values reset to 0. Initiatives and ideas don't carry forward.</div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">New quarter</label>
+      <select class="form-input" id="mCfQ">
+        ${quarterOptions(g.quarter).map(q=>`<option${q===nextQ?' selected':''}>${q}</option>`).join('')}
+      </select>
+    </div>
+    <div class="form-actions">
+      <button type="button" class="btn btn-outline" id="mCfCancel">Cancel</button>
+      <button type="button" class="btn btn-primary" id="mCfConfirm">Clone</button>
+    </div>
+  `);
+  document.getElementById('mCfCancel')?.addEventListener('click', closeModal);
+  const btn = document.getElementById('mCfConfirm');
+  btn?.addEventListener('click', () => withButtonBusy(btn, () => carryForwardGoal(gid)));
+}
+
+function openMoveInitModal() {
+  if (!DX) return;
+  const g = findGoal(DX.gid), kr = findKR(g, DX.krid), init = findInit(kr, DX.iid);
+  if (!init) return;
+  // Build goal options (active goals only)
+  const goalOpts = S.goals
+    .filter(go => go.status !== 'closed')
+    .map(go => `<option value="${go.id}"${go.id===g.id?' selected':''}>${esc(go.title)} · ${esc(go.quarter)}</option>`)
+    .join('');
+  showModal(`
+    <div class="modal-title">Move this initiative</div>
+    <div class="form-group">
+      <label class="form-label">Initiative</label>
+      <div style="font-size:14px;font-weight:600">${esc(init.title)}</div>
+      <div style="font-size:13px;color:var(--text-muted);margin-top:3px">Currently under <strong>${esc(g.title)} › ${esc(kr.title)}</strong></div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Move to goal</label>
+      <select class="form-input" id="mMoveGoal">${goalOpts}</select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">…and measure</label>
+      <select class="form-input" id="mMoveKR"></select>
+    </div>
+    <div class="form-actions">
+      <button type="button" class="btn btn-outline" id="mMoveCancel">Cancel</button>
+      <button type="button" class="btn btn-primary" id="mMoveConfirm">Move</button>
+    </div>
+  `);
+  const goalSel = document.getElementById('mMoveGoal');
+  const krSel = document.getElementById('mMoveKR');
+  const refreshKR = () => {
+    const sg = findGoal(goalSel.value);
+    if (!sg) { krSel.innerHTML = '<option value="">No measures</option>'; return; }
+    krSel.innerHTML = sg.keyResults
+      .map(k => `<option value="${k.id}"${k.id===kr.id ? ' selected' : ''}>${esc(k.title)}</option>`).join('')
+      || '<option value="">No measures — add one in that goal first</option>';
+  };
+  refreshKR();
+  goalSel?.addEventListener('change', refreshKR);
+  document.getElementById('mMoveCancel')?.addEventListener('click', closeModal);
+  const btn = document.getElementById('mMoveConfirm');
+  btn?.addEventListener('click', () => withButtonBusy(btn, moveInitiative));
+}
+
+async function moveInitiative() {
+  if (!DX) return;
+  const sourceG  = findGoal(DX.gid);
+  const sourceKR = findKR(sourceG, DX.krid);
+  const init     = findInit(sourceKR, DX.iid);
+  if (!init) return;
+  const destGid  = document.getElementById('mMoveGoal')?.value;
+  const destKRid = document.getElementById('mMoveKR')?.value;
+  if (!destKRid) { showToast('Pick a measure to move this initiative under.', true); return; }
+  if (destKRid === DX.krid) { closeModal(); return; } // no change
+  const destG  = findGoal(destGid);
+  const destKR = findKR(destG, destKRid);
+  if (!destKR) return;
+
+  const ok = await db.updateInitiative(init.id, {
+    krId: destKRid,
+    position: destKR.initiatives.length,
+  });
+  if (!ok) return;
+
+  // Log to activity trail so the move is visible
+  const noteText = `Moved from "${sourceG.title} › ${sourceKR.title}" to "${destG.title} › ${destKR.title}"`;
+  const entry = await db.addHistory(init.id, {
+    type: 'edited', date: today(), note: noteText
+  });
+  if (entry) init.history.push(entry);
+
+  // Update local state mirror
+  sourceKR.initiatives = sourceKR.initiatives.filter(i => i.id !== init.id);
+  destKR.initiatives.push(init);
+
+  // Update drawer context so subsequent edits target the new path
+  DX.gid  = destGid;
+  DX.krid = destKRid;
+  document.getElementById('dCrumb').textContent = `${destG.title}  ›  ${destKR.title}`;
+
+  closeModal();
+  showToast('Initiative moved.');
+  render();
+}
+
+async function carryForwardGoal(gid) {
+  const g = findGoal(gid); if (!g) return;
+  const newQuarter = document.getElementById('mCfQ')?.value || shiftQuarter(g.quarter, 1);
+  // Create the new goal
+  const cloned = await db.createGoal({
+    title: g.title, desc: g.desc, quarter: newQuarter,
+    owner: g.owner || '', position: S.goals.length,
+  });
+  if (!cloned) return;
+  // Clone each measure (current_value reset to 0)
+  for (const kr of g.keyResults) {
+    const newKR = await db.createKR(cloned.id, {
+      title: kr.title,
+      target: kr.target,
+      current: 0,
+      unit: kr.unit || '',
+      position: cloned.keyResults.length,
+    });
+    if (newKR) cloned.keyResults.push(newKR);
+  }
+  S.goals.push(cloned);
+  S.activeGoalId = cloned.id;
+  closeModal();
+  showToast(`Cloned to ${newQuarter}. Set your starting numbers and add initiatives.`);
+  render();
+}
+
 async function saveGoal(gid) {
   const title=(document.getElementById('mGoalTitle')?.value||'').trim();
   if(!title){ flashError('mGoalTitle','Give your adventure a name to set off!'); return; }
   const desc=(document.getElementById('mGoalDesc')?.value||'').trim();
-  const quarter=document.getElementById('mGoalQ')?.value||'Q2 2026';
+  const quarter=document.getElementById('mGoalQ')?.value||currentQuarterLabel();
+  const owner=(document.getElementById('mGoalOwner')?.value||'').trim();
   if(gid) {
     const g=findGoal(gid); if(!g) return;
-    const ok = await db.updateGoal(gid, { title, desc, quarter });
+    const ok = await db.updateGoal(gid, { title, desc, quarter, owner });
     if (!ok) return;
-    g.title=title; g.desc=desc; g.quarter=quarter;
+    g.title=title; g.desc=desc; g.quarter=quarter; g.owner=owner;
   } else {
-    const created = await db.createGoal({ title, desc, quarter, position: S.goals.length });
+    const created = await db.createGoal({ title, desc, quarter, owner, position: S.goals.length });
     if (!created) return;
     S.goals.push(created);
     S.activeGoalId = created.id;
@@ -3285,6 +4042,35 @@ function goToIdeas() {
   S.activeGoalId = null;
   render();
   closeSidebar();
+}
+
+function goToMyWork() {
+  S.view = 'mywork';
+  S.activeGoalId = null;
+  render();
+  closeSidebar();
+}
+
+function goToArchive() {
+  S.view = 'archive';
+  S.activeGoalId = null;
+  render();
+  closeSidebar();
+}
+
+function countMyInitiatives() {
+  const me = S.profile?.display_name;
+  if (!me) return 0;
+  let n = 0;
+  for (const g of S.goals) {
+    if (g.status === 'closed') continue;
+    for (const kr of g.keyResults) {
+      for (const init of kr.initiatives) {
+        if (init.owner === me && init.status !== 'completed') n++;
+      }
+    }
+  }
+  return n;
 }
 
 function goToSettings() {

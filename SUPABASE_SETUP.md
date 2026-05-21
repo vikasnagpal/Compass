@@ -121,6 +121,23 @@ Paste both back in chat. I'll plug them into `index.html` and ship the auth + da
 
 ---
 
+## 9. Apply migrations (existing projects)
+
+If you set Compass up before features like goal ownership, quarter close-out, or
+the idea lifecycle were added, run the migrations below **in order** in the SQL
+Editor. They are idempotent — running twice is safe.
+
+1. `supabase/migration-001.sql` — fixes profile-creation trigger, enables
+   realtime replication, and drops the unused members table.
+2. `supabase/migration-002.sql` — adds goal owner / lifecycle (active/closed +
+   score + reflection) and idea lifecycle states (captured / parked / rejected
+   / promoted), plus the link from a promoted idea back to its initiative.
+
+Open each file in the repo, copy the contents into a new SQL Editor query, and
+hit **Run**.
+
+---
+
 ## What's coming next (after you send the credentials)
 
 I'll:
