@@ -3135,35 +3135,73 @@ function cleanUrl() {
   try { window.history.replaceState(null, '', cleaned); } catch {}
 }
 
+// Promise.race helper — surfaces a hang as a real error so we don't sit
+// indefinitely on a single API call.
+function withTimeout(promise, ms, label) {
+  return Promise.race([
+    promise,
+    new Promise((_, reject) => setTimeout(
+      () => reject(new Error(`${label} timed out after ${ms}ms`)),
+      ms
+    )),
+  ]);
+}
+
 async function handleOAuthCallbackManually() {
-  const { hash, query } = parseAuthCallbackFromUrl();
+  let hash, query;
+  try {
+    ({ hash, query } = parseAuthCallbackFromUrl());
+  } catch (e) {
+    console.error('[Compass] URL parse failed:', e);
+    return { error: { message: 'Could not parse OAuth callback URL.' } };
+  }
 
   // ── Implicit flow: tokens in URL fragment ──
   if (hash.access_token && hash.refresh_token) {
     console.log('[Compass] OAuth callback: implicit flow detected, extracting tokens');
-    cleanUrl(); // ← strip the suspicious URL first so the rest of the page can load normally
-    const { data, error } = await sb.auth.setSession({
-      access_token: hash.access_token,
-      refresh_token: hash.refresh_token,
-    });
-    if (error) {
-      console.error('[Compass] setSession failed:', error);
-      return { error };
+    cleanUrl();
+    console.log('[Compass] URL cleaned. Calling sb.auth.setSession…');
+    try {
+      const result = await withTimeout(
+        sb.auth.setSession({
+          access_token: hash.access_token,
+          refresh_token: hash.refresh_token,
+        }),
+        6000,
+        'setSession'
+      );
+      console.log('[Compass] setSession returned');
+      const { data, error } = result;
+      if (error) {
+        console.error('[Compass] setSession returned error:', error);
+        return { error };
+      }
+      console.log('[Compass] Session established for', data?.session?.user?.email);
+      return { session: data.session };
+    } catch (e) {
+      console.error('[Compass] setSession threw / hung:', e);
+      return { error: { message: e?.message || 'Sign-in stalled — likely blocked by browser privacy settings.' } };
     }
-    return { session: data.session };
   }
 
   // ── PKCE flow: code in query ──
   if (query.code) {
     console.log('[Compass] OAuth callback: PKCE flow detected, exchanging code');
-    const code = query.code;
     cleanUrl();
-    const { data, error } = await sb.auth.exchangeCodeForSession(code);
-    if (error) {
-      console.error('[Compass] exchangeCodeForSession failed:', error);
-      return { error };
+    try {
+      const result = await withTimeout(
+        sb.auth.exchangeCodeForSession(query.code),
+        6000,
+        'exchangeCodeForSession'
+      );
+      const { data, error } = result;
+      if (error) { console.error('[Compass] exchangeCodeForSession error:', error); return { error }; }
+      console.log('[Compass] Session established for', data?.session?.user?.email);
+      return { session: data.session };
+    } catch (e) {
+      console.error('[Compass] exchangeCodeForSession threw / hung:', e);
+      return { error: { message: e?.message || 'Sign-in stalled.' } };
     }
-    return { session: data.session };
   }
 
   // ── Provider error in callback ──
@@ -3185,48 +3223,48 @@ async function handleOAuthCallbackManually() {
     catch { return false; }
   })());
 
-  // Handle OAuth callback manually FIRST (works around Orion's URL-API blocking).
+  // ─── Listener only for SIGNED_OUT after boot ─────────────────────
+  // We deliberately don't depend on INITIAL_SESSION / SIGNED_IN events
+  // for the initial boot — they fire async and can race with our manual
+  // setSession call. Instead the boot below is a straight-line sequence.
+  let booted = false;
+  sb.auth.onAuthStateChange((event, session) => {
+    console.log('[Compass] Auth event:', event, session ? `(${session.user?.email})` : '(no session)');
+    if (booted && event === 'SIGNED_OUT') window.location.reload();
+  });
+
+  // ─── Step 1: Manual OAuth callback (Orion-safe) ──────────────────
   const callback = await handleOAuthCallbackManually();
   if (callback.error) {
     renderSignInScreen({ error: callback.error.message || 'Sign-in failed. Please try again.' });
     return;
   }
 
-  let booted = false;
-
-  sb.auth.onAuthStateChange(async (event, session) => {
-    console.log('[Compass] Auth event:', event, session ? `(${session.user.email})` : '(no session)');
-
-    if (!booted && (event === 'INITIAL_SESSION' || event === 'SIGNED_IN')) {
-      booted = true;
-      const effectiveSession = session || callback.session;
-      if (effectiveSession) {
-        S.session = effectiveSession;
-        await bootApp();
-      } else {
-        renderSignInScreen();
-      }
-      return;
+  // ─── Step 2: Resolve current session ─────────────────────────────
+  // After the manual callback, the session should be set in sb (and in
+  // localStorage). Either use what the callback returned directly, or
+  // ask sb for what it knows.
+  let session = callback.session || null;
+  if (!session) {
+    console.log('[Compass] No session from callback, asking sb.auth.getSession()…');
+    try {
+      const { data, error } = await withTimeout(sb.auth.getSession(), 5000, 'getSession');
+      if (error) console.warn('[Compass] getSession error:', error);
+      session = data?.session || null;
+      console.log('[Compass] getSession returned:', session ? `session for ${session.user.email}` : 'no session');
+    } catch (e) {
+      console.error('[Compass] getSession threw / hung:', e);
     }
+  }
 
-    if (event === 'SIGNED_OUT') {
-      window.location.reload();
-    }
-  });
-
-  // Fallback: if INITIAL_SESSION doesn't fire within 4s, force a decision based on
-  // whatever the manual callback gave us. Prevents staring at a blank screen forever.
-  setTimeout(() => {
-    if (booted) return;
-    console.warn('[Compass] No INITIAL_SESSION event after 4s — using fallback.');
+  // ─── Step 3: Boot or show sign-in ────────────────────────────────
+  if (session) {
+    S.session = session;
     booted = true;
-    if (callback.session) {
-      S.session = callback.session;
-      bootApp();
-    } else {
-      renderSignInScreen();
-    }
-  }, 4000);
+    await bootApp();
+  } else {
+    renderSignInScreen();
+  }
 })();
 </script>
 </body>
