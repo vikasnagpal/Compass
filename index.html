@@ -1350,23 +1350,75 @@
     .drawer.open { transform: translateX(0); }
 
     .drawer-head {
-      padding: 18px 22px; border-bottom: 1px solid var(--border); flex-shrink: 0;
+      padding: 14px 22px 18px; border-bottom: 1px solid var(--border); flex-shrink: 0;
+    }
+    /* Top row: kebab + close, right-aligned, above the breadcrumb */
+    .d-head-actions {
+      display: flex; align-items: center; justify-content: flex-end;
+      gap: 4px; margin-bottom: 6px;
     }
     .drawer-close-btn {
-      float: right; background: none; border: none; font-size: 22px;
-      cursor: pointer; color: var(--text-muted); line-height: 1;
-      padding: 2px 4px; border-radius: 6px; transition: all .15s;
+      background: none; border: 1px solid transparent;
+      font-size: 20px; line-height: 1;
+      cursor: pointer; color: var(--text-muted);
+      width: 32px; height: 32px;
+      display: inline-flex; align-items: center; justify-content: center;
+      border-radius: 8px; transition: all .15s;
     }
-    .drawer-close-btn:hover { background: var(--bg); color: var(--text); }
-    .drawer-crumb { font-size: 13px; color: var(--text-muted); margin-bottom: 6px; }
-    .drawer-title { font-size: 18px; font-weight: 700; line-height: 1.4; margin-right: 34px; }
+    .drawer-close-btn:hover { background: var(--bg); color: var(--text); border-color: var(--border); }
+    .drawer-close-btn:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+
+    /* Drawer kebab menu (parallel to goal-detail kebab) */
+    .d-menu-wrap { position: relative; }
+    .d-menu-btn {
+      width: 32px; height: 32px; padding: 0;
+      display: inline-flex; align-items: center; justify-content: center;
+      background: transparent; border: 1px solid transparent;
+      border-radius: 8px; cursor: pointer;
+      color: var(--text-muted); transition: all .15s;
+    }
+    .d-menu-btn:hover { background: var(--bg); color: var(--text); border-color: var(--border); }
+    .d-menu-btn:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+    .d-menu-btn .icon { width: 18px; height: 18px; }
+    .d-menu {
+      position: absolute; right: 0; top: calc(100% + 6px);
+      min-width: 220px; padding: 6px;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius-sm); box-shadow: var(--shadow-md);
+      z-index: 260;
+    }
+    .d-menu[hidden] { display: none; }
+    .d-menu-item {
+      display: flex; align-items: center; gap: 10px;
+      width: 100%; text-align: left;
+      padding: 9px 12px; border-radius: 6px;
+      background: transparent; border: none; cursor: pointer;
+      font-family: 'Inter', sans-serif; font-size: 13.5px; font-weight: 500;
+      color: var(--text); transition: background .15s;
+    }
+    .d-menu-item:hover { background: var(--bg); }
+    .d-menu-icon {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 16px; color: var(--text-muted); flex-shrink: 0;
+    }
+    .d-menu-danger { color: var(--danger); }
+    .d-menu-danger .d-menu-icon { color: var(--danger); }
+    .d-menu-danger:hover { background: var(--danger-light); }
+    .d-menu-sep { height: 1px; background: var(--border); margin: 4px 8px; }
+
+    /* Single-line breadcrumb — truncates with ellipsis on narrow viewports */
+    .drawer-crumb {
+      font-size: 12.5px; color: var(--text-muted);
+      margin-bottom: 8px;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .drawer-title {
+      font-size: 20px; font-weight: 700; line-height: 1.35;
+      overflow-wrap: anywhere;
+    }
     .drawer-meta {
-      display: flex; gap: 8px; flex-wrap: wrap;
-      align-items: center; margin-top: 12px;
-    }
-    .drawer-toolbar {
-      margin-top: 10px;
-      display: flex; gap: 6px; align-items: center; flex-wrap: wrap;
+      display: flex; gap: 6px; flex-wrap: wrap;
+      align-items: center; margin-top: 14px;
     }
     .chip {
       display: inline-flex; align-items: center; gap: 4px;
@@ -1412,24 +1464,25 @@
        Read-block reveals a textarea on click. Empty state nudges the
        user to add context with a dashed border. */
     .init-desc {
-      font-size: 14px; line-height: 1.6;
+      font-size: 14px; line-height: 1.65;
       color: var(--text);
-      padding: 12px 14px;
-      background: var(--bg);
-      border: 1.5px solid var(--border);
-      border-radius: var(--radius-sm);
+      padding: 0 0 16px;
       margin-bottom: 18px;
+      border-bottom: 1px solid var(--border);
       cursor: pointer;
-      transition: all .15s;
+      transition: color .15s;
       white-space: pre-wrap; word-wrap: break-word;
     }
-    .init-desc:hover { border-color: var(--primary); }
+    .init-desc:hover { color: var(--primary); }
     .init-desc.is-empty {
-      border-style: dashed;
+      padding: 12px 14px;
+      border: 1.5px dashed var(--border);
+      border-radius: var(--radius-sm);
       color: var(--text-muted); font-style: italic;
     }
     .init-desc.is-empty:hover {
       color: var(--text); font-style: normal;
+      border-color: var(--primary);
       background: var(--primary-light);
     }
     .init-desc-editor { margin-bottom: 18px; }
@@ -1461,17 +1514,31 @@
       font-size: 12.5px; font-weight: 700; text-transform: uppercase;
       letter-spacing: .9px; color: var(--text-muted); margin-bottom: 12px;
     }
-    .status-pills { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
+    .status-pills {
+      display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px;
+    }
     .status-pill {
       display: inline-flex; align-items: center; justify-content: center;
-      padding: 0 14px; min-height: 30px;
+      gap: 5px;
+      padding: 0 12px; min-height: 30px;
       border-radius: 20px; border: 1.5px solid transparent;
-      font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 600;
-      cursor: pointer; transition: all .18s;
+      font-family: 'Inter', sans-serif; font-size: 12.5px; font-weight: 600;
+      cursor: pointer; transition: all .15s;
       line-height: 1;
     }
     .status-pill:hover { transform: translateY(-1px); box-shadow: var(--shadow-sm); }
-    .status-pill.active { box-shadow: 0 0 0 2.5px var(--primary); }
+    /* Active state: a dark contrasty ring instead of the mustard ring
+       (which disappeared against the yellow In-Progress pill). */
+    .status-pill.active {
+      border-color: var(--text);
+      box-shadow: 0 0 0 1px var(--text);
+    }
+    @media (max-width: 520px) {
+      /* On phone widths, lay pills out as a uniform 3-column grid so they
+         don't end up at three different widths across three ragged rows. */
+      .status-pills { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+      .status-pill { padding: 0 6px; min-height: 32px; font-size: 12px; }
+    }
     .status-pending-hint {
       margin-top: 10px; padding: 8px 12px;
       background: var(--primary-light); border: 1px dashed var(--primary);
@@ -1808,13 +1875,22 @@
 <!-- INITIATIVE DRAWER -->
 <div class="drawer" id="drawer">
   <div class="drawer-head">
-    <button class="drawer-close-btn" onclick="closeDrawer()">×</button>
+    <div class="d-head-actions">
+      <div class="d-menu-wrap">
+        <button class="d-menu-btn" type="button" id="dMenuBtn" aria-label="Initiative actions" aria-haspopup="true" aria-expanded="false" onclick="toggleInitMenu(event)">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg>
+        </button>
+        <div class="d-menu" id="dMenu" role="menu" hidden>
+          <button class="d-menu-item" type="button" role="menuitem" onclick="closeInitMenu();openMoveInitModal()">${''}<span class="d-menu-icon">↪</span> Move to another measure</button>
+          <div class="d-menu-sep"></div>
+          <button class="d-menu-item d-menu-danger" type="button" role="menuitem" onclick="closeInitMenu();deleteCurrentInit()"><span class="d-menu-icon">✕</span> Delete initiative</button>
+        </div>
+      </div>
+      <button class="drawer-close-btn" type="button" onclick="closeDrawer()" aria-label="Close">×</button>
+    </div>
     <div class="drawer-crumb" id="dCrumb"></div>
     <div class="drawer-title" id="dTitle"></div>
     <div class="drawer-meta" id="dMeta"></div>
-    <div class="drawer-toolbar">
-      <button class="btn-link" type="button" onclick="openMoveInitModal()" title="Move this initiative to a different goal or measure">↪ Move to another measure</button>
-    </div>
   </div>
   <div class="drawer-body" id="dBody"></div>
 </div>
@@ -2631,6 +2707,36 @@ document.addEventListener('click', e => {
   if (e.target.closest('#gdMenu') || e.target.closest('#gdMenuBtn')) return;
   closeGoalMenu();
 });
+
+// Initiative-drawer overflow menu toggle (same pattern as goal kebab)
+function toggleInitMenu(e) {
+  if (e) e.stopPropagation();
+  const menu = document.getElementById('dMenu');
+  const btn = document.getElementById('dMenuBtn');
+  if (!menu || !btn) return;
+  const showing = !menu.hidden;
+  menu.hidden = showing;
+  btn.setAttribute('aria-expanded', String(!showing));
+}
+function closeInitMenu() {
+  const menu = document.getElementById('dMenu');
+  const btn = document.getElementById('dMenuBtn');
+  if (menu) menu.hidden = true;
+  if (btn) btn.setAttribute('aria-expanded', 'false');
+}
+document.addEventListener('click', e => {
+  const menu = document.getElementById('dMenu');
+  if (!menu || menu.hidden) return;
+  if (e.target.closest('#dMenu') || e.target.closest('#dMenuBtn')) return;
+  closeInitMenu();
+});
+// Delete the initiative currently open in the drawer (kebab action)
+function deleteCurrentInit() {
+  if (!DX) return;
+  const { gid, krid, iid } = DX;
+  closeDrawer();
+  deleteInit(gid, krid, iid);
+}
 
 function renderSidebar() {
   const ideasBtn = document.getElementById('navIdeasBtn');
