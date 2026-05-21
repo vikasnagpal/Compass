@@ -888,9 +888,23 @@
       padding: 0 11px; min-height: 24px;
       border-radius: 20px; line-height: 1;
     }
+    .gd-header {
+      display: flex; align-items: flex-start; gap: 12px;
+      justify-content: space-between; flex-wrap: wrap;
+    }
+    .gd-main { flex: 1 1 280px; min-width: 0; }
     .gd-actions {
       display: flex; gap: 7px; flex-shrink: 0; flex-wrap: wrap;
       justify-content: flex-end;
+    }
+    @media (max-width: 720px) {
+      .gd-header { flex-direction: column; }
+      .gd-main { flex: 1 1 auto; width: 100%; }
+      .gd-actions {
+        width: 100%; justify-content: flex-start;
+        order: 2; /* render actions BELOW the title block on mobile */
+      }
+      .gd-actions .btn { flex: 1 1 auto; }
     }
     .gd-reflection {
       margin-top: 14px; padding: 12px 14px;
@@ -903,7 +917,10 @@
     .gd-reflection strong { color: var(--green); font-weight: 700; }
     .goal-detail-box.is-closed { opacity: .92; }
     .goal-detail-box.is-closed .gd-title { color: var(--text-muted); }
-    .gd-title { font-size: 22px; font-weight: 700; margin-bottom: 6px; }
+    .gd-title {
+      font-size: 22px; font-weight: 700; margin-bottom: 6px;
+      line-height: 1.3; overflow-wrap: anywhere;
+    }
     .goal-card-owner {
       font-size: 13px; color: var(--text-muted);
       margin-bottom: 12px; margin-top: -8px;
@@ -2714,8 +2731,8 @@ function renderGoalDetail(el, g) {
       <span>${esc(g.title)}</span>
     </div>
     <div class="goal-detail-box${g.status==='closed'?' is-closed':''}">
-      <div style="display:flex;align-items:flex-start;gap:12px;justify-content:space-between">
-        <div style="flex:1;min-width:0">
+      <div class="gd-header">
+        <div class="gd-main">
           <div class="gd-chips">
             <span class="q-chip">${esc(g.quarter)}</span>
             ${g.status==='closed'?`<span class="goal-closed-chip">Closed${g.score!=null?` · ${Math.round(g.score*100)}%`:''}</span>`:''}
