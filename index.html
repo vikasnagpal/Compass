@@ -1302,8 +1302,10 @@
       background: var(--danger-light); color: var(--danger);
       border: 1px solid var(--danger);
       border-radius: var(--radius-sm);
-      padding: 10px 14px; font-size: 13.5px; font-weight: 500;
+      padding: 12px 16px; font-size: 14px; font-weight: 500;
+      line-height: 1.55;
       margin-bottom: 16px;
+      text-align: left;
     }
     .signin-google {
       display: inline-flex; align-items: center; justify-content: center; gap: 10px;
@@ -3580,16 +3582,46 @@ function parseAuthCallbackFromUrl() {
   const parseKV = s => {
     const o = {};
     if (!s) return o;
+    // OAuth providers use form-urlencoded (+ for space) — convert
+    // before decoding so "Database+error" becomes "Database error".
+    const decode = x => {
+      try { return decodeURIComponent((x || '').replace(/\+/g, ' ')); }
+      catch { return x; }
+    };
     for (const pair of s.split('&')) {
       const eq = pair.indexOf('=');
       const k = eq < 0 ? pair : pair.slice(0, eq);
       const v = eq < 0 ? '' : pair.slice(eq + 1);
-      try { o[decodeURIComponent(k)] = decodeURIComponent(v); }
-      catch { o[k] = v; }
+      o[decode(k)] = decode(v);
     }
     return o;
   };
   return { hash: parseKV(cleanHash), query: parseKV(queryStr) };
+}
+
+// Map technical auth errors to messages a teammate can act on.
+function friendlyAuthError(code, desc) {
+  const d = (desc || '').toLowerCase();
+  // The domain-restriction trigger raises an exception during signup,
+  // and Supabase wraps it as "Database error saving new user". Treat
+  // anything that looks like a signup-domain rejection as such.
+  if (
+    d.includes('database error saving new user') ||
+    d.includes('sign-up restricted') ||
+    d.includes('signup is disabled') ||
+    d.includes('not an allowed domain') ||
+    d.includes('email domain') ||
+    d.includes('not allowed')
+  ) {
+    return 'Zostel Compass is only open to the Zostel team. Please sign in with your @zostel.com Google account.';
+  }
+  if (code === 'access_denied') {
+    return 'Sign-in was cancelled. Click "Continue with Google" to try again.';
+  }
+  if (d.includes('popup') || d.includes('window closed')) {
+    return 'Sign-in window closed before finishing. Please try again.';
+  }
+  return desc || 'Sign-in failed. Please try again.';
 }
 
 function cleanUrl() {
@@ -3669,10 +3701,11 @@ async function handleOAuthCallbackManually() {
 
   // ── Provider error in callback ──
   if (hash.error || query.error) {
-    const err = hash.error_description || query.error_description || hash.error || query.error;
-    console.error('[Compass] OAuth provider error:', err);
+    const code = hash.error || query.error;
+    const desc = hash.error_description || query.error_description || '';
+    console.error('[Compass] OAuth provider error:', { code, desc });
     cleanUrl();
-    return { error: { message: err } };
+    return { error: { message: friendlyAuthError(code, desc), code } };
   }
 
   return {}; // no callback
