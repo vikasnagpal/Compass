@@ -290,29 +290,6 @@
     }
 
     /* ── HELP PAGE ── */
-    .help-hero {
-      border-radius: var(--radius);
-      background: linear-gradient(130deg, #FFF8E1 0%, #FFE6B0 100%);
-      padding: 26px 30px; margin-bottom: 22px;
-      position: relative; overflow: hidden;
-    }
-    .help-hero::after {
-      content: '🧭'; position: absolute;
-      right: 26px; top: 50%; transform: translateY(-50%);
-      font-size: 86px; opacity: .18; pointer-events: none;
-    }
-    .help-hero h2 { font-size: 24px; margin-bottom: 6px; color: var(--text); }
-    .help-hero p {
-      font-size: 15px; color: var(--text); opacity: .82;
-      line-height: 1.65; max-width: 620px;
-    }
-    /* Dark mode: swap the cream gradient for a deep mustard tint so the
-       cream text stays readable. Mirrors the ideas-hero treatment. */
-    [data-theme="dark"] .help-hero {
-      background: linear-gradient(130deg, #3A2E0A 0%, #2A1F08 100%);
-    }
-    [data-theme="dark"] .help-hero::after { opacity: .28; }
-
     .help-section {
       background: var(--surface); border: 1.5px solid var(--border);
       border-radius: var(--radius); padding: 22px 24px;
@@ -412,27 +389,6 @@
     .help-credit a:hover { color: var(--primary-dark); border-bottom-color: var(--primary-dark); }
 
     /* ── IDEAS PAGE ── */
-    .ideas-hero {
-      border-radius: var(--radius);
-      background: linear-gradient(130deg, #FFF8E1 0%, #FFE6B0 100%);
-      padding: 22px 26px; margin-bottom: 22px;
-      position: relative; overflow: hidden;
-    }
-    .ideas-hero::after {
-      content: '💡'; position: absolute;
-      right: 24px; top: 50%; transform: translateY(-50%);
-      font-size: 80px; opacity: .18; pointer-events: none;
-    }
-    .ideas-hero h2 { font-size: 22px; margin-bottom: 4px; color: var(--text); }
-    .ideas-hero p { font-size: 15px; color: var(--text-muted); max-width: 560px; }
-    /* In dark mode, swap the cream gradient for a deep mustard tint so
-       the cream text stays readable and the "ideas = spark" cue carries
-       across themes. */
-    [data-theme="dark"] .ideas-hero {
-      background: linear-gradient(130deg, #3A2E0A 0%, #2A1F08 100%);
-    }
-    [data-theme="dark"] .ideas-hero::after { opacity: .28; }
-
     .idea-capture {
       background: var(--surface); border: 1.5px solid var(--border);
       border-radius: var(--radius); padding: 16px;
@@ -851,19 +807,34 @@
     }
 
     /* ── WELCOME BANNER ── */
+    /* Unified page hero banner. Each banner instance sets its own corner
+       glyph via `style="--banner-icon: '🏕️'"`. Light mode: cream gradient;
+       dark mode: deep mustard tints. Same look across Dashboard, My work,
+       Archive, Ideas, and Help. */
     .banner {
       border-radius: var(--radius);
-      background: linear-gradient(130deg, #F4B400 0%, #E09000 100%);
-      padding: 24px 28px; margin-bottom: 26px; color: #fff;
+      background: linear-gradient(130deg, #FFF8E1 0%, #FFE6B0 100%);
+      padding: 26px 30px; margin-bottom: 22px;
       position: relative; overflow: hidden;
     }
     .banner::after {
-      content: '✦'; position: absolute;
-      right: 28px; top: 50%; transform: translateY(-50%);
-      font-size: 90px; opacity: .12; pointer-events: none;
+      content: var(--banner-icon, '✦'); position: absolute;
+      right: 26px; top: 50%; transform: translateY(-50%);
+      font-size: 86px; opacity: .22; pointer-events: none;
     }
-    .banner h2 { font-size: 22px; margin-bottom: 4px; }
-    .banner p { font-size: 15px; opacity: .92; }
+    .banner h2 {
+      font-size: 24px; margin-bottom: 6px;
+      color: var(--text);
+      font-family: 'Poppins', sans-serif;
+    }
+    .banner p {
+      font-size: 15px; color: var(--text); opacity: .82;
+      line-height: 1.65; max-width: 620px;
+    }
+    [data-theme="dark"] .banner {
+      background: linear-gradient(130deg, #3A2E0A 0%, #2A1F08 100%);
+    }
+    [data-theme="dark"] .banner::after { opacity: .32; }
 
     /* ── SECTION HEADER ── */
     .sec-header {
@@ -2919,8 +2890,8 @@ function renderDashboard(el) {
   const risk = allInits.filter(i=>i.status==='at_risk'||i.status==='blocked').length;
 
   el.innerHTML = `<div class="fade-up">
-    <div class="banner">
-      <h2>Where are we heading next? 🏕️</h2>
+    <div class="banner" style="--banner-icon: '🏕️'">
+      <h2>Where are we heading next?</h2>
       <p>Set your goals, track each measure, and rally the crew around the initiatives that move us forward together.</p>
     </div>
     <div class="sec-header">
@@ -3012,8 +2983,8 @@ function renderMyWorkPage(el) {
     </div>`;
 
   el.innerHTML = `<div class="fade-up">
-    <div class="banner">
-      <h2>Your trail today, ${esc(me.split(' ')[0])} 🥾</h2>
+    <div class="banner" style="--banner-icon: '🥾'">
+      <h2>Your trail today, ${esc(me.split(' ')[0])}</h2>
       <p>Every initiative you're leading, gathered in one place — so nothing falls off your pack.</p>
     </div>
     <div class="mw-stats">
@@ -3077,8 +3048,8 @@ function renderArchivePage(el) {
   };
 
   el.innerHTML = `<div class="fade-up">
-    <div class="banner">
-      <h2>The trail behind us 🏔️</h2>
+    <div class="banner" style="--banner-icon: '🏔️'">
+      <h2>The trail behind us</h2>
       <p>Every goal we've closed out, with the lessons we picked up along the way. Click any goal to revisit the full story.</p>
     </div>
     ${!closed.length
@@ -3335,8 +3306,8 @@ function showHuzzah(text, big=false) {
 function renderIdeasPage(el) {
   const total = S.ideas.length;
   el.innerHTML = `<div class="fade-up">
-    <div class="ideas-hero">
-      <h2>What's brewing? 💡</h2>
+    <div class="banner" style="--banner-icon: '💡'">
+      <h2>What's brewing?</h2>
       <p>A backlog for half-formed ideas. Capture them here now — they'll be ready when planning rolls around.</p>
     </div>
 
@@ -4523,7 +4494,7 @@ function goToHelp() {
 
 function renderHelpPage(el) {
   el.innerHTML = `<div class="fade-up">
-    <div class="help-hero">
+    <div class="banner" style="--banner-icon: '🧭'">
       <h2>How Compass works</h2>
       <p>Most goal trackers end up as graveyards for plans no one remembers writing. Compass is built around how a team actually moves — set the destination, mark the signposts, share the load, and check in often enough to course-correct before the season is over.</p>
     </div>
