@@ -306,6 +306,12 @@
       font-size: 15px; color: var(--text); opacity: .82;
       line-height: 1.65; max-width: 620px;
     }
+    /* Dark mode: swap the cream gradient for a deep mustard tint so the
+       cream text stays readable. Mirrors the ideas-hero treatment. */
+    [data-theme="dark"] .help-hero {
+      background: linear-gradient(130deg, #3A2E0A 0%, #2A1F08 100%);
+    }
+    [data-theme="dark"] .help-hero::after { opacity: .28; }
 
     .help-section {
       background: var(--surface); border: 1.5px solid var(--border);
