@@ -6,20 +6,34 @@
   <title>Zostel Compass</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500&display=swap" rel="stylesheet" />
+  <script>
+    // Apply theme synchronously BEFORE CSS parses, so the browser
+    // never paints a frame in the wrong palette. Reads a saved
+    // preference; falls back to the OS-level prefers-color-scheme.
+    (function () {
+      var saved = null;
+      try { saved = localStorage.getItem('compassTheme'); } catch (e) {}
+      var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+      var theme = saved === 'light' || saved === 'dark' ? saved : (prefersDark ? 'dark' : 'light');
+      document.documentElement.setAttribute('data-theme', theme);
+    })();
+  </script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-    :root {
+    :root, [data-theme="light"] {
       --primary:        #F4B400;
       --primary-light:  #FFF8E1;
       --primary-dark:   #D9A000;
       --text:           #1F1F1F;
       --text-muted:     #5C5B56;
       --bg:             #FAF8F3;
+      --bg-soft:        #F4F0E8;
       --neutral:        #D9D2C3;
       --green:          #4C6A3D;
       --green-light:    #EBF2E6;
       --surface:        #FFFFFF;
+      --card:           #FFFFFF;
       --border:         #E8E3D8;
       --danger:         #A82A1F;
       --danger-light:   #FDECEA;
@@ -32,6 +46,43 @@
       --shadow-lg:      0 10px 40px rgba(0,0,0,0.14);
       --sidebar-w:      272px;
       --header-h:       58px;
+    }
+
+    /* ─── DARK THEME ───────────────────────────────────────────
+       Warm dark palette, not steel-blue tech-y. The mustard primary
+       stays put so the brand identity carries across both modes. */
+    [data-theme="dark"] {
+      --primary:        #F4B400;
+      --primary-light:  #3A2E0A;   /* deep mustard tint for hover/active */
+      --primary-dark:   #FFC828;
+      --text:           #EAE4D5;   /* warm cream, echoes the light-mode bg */
+      --text-muted:     #908C7E;
+      --bg:             #15151B;   /* warm near-black */
+      --bg-soft:        #1A1A21;   /* between bg and surface */
+      --neutral:        #3A3A45;
+      --green:          #8FC470;   /* brighter, more saturated for contrast */
+      --green-light:    #1A2A14;
+      --surface:        #1E1E27;   /* card surface, one step lighter than bg */
+      --card:           #1E1E27;
+      --border:         #2C2C36;
+      --danger:         #FF7A6E;   /* brighter coral so it pops on dark */
+      --danger-light:   #3A1814;
+      --warning:        #FFB85C;
+      --warning-light:  #3A2810;
+      --shadow-sm:      0 1px 4px rgba(0,0,0,0.35);
+      --shadow-md:      0 4px 14px rgba(0,0,0,0.45);
+      --shadow-lg:      0 10px 40px rgba(0,0,0,0.55);
+    }
+
+    /* Smooth (but quick) cross-fade when the user toggles theme.
+       Don't transition layout properties — only colors. */
+    body, .header, .sidebar, .goal-card, .kr-card, .init-row, .drawer,
+    .goal-detail-box, .gd-menu, .d-menu, .user-menu-dropdown, .banner,
+    .empty, .modal, .update-box, .init-desc, .arch-row, .mw-row,
+    .idea-card, .form-input, .form-select, .gd-progress-track,
+    .help-section, .help-pillar, .stats-card {
+      transition: background-color .22s ease, color .22s ease,
+                  border-color .22s ease;
     }
 
     body {
@@ -114,6 +165,8 @@
       color: var(--text); transition: background .15s;
     }
     .user-menu-item:hover { background: var(--bg); }
+    .user-menu-item { display: flex; align-items: center; }
+    .user-menu-sep { height: 1px; background: var(--border); margin: 4px 8px; }
 
     .menu-btn {
       display: none;
@@ -1318,6 +1371,19 @@
       line-height: 1;
     }
     .badge-not_started  { background: #F0EFED; color: #6B6A65; }
+    [data-theme="dark"] .badge-not_started { background: #2A2A33; color: #B0AC9D; }
+    [data-theme="dark"] .badge-on_hold     { background: #2A2A33; color: #B0AC9D; }
+    [data-theme="dark"] .dot-not_started   { background: #6A675F; }
+    [data-theme="dark"] .dot-on_hold       { background: #555259; }
+    [data-theme="dark"] .flag-chip.flag-stale   { background: #3A2810; color: #FFB85C; }
+    [data-theme="dark"] .idea-status-chip.status-parked { background: #3A2810; color: #FFB85C; }
+    /* The status pill active state uses var(--text) for its border —
+       in dark mode that's a light cream which clashes with the dark
+       pill background. Use a high-contrast accent instead. */
+    [data-theme="dark"] .status-pill.active {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 1px var(--primary);
+    }
     .badge-in_progress  { background: var(--primary-light); color: var(--warning); }
     .badge-on_track     { background: var(--green-light); color: var(--green); }
     .badge-at_risk      { background: var(--warning-light); color: var(--warning); }
@@ -1815,6 +1881,11 @@
           <div class="user-menu-name" id="userMenuName">—</div>
           <div class="user-menu-email" id="userMenuEmail"></div>
         </div>
+        <button class="user-menu-item" type="button" role="menuitem" id="themeToggleBtn" onclick="toggleTheme()">
+          <span id="themeToggleIcon" aria-hidden="true" style="margin-right:8px"></span>
+          <span id="themeToggleLabel">Switch theme</span>
+        </button>
+        <div class="user-menu-sep"></div>
         <button class="user-menu-item" type="button" role="menuitem" onclick="signOut()">Sign out</button>
       </div>
     </div>
@@ -2667,6 +2738,30 @@ function renderUserMenu() {
   avatar.innerHTML = photoUrl
     ? `<img src="${esc(photoUrl)}" alt="" referrerpolicy="no-referrer" />`
     : esc((name || '?').charAt(0).toUpperCase());
+  refreshThemeToggleUI();
+}
+
+// Theme toggle ─────────────────────────────────────────────────
+// Sun icon when in dark (action = switch to light), moon when in light.
+const SUN_SVG  = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m4.93 19.07 1.41-1.41"/><path d="m17.66 6.34 1.41-1.41"/></svg>';
+const MOON_SVG = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>';
+
+function currentTheme() {
+  return document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
+}
+function refreshThemeToggleUI() {
+  const icon = document.getElementById('themeToggleIcon');
+  const label = document.getElementById('themeToggleLabel');
+  if (!icon || !label) return;
+  const isDark = currentTheme() === 'dark';
+  icon.innerHTML = isDark ? SUN_SVG : MOON_SVG;
+  label.textContent = isDark ? 'Switch to light mode' : 'Switch to dark mode';
+}
+function toggleTheme() {
+  const next = currentTheme() === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', next);
+  try { localStorage.setItem('compassTheme', next); } catch (e) {}
+  refreshThemeToggleUI();
 }
 
 // User-menu dropdown toggle
