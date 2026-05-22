@@ -677,18 +677,6 @@
     .settings-section-sub {
       font-size: 13.5px; color: var(--text-muted); line-height: 1.55;
     }
-    .member-add {
-      display: flex; gap: 8px; align-items: center;
-      margin-bottom: 18px; flex-wrap: wrap;
-    }
-    .member-add input {
-      flex: 1; min-width: 200px; padding: 10px 13px;
-      border: 1.5px solid var(--border); border-radius: var(--radius-sm);
-      font-family: 'Inter', sans-serif; font-size: 14px;
-      background: var(--bg); outline: none;
-      color: var(--text); transition: border-color .15s;
-    }
-    .member-add input:focus { border-color: var(--primary); }
     .member-list {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
@@ -737,9 +725,6 @@
       font-style: italic;
       background: var(--bg); border-radius: var(--radius-sm);
       border: 1px dashed var(--neutral);
-    }
-    @media (max-width: 480px) {
-      .member-row .mr-remove { opacity: 1; }
     }
 
     /* ── DELIGHT: idea-capture micro-celebrations ── */
@@ -2285,7 +2270,14 @@ function dbIdeaToState(i) {
   };
 }
 const byPos     = (a, b) => (a.position || 0) - (b.position || 0);
-const byCreated = (a, b) => new Date(a.created_at) - new Date(b.created_at);
+const byCreated = (a, b) => {
+  // Guard against missing / invalid created_at — Invalid Date coerced via
+  // the subtraction operator yields NaN, which makes the sort order
+  // indeterminate (different rows can swap on re-render). Fall back to 0.
+  const ta = new Date(a.created_at).getTime() || 0;
+  const tb = new Date(b.created_at).getTime() || 0;
+  return ta - tb;
+};
 
 // ─── Error UI ───
 function showDBError(error) {
@@ -2346,6 +2338,12 @@ function onGoalChange({ eventType, new: row, old: oldRow }) {
   } else if (eventType === 'DELETE') {
     const id = oldRow?.id; if (!id) return;
     const wasActive = S.activeGoalId === id;
+    // If a drawer is open on an initiative inside this goal, close it.
+    // (The cascade should also fire individual init DELETEs, but the order
+    // of those events isn't guaranteed — guard explicitly.)
+    if (DX && DX.gid === id) {
+      closeDrawer();
+    }
     S.goals = S.goals.filter(g => g.id !== id);
     if (wasActive) {
       S.activeGoalId = null;
@@ -2371,6 +2369,10 @@ function onKRChange({ eventType, new: row, old: oldRow }) {
     scheduleRerender();
   } else if (eventType === 'DELETE') {
     const id = oldRow?.id; if (!id) return;
+    // Close the drawer if it's open on an initiative inside this measure
+    if (DX && DX.krid === id) {
+      closeDrawer();
+    }
     for (const g of S.goals) {
       const idx = g.keyResults.findIndex(k => k.id === id);
       if (idx >= 0) { g.keyResults.splice(idx, 1); break; }
@@ -2488,10 +2490,12 @@ function onProfileChange({ eventType, new: row, old: oldRow }) {
   }
 }
 
+let _rtReconnectTimer = null;
 function setupRealtime() {
   if (window._rtChannel) {
     try { sb.removeChannel(window._rtChannel); } catch (e) {}
   }
+  if (_rtReconnectTimer) { clearTimeout(_rtReconnectTimer); _rtReconnectTimer = null; }
   const channel = sb.channel('compass-room')
     .on('postgres_changes', { event: '*', schema: 'public', table: 'goals' },              onGoalChange)
     .on('postgres_changes', { event: '*', schema: 'public', table: 'key_results' },        onKRChange)
@@ -2501,6 +2505,18 @@ function setupRealtime() {
     .on('postgres_changes', { event: '*', schema: 'public', table: 'profiles' },           onProfileChange)
     .subscribe(status => {
       console.log('[Compass] Realtime channel status:', status);
+      // Without explicit reconnect handling, a brief network blip leaves the
+      // app silently un-synced — UI keeps working, but nothing new shows up
+      // from other clients until reload. Re-subscribe with a 3s delay on
+      // hard errors. SUBSCRIBED / CLOSED are normal lifecycle, not errors.
+      if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
+        if (_rtReconnectTimer) return; // already scheduled
+        _rtReconnectTimer = setTimeout(() => {
+          _rtReconnectTimer = null;
+          console.log('[Compass] Realtime: attempting reconnect…');
+          setupRealtime();
+        }, 3000);
+      }
     });
   window._rtChannel = channel;
 }
@@ -4621,7 +4637,7 @@ function renderSettingsPage(el) {
                 ? `<img src="${esc(m.avatar_url)}" alt="" referrerpolicy="no-referrer" />`
                 : esc(initial);
               return `<div class="member-row${isMe?' is-me':''}">
-                <span class="member-avatar member-avatar-img" aria-hidden="true">${avatarInner}</span>
+                <span class="member-avatar" aria-hidden="true">${avatarInner}</span>
                 <div class="member-meta">
                   <div class="member-name">${esc(m.name)}${isMe?' <span class="member-you">You</span>':''}</div>
                   ${m.email ? `<div class="member-email">${esc(m.email)}</div>` : ''}
