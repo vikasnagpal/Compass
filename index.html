@@ -26,6 +26,7 @@
       --primary-light:  #FFF8E1;
       --primary-dark:   #D9A000;
       --text:           #1F1F1F;
+      --text-on-primary:#1F1F1F;
       --text-muted:     #5C5B56;
       --bg:             #FAF8F3;
       --bg-soft:        #F4F0E8;
@@ -56,6 +57,7 @@
       --primary-light:  #3A2E0A;   /* deep mustard tint for hover/active */
       --primary-dark:   #FFC828;
       --text:           #EAE4D5;   /* warm cream, echoes the light-mode bg */
+      --text-on-primary:#1F1F1F;   /* always dark — for legibility on the mustard accent */
       --text-muted:     #908C7E;
       --bg:             #15151B;   /* warm near-black */
       --bg-soft:        #1A1A21;   /* between bg and surface */
@@ -134,7 +136,7 @@
     .user-menu-trigger:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
     .user-avatar {
       width: 32px; height: 32px; border-radius: 50%;
-      background: var(--primary); color: var(--text);
+      background: var(--primary); color: var(--text-on-primary);
       display: inline-flex; align-items: center; justify-content: center;
       font-family: 'Poppins', sans-serif; font-weight: 700; font-size: 13px;
       overflow: hidden;
@@ -278,7 +280,7 @@
       font-family: 'IBM Plex Sans', sans-serif;
       line-height: 1;
     }
-    .nav-ideas-btn.active .nav-ideas-count { background: var(--primary); color: var(--text); }
+    .nav-ideas-btn.active .nav-ideas-count { background: var(--primary); color: var(--text-on-primary); }
 
     .sidebar-footer {
       margin-top: auto;
@@ -383,7 +385,7 @@
       content: counter(helpsteps);
       position: absolute; left: 0; top: 0;
       width: 26px; height: 26px; border-radius: 50%;
-      background: var(--primary); color: var(--text);
+      background: var(--primary); color: var(--text-on-primary);
       font-family: 'IBM Plex Sans', sans-serif; font-weight: 600;
       font-size: 13px;
       display: flex; align-items: center; justify-content: center;
@@ -488,7 +490,7 @@
       font-family: 'IBM Plex Sans', sans-serif;
       line-height: 1;
     }
-    .idea-filter.active .idea-filter-count { background: var(--primary); color: var(--text); }
+    .idea-filter.active .idea-filter-count { background: var(--primary); color: var(--text-on-primary); }
 
     .ideas-grid {
       display: grid; gap: 12px;
@@ -692,7 +694,7 @@
     .member-row.is-me { background: var(--primary-light); border-color: var(--primary); }
     .member-avatar {
       width: 36px; height: 36px; border-radius: 50%;
-      background: var(--primary); color: var(--text);
+      background: var(--primary); color: var(--text-on-primary);
       display: flex; align-items: center; justify-content: center;
       font-family: 'Poppins', sans-serif; font-weight: 700; font-size: 14px;
       flex-shrink: 0; overflow: hidden;
@@ -715,7 +717,7 @@
       display: inline-flex; align-items: center;
       font-size: 11px; font-weight: 700; line-height: 1;
       padding: 0 8px; min-height: 18px; border-radius: 10px;
-      background: var(--primary); color: var(--text);
+      background: var(--primary); color: var(--text-on-primary);
       font-family: 'IBM Plex Sans', sans-serif;
       text-transform: uppercase; letter-spacing: .4px;
     }
@@ -747,7 +749,7 @@
     .nav-ideas-count.bump { animation: countBump 520ms ease; }
     @keyframes countBump {
       0%   { transform: scale(1); }
-      35%  { transform: scale(1.35); background: var(--primary); color: var(--text); }
+      35%  { transform: scale(1.35); background: var(--primary); color: var(--text-on-primary); }
       100% { transform: scale(1); }
     }
 
@@ -825,7 +827,7 @@
       cursor: pointer; transition: all .18s; white-space: nowrap;
       line-height: 1;
     }
-    .btn-primary { background: var(--primary); color: var(--text); }
+    .btn-primary { background: var(--primary); color: var(--text-on-primary); }
     .btn-primary:hover { background: var(--primary-dark); }
     .btn-outline {
       background: transparent; border: 1.5px solid var(--border); color: var(--text);
@@ -1773,7 +1775,7 @@
     .undo-toast-text { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .undo-toast-btn {
       display: inline-flex; align-items: center;
-      background: var(--primary); color: var(--text);
+      background: var(--primary); color: var(--text-on-primary);
       border: none; border-radius: 100px;
       padding: 0 14px; min-height: 30px;
       font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 700;
