@@ -4719,7 +4719,7 @@ function friendlyAuthError(code, desc) {
     d.includes('email domain') ||
     d.includes('not allowed')
   ) {
-    return 'Zostel Compass is only open to the Zostel team. Please sign in with your @zostel.com Google account.';
+    return 'Zostel Compass is only open to the Zostel team. Please sign in with your @zostel.com or @zo.xyz Google account.';
   }
   if (code === 'access_denied') {
     return 'Sign-in was cancelled. Click "Continue with Google" to try again.';
