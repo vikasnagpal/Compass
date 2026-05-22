@@ -417,6 +417,13 @@
     }
     .ideas-hero h2 { font-size: 22px; margin-bottom: 4px; color: var(--text); }
     .ideas-hero p { font-size: 15px; color: var(--text-muted); max-width: 560px; }
+    /* In dark mode, swap the cream gradient for a deep mustard tint so
+       the cream text stays readable and the "ideas = spark" cue carries
+       across themes. */
+    [data-theme="dark"] .ideas-hero {
+      background: linear-gradient(130deg, #3A2E0A 0%, #2A1F08 100%);
+    }
+    [data-theme="dark"] .ideas-hero::after { opacity: .28; }
 
     .idea-capture {
       background: var(--surface); border: 1.5px solid var(--border);
