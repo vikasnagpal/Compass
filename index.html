@@ -2105,10 +2105,12 @@ const db = {
     return dbKRToState({ ...data, initiatives: [] });
   },
   async updateKR(id, f) {
-    const { error } = await sb.from('key_results').update({
+    const patch = {
       title: f.title, target_value: f.target,
       current_value: f.current, unit: f.unit,
-    }).eq('id', id);
+    };
+    if (f.goalId !== undefined) patch.goal_id = f.goalId;
+    const { error } = await sb.from('key_results').update(patch).eq('id', id);
     if (error) { showDBError(error); return false; }
     return true;
   },
@@ -2340,11 +2342,19 @@ function onKRChange({ eventType, new: row, old: oldRow }) {
     scheduleRerender();
   } else if (eventType === 'UPDATE') {
     const found = findKRById(row.id); if (!found) return;
-    const { kr } = found;
+    const { goal: oldGoal, kr } = found;
     kr.title = row.title;
     kr.target = Number(row.target_value) || 0;
     kr.current = Number(row.current_value) || 0;
     kr.unit = row.unit || '';
+    // Handle move between goals
+    if (row.goal_id && row.goal_id !== oldGoal.id) {
+      const destG = findGoal(row.goal_id);
+      if (destG) {
+        oldGoal.keyResults = oldGoal.keyResults.filter(k => k.id !== row.id);
+        if (!destG.keyResults.find(k => k.id === row.id)) destG.keyResults.push(kr);
+      }
+    }
     scheduleRerender();
   } else if (eventType === 'DELETE') {
     const id = oldRow?.id; if (!id) return;
@@ -4259,11 +4269,19 @@ function deleteGoal(gid) {
 function openKRModal(gid, krid) {
   const g=findGoal(gid); if(!g) return;
   const kr=krid?findKR(g,krid):null;
+  const goalOpts = S.goals
+    .filter(go => go.status !== 'closed' || go.id === gid)
+    .map(go => `<option value="${go.id}"${go.id===gid?' selected':''}>${esc(go.title)} · ${esc(go.quarter)}</option>`)
+    .join('');
   showModal(`
     <div class="modal-title">${icon('measure','icon-lg')} ${kr?'Edit Measure':'New Measure'}</div>
     <div class="form-group">
       <label class="form-label">Measure</label>
       <input class="form-input" id="mKRTitle" value="${esc(kr?.title||'')}" placeholder="e.g. 4.8+ average community rating across all stays" />
+    </div>
+    <div class="form-group">
+      <label class="form-label">Goal</label>
+      <select class="form-input" id="mKRGoal">${goalOpts}</select>
     </div>
     <div class="form-row">
       <div class="form-group">
@@ -4299,15 +4317,26 @@ async function saveKR(gid, krid) {
   const cur=parseFloat(document.getElementById('mKRCur')?.value)||0;
   const target=parseFloat(document.getElementById('mKRTarget')?.value)||100;
   const unit=(document.getElementById('mKRUnit')?.value||'').trim()||'%';
+  const destGid=document.getElementById('mKRGoal')?.value||gid;
   if(krid) {
     const kr=findKR(g,krid); if(!kr) return;
-    const ok = await db.updateKR(krid, { title, current: cur, target, unit });
+    const moving = destGid && destGid !== gid;
+    const destG = moving ? findGoal(destGid) : g;
+    if (moving && !destG) return;
+    const patch = { title, current: cur, target, unit };
+    if (moving) patch.goalId = destGid;
+    const ok = await db.updateKR(krid, patch);
     if (!ok) return;
     kr.title=title; kr.current=cur; kr.target=target; kr.unit=unit;
+    if (moving) {
+      g.keyResults = g.keyResults.filter(k => k.id !== krid);
+      destG.keyResults.push(kr);
+    }
   } else {
-    const kr = await db.createKR(gid, { title, current: cur, target, unit, position: g.keyResults.length });
+    const destG = findGoal(destGid) || g;
+    const kr = await db.createKR(destG.id, { title, current: cur, target, unit, position: destG.keyResults.length });
     if (!kr) return;
-    g.keyResults.push(kr);
+    destG.keyResults.push(kr);
     S.openKRs.add(kr.id);
   }
   closeModal(); render();
