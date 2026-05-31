@@ -755,6 +755,8 @@
       .idea-card.fresh, .goal-idea-row.fresh { animation: none; }
       .idea-huzzah { transition: opacity .14s ease; transform: translateX(-50%); }
       .idea-huzzah.show { transform: translateX(-50%); }
+      .kr-collapsible { transition: none; }
+      .kr-chevron { transition: none; }
     }
 
     /* ── CONTENT ── */
@@ -1194,6 +1196,23 @@
     .kr-chevron { font-size: 16px; color: var(--text-muted); transition: transform .2s; flex-shrink: 0; }
     .kr-chevron.open { transform: rotate(180deg); }
     @media (max-width: 560px) { .kr-progress-block { display: none; } }
+
+    /* ── COLLAPSIBLE INITIATIVES PANEL ──
+       The inits-frame is always in the DOM. This wrapper toggles between
+       grid-template-rows: 0fr (closed) and 1fr (open), which animates the
+       height smoothly without us having to measure pixels. The child gets
+       overflow: hidden + min-height: 0 so the grid actually clips when
+       closed. No re-render means scroll position stays put. */
+    .kr-collapsible {
+      display: grid;
+      grid-template-rows: 0fr;
+      transition: grid-template-rows .22s ease;
+    }
+    .kr-collapsible.open { grid-template-rows: 1fr; }
+    .kr-collapsible > .inits-frame {
+      overflow: hidden;
+      min-height: 0;
+    }
 
     /* ── INITIATIVES ──
        Wide view uses CSS subgrid so every row shares the same 7 columns:
@@ -3162,7 +3181,7 @@ function krCard(g, kr) {
       <button class="btn btn-ghost btn-sm" style="flex-shrink:0" onclick="event.stopPropagation();openKRModal('${g.id}','${kr.id}')">Edit</button>
       <span class="kr-chevron${open?' open':''}">▾</span>
     </div>
-    ${open?`<div class="inits-frame"><div class="inits-wrap">
+    <div class="kr-collapsible${open?' open':''}"><div class="inits-frame"><div class="inits-wrap">
       <div class="inits-toolbar">
         <span class="inits-toolbar-label">Initiatives</span>
         <button class="btn btn-primary btn-sm" onclick="openInitModal('${g.id}','${kr.id}')">+ Add Initiative</button>
@@ -3171,7 +3190,7 @@ function krCard(g, kr) {
         ?`<div style="padding:20px;font-size:14px;color:var(--text-muted);text-align:center">No initiatives yet — add the first one to get this journey started!</div>`
         : kr.initiatives.map(i=>initRow(g,kr,i)).join('')
       }
-    </div></div>`:''}
+    </div></div></div>
   </div>`;
 }
 
@@ -4697,8 +4716,15 @@ function exportWorkspace() {
 }
 
 function toggleKR(krid) {
-  S.openKRs.has(krid)?S.openKRs.delete(krid):S.openKRs.add(krid);
-  render();
+  const willOpen = !S.openKRs.has(krid);
+  if (willOpen) S.openKRs.add(krid); else S.openKRs.delete(krid);
+  // Imperative toggle on just this card — avoids a full re-render so the
+  // page doesn't jump back to wherever the previous render started, and the
+  // CSS grid-template-rows transition gets to play.
+  const card = document.getElementById(`kr-${krid}`);
+  if (!card) { render(); return; }
+  card.querySelector('.kr-collapsible')?.classList.toggle('open', willOpen);
+  card.querySelector('.kr-chevron')?.classList.toggle('open', willOpen);
 }
 
 function closeSidebar() {
