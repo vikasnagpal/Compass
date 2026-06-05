@@ -1078,6 +1078,24 @@
   /* ID-CHIP / PILL TOOLTIP AFFORDANCE */
   .id-chip[title], .pill[title] { cursor: help; }
 
+  /* CROSS-REFERENCE LINKS — a chip/code that jumps to its definition */
+  .id-chip.id-link, code.id-link {
+    cursor: pointer;
+    transition: background-color .15s ease, color .15s ease, box-shadow .15s ease;
+  }
+  .id-chip.id-link:hover { background: var(--sky); color: #2A547A; }
+  code.id-link:hover { text-decoration: underline; }
+  .id-chip.id-link:focus-visible, code.id-link:focus-visible {
+    outline: 2px solid var(--sky-deep);
+    outline-offset: 2px;
+  }
+  /* Brief highlight on the definition row when jumped to */
+  tr.id-flash { animation: id-flash 1.4s ease; }
+  @keyframes id-flash {
+    0%, 15% { background: var(--butter); }
+    100% { background: transparent; }
+  }
+
   /* OWNERS — unassigned row */
   .owner-row.unassigned .who { color: var(--coral-deep); }
   .owner-row.unassigned .id-chip {
@@ -2000,12 +2018,49 @@
     'Run-2': 'Produce & publish',
     'Run-3': 'Seed first collaborations'
   };
-  document.querySelectorAll('.id-chip').forEach(function (chip) {
+  function defId(key) { return 'def-' + key.toLowerCase(); }
+
+  // 1) Tag each ID's defining row (the chip inside a Goal table) with an anchor.
+  var defined = {};
+  document.querySelectorAll('.goal-card .id-chip').forEach(function (chip) {
     var key = chip.textContent.trim();
-    if (NAMES[key] && !chip.hasAttribute('title')) {
-      chip.setAttribute('title', NAMES[key]);
+    if (NAMES[key] && !defined[key]) {
+      chip.id = defId(key);
+      defined[key] = true;
     }
   });
+
+  // 2) Tooltip every chip; turn references (chips/code outside the Goal tables)
+  //    into clickable links that jump to — and briefly flash — the definition.
+  function jumpTo(key) {
+    var target = document.getElementById(defId(key));
+    if (!target) return;
+    target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    var row = target.closest('tr') || target;
+    row.classList.remove('id-flash');
+    // reflow so the animation can replay on repeated clicks
+    void row.offsetWidth;
+    row.classList.add('id-flash');
+    setTimeout(function () { row.classList.remove('id-flash'); }, 1400);
+  }
+
+  function wire(el) {
+    var key = el.textContent.trim();
+    if (!NAMES[key]) return;
+    if (!el.hasAttribute('title')) el.setAttribute('title', NAMES[key]);
+    // Skip the definition chip itself — clicking it would just scroll to itself.
+    if (el.id === defId(key)) return;
+    if (!defined[key]) return;
+    el.classList.add('id-link');
+    el.setAttribute('role', 'link');
+    el.setAttribute('tabindex', '0');
+    el.setAttribute('aria-label', key + ' — ' + NAMES[key] + ' (jump to definition)');
+    el.addEventListener('click', function () { jumpTo(key); });
+    el.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); jumpTo(key); }
+    });
+  }
+  document.querySelectorAll('.id-chip, code').forEach(wire);
 
   // ---- Interactive exit checklist (persisted) ----
   var KEY = 'destination-program-checklist';
