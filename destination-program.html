@@ -43,6 +43,9 @@
     --radius-xl: 40px;
     --radius-pill: 999px;
 
+    /* Hairline — single token for all 1px borders & dividers */
+    --hairline: rgba(15, 27, 45, 0.06);
+
     --shadow-sm: 0 1px 2px rgba(15, 27, 45, 0.04), 0 2px 8px rgba(15, 27, 45, 0.04);
     --shadow: 0 4px 16px rgba(15, 27, 45, 0.06), 0 16px 40px rgba(15, 27, 45, 0.04);
     --shadow-lg: 0 8px 30px rgba(15, 27, 45, 0.08), 0 24px 60px rgba(15, 27, 45, 0.06);
@@ -89,7 +92,7 @@
     background: var(--card);
     padding: 7px 14px 7px 12px;
     border-radius: var(--radius-pill);
-    border: 1px solid rgba(15, 27, 45, 0.06);
+    border: 1px solid var(--hairline);
   }
   .eyebrow::before {
     content: '';
@@ -112,7 +115,7 @@
     padding: 12px 14px 12px 24px;
     background: rgba(255, 255, 255, 0.85);
     backdrop-filter: blur(20px);
-    border: 1px solid rgba(15, 27, 45, 0.05);
+    border: 1px solid var(--hairline);
     border-radius: var(--radius-pill);
     display: flex; align-items: center; justify-content: space-between;
     gap: 24px;
@@ -167,7 +170,7 @@
     margin: 0 auto;
     background: linear-gradient(135deg, #BFD6EA 0%, #D9C7E5 50%, #F5CFC2 100%);
     border-radius: var(--radius-xl);
-    padding: 80px 64px 88px;
+    padding: 80px 64px;
     position: relative;
     overflow: hidden;
     box-shadow: var(--shadow);
@@ -335,7 +338,7 @@
     background: var(--card);
     border-radius: var(--radius-lg);
     padding: 32px;
-    border: 1px solid rgba(15, 27, 45, 0.04);
+    border: 1px solid var(--hairline);
     box-shadow: var(--shadow-sm);
     transition: all .25s ease;
   }
@@ -437,7 +440,7 @@
   @media (max-width: 800px) { .host-grid { grid-template-columns: 1fr; } }
   .host-card {
     border-radius: var(--radius-lg);
-    padding: 36px;
+    padding: 40px;
     position: relative;
     overflow: hidden;
   }
@@ -458,7 +461,7 @@
     align-items: flex-start;
     gap: 12px;
     padding: 12px 0;
-    border-top: 1px solid rgba(15, 27, 45, 0.06);
+    border-top: 1px solid var(--hairline);
     font-size: 0.98rem;
     color: var(--ink-soft);
   }
@@ -501,7 +504,7 @@
     border-radius: var(--radius-pill);
     font-size: 0.92rem;
     font-weight: 500;
-    border: 1px solid rgba(15, 27, 45, 0.05);
+    border: 1px solid var(--hairline);
   }
   .flywheel-step.accent {
     background: var(--primary);
@@ -529,7 +532,7 @@
   .phase-card {
     background: var(--card);
     border-radius: var(--radius-lg);
-    padding: 36px 32px;
+    padding: 32px;
     position: relative;
     overflow: hidden;
     box-shadow: var(--shadow-sm);
@@ -595,7 +598,7 @@
   .winning {
     background: var(--primary);
     border-radius: var(--radius-xl);
-    padding: 72px 64px;
+    padding: 80px 64px;
     color: white;
     position: relative;
     overflow: hidden;
@@ -683,12 +686,12 @@
   }
   td {
     padding: 18px 20px;
-    border-top: 1px solid rgba(15, 27, 45, 0.05);
+    border-top: 1px solid var(--hairline);
     vertical-align: top;
     color: var(--ink-soft);
     line-height: 1.55;
   }
-  tbody tr:first-child td { border-top: 1px solid rgba(15, 27, 45, 0.05); }
+  tbody tr:first-child td { border-top: 1px solid var(--hairline); }
   td:first-child {
     color: var(--ink);
     font-weight: 600;
@@ -732,11 +735,11 @@
   }
   .goal-head {
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     gap: 20px;
     padding-bottom: 28px;
     margin-bottom: 28px;
-    border-bottom: 1px solid rgba(15, 27, 45, 0.06);
+    border-bottom: 1px solid var(--hairline);
   }
   .goal-num-circle {
     flex-shrink: 0;
@@ -765,7 +768,6 @@
     border-radius: var(--radius-pill);
     font-size: 0.9rem;
     color: var(--ink-soft);
-    margin-top: 14px;
   }
   .goal-measure strong {
     color: var(--ink);
@@ -832,7 +834,7 @@
     grid-template-columns: 120px 1fr;
     gap: 28px;
     padding: 18px 0;
-    border-top: 1px solid rgba(15, 27, 45, 0.06);
+    border-top: 1px solid var(--hairline);
     align-items: flex-start;
   }
   .week-row:first-child { border-top: 0; padding-top: 0; }
@@ -879,7 +881,7 @@
     display: grid;
     grid-template-columns: 140px 1fr;
     padding: 18px 24px;
-    border-top: 1px solid rgba(15, 27, 45, 0.05);
+    border-top: 1px solid var(--hairline);
     align-items: center;
     gap: 16px;
   }
@@ -957,7 +959,7 @@
   /* PHASE NOTES */
   .phase-note {
     border-radius: var(--radius-lg);
-    padding: 36px;
+    padding: 40px;
     margin: 20px 0;
     position: relative;
     overflow: hidden;
@@ -1558,7 +1560,6 @@
     <div class="goal-head">
       <div class="goal-num-circle">01</div>
       <div>
-        <h3>Stand up the operating spine</h3>
         <div class="goal-measure">
           <span><strong>Measure:</strong> Every system, framework and dashboard below is live and in use by Day 60.</span>
         </div>
@@ -1627,13 +1628,13 @@
     <div class="goal-head">
       <div class="goal-num-circle">02</div>
       <div>
-        <h3>Recruit, onboard &amp; activate 10 destination hosts</h3>
         <div class="goal-measure">
           <span><strong>Measure:</strong> 10 hosts signed, onboarded in &lt;48h each, all actively capturing by Day 60.</span>
         </div>
       </div>
     </div>
 
+    <div class="goal-section-title">Recruitment</div>
     <div class="table-wrap" style="margin: 0 -8px;">
       <table>
         <thead>
@@ -1653,20 +1654,20 @@
 <section class="container" id="goal-3">
   <div class="section-head">
     <span class="eyebrow lilac">Goal 03</span>
-    <h2>Get 10 handles live &amp; posting.</h2>
+    <h2>Get 10 handles live &amp; posting — HQ-produced.</h2>
   </div>
 
   <div class="goal-card">
     <div class="goal-head">
       <div class="goal-num-circle">03</div>
       <div>
-        <h3>Get 10 handles live and posting consistently (HQ-produced)</h3>
         <div class="goal-measure">
           <span><strong>Measure:</strong> 10 handles live; &gt;80% cadence hit rate sustained without chasing by Day 60.</span>
         </div>
       </div>
     </div>
 
+    <div class="goal-section-title">Launch</div>
     <div class="table-wrap" style="margin: 0 -8px;">
       <table>
         <thead>
