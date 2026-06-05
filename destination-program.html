@@ -561,7 +561,7 @@
   .phase-card p { font-size: 0.96rem; line-height: 1.6; }
 
   /* STREAMS */
-  .streams-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+  .streams-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
   @media (max-width: 720px) { .streams-grid { grid-template-columns: 1fr; } }
   .stream {
     background: var(--card);
@@ -749,8 +749,12 @@
     font-weight: 700;
     color: var(--ink);
   }
-  .goal-card:nth-of-type(2) .goal-num-circle { background: var(--coral); }
-  .goal-card:nth-of-type(3) .goal-num-circle { background: var(--mint); }
+  /* Each goal lives in its own section, so scope the circle colour by goal
+     to match its eyebrow (coral / mint / lilac) — :nth-of-type would hit
+     all three cards identically. */
+  #goals  .goal-num-circle { background: var(--coral); }
+  #goal-2 .goal-num-circle { background: var(--mint); }
+  #goal-3 .goal-num-circle { background: var(--lilac); }
   .goal-head h3 { margin-bottom: 8px; }
   .goal-measure {
     display: inline-flex;
@@ -789,7 +793,7 @@
   .rhythm {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 16px;
+    gap: 20px;
   }
   @media (max-width: 900px) { .rhythm { grid-template-columns: 1fr; } }
   .rhythm-card {
