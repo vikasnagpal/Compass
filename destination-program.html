@@ -1,0 +1,1751 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>The Destination Program — Zostel</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    /* Surfaces */
+    --bg: #E8EDE6;
+    --card: #FFFFFF;
+    --card-2: #F5F7F4;
+
+    /* Ink */
+    --ink: #0F1B2D;
+    --ink-soft: #475467;
+    --ink-mute: #8A95A4;
+    --ink-faint: #B5BCC6;
+
+    /* Brand & accents (soft pastels) */
+    --primary: #0F1B2D;
+    --primary-hover: #1E2B43;
+    --sky: #C9DEF1;
+    --sky-deep: #6F9DC4;
+    --coral: #F5CFC2;
+    --coral-deep: #D88871;
+    --mint: #CCDEC9;
+    --mint-deep: #6E9268;
+    --butter: #F4E4B0;
+    --butter-deep: #B69845;
+    --lilac: #DACFEA;
+    --lilac-deep: #8E7AB5;
+    --sun: #FFD66B;
+
+    /* Layout */
+    --radius-xs: 10px;
+    --radius-sm: 14px;
+    --radius: 20px;
+    --radius-lg: 28px;
+    --radius-xl: 40px;
+    --radius-pill: 999px;
+
+    --shadow-sm: 0 1px 2px rgba(15, 27, 45, 0.04), 0 2px 8px rgba(15, 27, 45, 0.04);
+    --shadow: 0 4px 16px rgba(15, 27, 45, 0.06), 0 16px 40px rgba(15, 27, 45, 0.04);
+    --shadow-lg: 0 8px 30px rgba(15, 27, 45, 0.08), 0 24px 60px rgba(15, 27, 45, 0.06);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+    font-weight: 400;
+    -webkit-font-smoothing: antialiased;
+    letter-spacing: -0.005em;
+  }
+
+  /* TYPOGRAPHY */
+  h1, h2, h3, h4 {
+    font-family: 'Bricolage Grotesque', 'Plus Jakarta Sans', sans-serif;
+    font-weight: 600;
+    color: var(--ink);
+    line-height: 1.1;
+    letter-spacing: -0.025em;
+  }
+  h1 { font-size: clamp(2.6rem, 6vw, 5rem); font-weight: 700; letter-spacing: -0.035em; }
+  h2 { font-size: clamp(1.8rem, 3.6vw, 2.8rem); letter-spacing: -0.03em; }
+  h3 { font-size: clamp(1.3rem, 2vw, 1.7rem); }
+  h4 { font-size: 1.1rem; font-weight: 600; }
+
+  p { color: var(--ink-soft); }
+
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    color: var(--ink-soft);
+    background: var(--card);
+    padding: 7px 14px 7px 12px;
+    border-radius: var(--radius-pill);
+    border: 1px solid rgba(15, 27, 45, 0.06);
+  }
+  .eyebrow::before {
+    content: '';
+    width: 6px; height: 6px;
+    background: var(--mint-deep);
+    border-radius: 50%;
+  }
+  .eyebrow.coral::before { background: var(--coral-deep); }
+  .eyebrow.sky::before { background: var(--sky-deep); }
+  .eyebrow.lilac::before { background: var(--lilac-deep); }
+  .eyebrow.butter::before { background: var(--butter-deep); }
+
+  /* NAV */
+  nav.topbar {
+    position: sticky; top: 16px; z-index: 50;
+    margin: 16px 24px 0;
+  }
+  .nav-inner {
+    max-width: 1280px; margin: 0 auto;
+    padding: 12px 14px 12px 24px;
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(15, 27, 45, 0.05);
+    border-radius: var(--radius-pill);
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 24px;
+    box-shadow: var(--shadow-sm);
+  }
+  .brand {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-weight: 700;
+    font-size: 1.02rem;
+    letter-spacing: -0.02em;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .brand-mark {
+    width: 28px; height: 28px;
+    background: var(--primary);
+    border-radius: 8px;
+    display: inline-flex; align-items: center; justify-content: center;
+    color: var(--sun);
+    font-size: 0.95rem;
+  }
+  .nav-links { display: flex; gap: 4px; align-items: center; }
+  .nav-links a {
+    font-size: 0.88rem;
+    font-weight: 500;
+    text-decoration: none;
+    color: var(--ink-soft);
+    padding: 8px 14px;
+    border-radius: var(--radius-pill);
+    transition: all .2s ease;
+  }
+  .nav-links a:hover { background: var(--bg); color: var(--ink); }
+  .nav-cta {
+    background: var(--primary);
+    color: white !important;
+    padding: 10px 20px !important;
+    margin-left: 8px;
+  }
+  .nav-cta:hover { background: var(--primary-hover) !important; }
+  @media (max-width: 720px) {
+    .nav-links a:not(.nav-cta) { display: none; }
+  }
+
+  /* CONTAINER */
+  .container { max-width: 1280px; margin: 0 auto; padding: 0 24px; }
+  .narrow { max-width: 880px; }
+  section { padding: 56px 0; }
+
+  /* HERO */
+  .hero { padding: 56px 24px 24px; }
+  .hero-card {
+    max-width: 1280px;
+    margin: 0 auto;
+    background: linear-gradient(135deg, #BFD6EA 0%, #D9C7E5 50%, #F5CFC2 100%);
+    border-radius: var(--radius-xl);
+    padding: 80px 64px 88px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+  }
+  .hero-card::before {
+    content: '';
+    position: absolute;
+    top: -100px; right: -100px;
+    width: 360px; height: 360px;
+    background: radial-gradient(circle, rgba(255,255,255,0.5) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+  .hero-card::after {
+    content: '';
+    position: absolute;
+    bottom: -120px; left: -80px;
+    width: 320px; height: 320px;
+    background: radial-gradient(circle, rgba(255, 214, 107, 0.35) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+  .hero-content { position: relative; z-index: 1; }
+  .hero-eyebrow {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(8px);
+    padding: 8px 16px 8px 14px;
+    border-radius: var(--radius-pill);
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--ink);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+  }
+  .hero-eyebrow::before {
+    content: '';
+    width: 6px; height: 6px;
+    background: var(--coral-deep);
+    border-radius: 50%;
+  }
+  .hero h1 {
+    margin: 24px 0 24px;
+    max-width: 900px;
+  }
+  .hero-lede {
+    font-size: clamp(1.05rem, 1.4vw, 1.25rem);
+    color: var(--ink);
+    max-width: 620px;
+    font-weight: 400;
+    line-height: 1.5;
+  }
+  .hero-ctas {
+    display: flex; gap: 12px; margin-top: 36px;
+    flex-wrap: wrap;
+  }
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 14px 24px;
+    border-radius: var(--radius-pill);
+    font-weight: 600;
+    font-size: 0.92rem;
+    text-decoration: none;
+    border: 1px solid transparent;
+    transition: all .2s ease;
+    cursor: pointer;
+  }
+  .btn-primary {
+    background: var(--primary);
+    color: white;
+  }
+  .btn-primary:hover { background: var(--primary-hover); transform: translateY(-1px); }
+  .btn-secondary {
+    background: rgba(255, 255, 255, 0.9);
+    color: var(--ink);
+    border-color: rgba(15, 27, 45, 0.08);
+  }
+  .btn-secondary:hover { background: white; transform: translateY(-1px); }
+  .btn .arrow {
+    transition: transform .2s ease;
+  }
+  .btn:hover .arrow { transform: translateX(3px); }
+
+  /* HERO STATS STRIP */
+  .stats-strip {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-top: 56px;
+    position: relative;
+    z-index: 1;
+  }
+  @media (max-width: 800px) { .stats-strip { grid-template-columns: repeat(2, 1fr); } }
+  .stat-pill {
+    background: rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(10px);
+    border-radius: var(--radius);
+    padding: 18px 20px;
+    border: 1px solid rgba(255, 255, 255, 0.7);
+  }
+  .stat-pill .label {
+    font-size: 0.75rem;
+    color: var(--ink-soft);
+    font-weight: 500;
+    margin-bottom: 4px;
+  }
+  .stat-pill .value {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--ink);
+    letter-spacing: -0.02em;
+  }
+
+  @media (max-width: 720px) {
+    .hero-card { padding: 56px 28px 64px; border-radius: var(--radius-lg); }
+  }
+
+  /* SECTION HEADER */
+  .section-head {
+    margin-bottom: 40px;
+    max-width: 720px;
+  }
+  .section-head .eyebrow { margin-bottom: 16px; }
+  .section-head h2 { margin-bottom: 12px; }
+  .section-head p {
+    font-size: 1.05rem;
+    color: var(--ink-soft);
+  }
+
+  /* PART DIVIDER */
+  .part-divider {
+    text-align: center;
+    padding: 80px 24px 24px;
+  }
+  .part-tag {
+    display: inline-flex; align-items: center; gap: 10px;
+    background: var(--primary);
+    color: white;
+    padding: 10px 20px 10px 16px;
+    border-radius: var(--radius-pill);
+    font-size: 0.82rem;
+    font-weight: 600;
+    margin-bottom: 20px;
+  }
+  .part-tag .num {
+    background: var(--sun);
+    color: var(--primary);
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 0.75rem;
+    font-weight: 700;
+  }
+  .part-divider h2 {
+    font-size: clamp(2rem, 4vw, 3.2rem);
+    max-width: 760px;
+    margin: 0 auto 12px;
+  }
+  .part-divider p {
+    max-width: 580px;
+    margin: 0 auto;
+    color: var(--ink-soft);
+  }
+
+  /* CARDS */
+  .card {
+    background: var(--card);
+    border-radius: var(--radius-lg);
+    padding: 32px;
+    border: 1px solid rgba(15, 27, 45, 0.04);
+    box-shadow: var(--shadow-sm);
+    transition: all .25s ease;
+  }
+  .card:hover { box-shadow: var(--shadow); transform: translateY(-2px); }
+
+  .card-flat {
+    background: var(--card);
+    border-radius: var(--radius-lg);
+    padding: 32px;
+  }
+
+  /* PROSE */
+  .prose-card {
+    background: var(--card);
+    border-radius: var(--radius-lg);
+    padding: 48px;
+    max-width: 880px;
+    margin: 0 auto;
+    box-shadow: var(--shadow-sm);
+  }
+  .prose-card p {
+    font-size: 1.05rem;
+    color: var(--ink-soft);
+    margin-bottom: 1.2em;
+    line-height: 1.65;
+  }
+  .prose-card p:last-child { margin-bottom: 0; }
+  .prose-card p.large {
+    font-size: 1.3rem;
+    color: var(--ink);
+    font-weight: 500;
+    line-height: 1.45;
+    letter-spacing: -0.015em;
+  }
+  .prose-card .highlight {
+    background: linear-gradient(120deg, transparent 0%, transparent 8%, var(--butter) 8%, var(--butter) 92%, transparent 92%, transparent 100%);
+    padding: 0 2px;
+  }
+
+  /* SPLIT QUOTE */
+  .split-quote {
+    background: linear-gradient(135deg, var(--sky) 0%, var(--lilac) 100%);
+    border-radius: var(--radius-lg);
+    padding: 48px;
+    margin: 32px 0;
+    position: relative;
+    overflow: hidden;
+  }
+  .split-quote::before {
+    content: '"';
+    position: absolute;
+    top: -20px; left: 28px;
+    font-family: 'Bricolage Grotesque', serif;
+    font-size: 9rem;
+    color: rgba(255, 255, 255, 0.5);
+    line-height: 1;
+    font-weight: 700;
+  }
+  .split-quote .q-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+    position: relative;
+    z-index: 1;
+  }
+  @media (max-width: 720px) { .split-quote .q-grid { grid-template-columns: 1fr; } }
+  .split-quote .q-label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--ink);
+    opacity: 0.65;
+    margin-bottom: 8px;
+  }
+  .split-quote .q-text {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: var(--ink);
+    line-height: 1.25;
+    letter-spacing: -0.02em;
+  }
+
+  /* WORK STREAMS / GRID */
+  .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
+  .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+  .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+  @media (max-width: 900px) { .grid-3, .grid-4 { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 600px) { .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; } }
+
+  /* HOST BENEFITS */
+  .host-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-top: 32px;
+  }
+  @media (max-width: 800px) { .host-grid { grid-template-columns: 1fr; } }
+  .host-card {
+    border-radius: var(--radius-lg);
+    padding: 36px;
+    position: relative;
+    overflow: hidden;
+  }
+  .host-card.light {
+    background: var(--card);
+    box-shadow: var(--shadow-sm);
+  }
+  .host-card.dark {
+    background: var(--primary);
+    color: white;
+  }
+  .host-card h4 { margin: 16px 0 20px; font-size: 1.4rem; }
+  .host-card.dark h4 { color: white; }
+  .host-card.dark p, .host-card.dark li { color: rgba(255, 255, 255, 0.78); }
+  .host-card ul { list-style: none; }
+  .host-card li {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 12px 0;
+    border-top: 1px solid rgba(15, 27, 45, 0.06);
+    font-size: 0.98rem;
+    color: var(--ink-soft);
+  }
+  .host-card li:first-of-type { border-top: 0; padding-top: 0; }
+  .host-card.dark li { border-color: rgba(255, 255, 255, 0.12); }
+  .host-card li::before {
+    content: '';
+    flex-shrink: 0;
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    background: var(--mint);
+    margin-top: 2px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%230F1B2D' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: center;
+  }
+  .host-card.dark li::before {
+    background-color: var(--sun);
+  }
+
+  /* FLYWHEEL */
+  .flywheel-card {
+    background: var(--card);
+    border-radius: var(--radius-lg);
+    padding: 40px;
+    margin-top: 24px;
+    box-shadow: var(--shadow-sm);
+  }
+  .flywheel-steps {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+    margin-top: 8px;
+  }
+  .flywheel-step {
+    background: var(--bg);
+    color: var(--ink);
+    padding: 12px 18px;
+    border-radius: var(--radius-pill);
+    font-size: 0.92rem;
+    font-weight: 500;
+    border: 1px solid rgba(15, 27, 45, 0.05);
+  }
+  .flywheel-step.accent {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+  }
+  .flywheel-arrow {
+    color: var(--ink-mute);
+    font-size: 1rem;
+    display: inline-flex; align-items: center;
+  }
+  .flywheel-loop {
+    background: var(--sun);
+    color: var(--primary);
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 1.1rem;
+    font-weight: 700;
+  }
+
+  /* PHASES */
+  .phases { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+  @media (max-width: 900px) { .phases { grid-template-columns: 1fr; } }
+  .phase-card {
+    background: var(--card);
+    border-radius: var(--radius-lg);
+    padding: 36px 32px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+  }
+  .phase-card .phase-bubble {
+    width: 64px; height: 64px;
+    border-radius: 50%;
+    background: var(--sky);
+    display: inline-flex; align-items: center; justify-content: center;
+    margin-bottom: 24px;
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--ink);
+    letter-spacing: -0.02em;
+  }
+  .phase-card:nth-child(2) .phase-bubble { background: var(--butter); }
+  .phase-card:nth-child(3) .phase-bubble { background: var(--mint); }
+
+  .phase-card .phase-label {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--ink-mute);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 6px;
+  }
+  .phase-card h3 { margin-bottom: 12px; }
+  .phase-card p { font-size: 0.96rem; line-height: 1.6; }
+
+  /* STREAMS */
+  .streams-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+  @media (max-width: 720px) { .streams-grid { grid-template-columns: 1fr; } }
+  .stream {
+    background: var(--card);
+    border-radius: var(--radius-lg);
+    padding: 32px;
+    box-shadow: var(--shadow-sm);
+    position: relative;
+  }
+  .stream-icon {
+    width: 48px; height: 48px;
+    border-radius: 14px;
+    background: var(--sky);
+    display: inline-flex; align-items: center; justify-content: center;
+    margin-bottom: 20px;
+    color: var(--ink);
+  }
+  .stream:nth-child(2) .stream-icon { background: var(--coral); }
+  .stream:nth-child(3) .stream-icon { background: var(--mint); }
+  .stream:nth-child(4) .stream-icon { background: var(--lilac); }
+  .stream h4 { margin-bottom: 8px; font-size: 1.25rem; }
+  .stream p { font-size: 0.95rem; line-height: 1.6; }
+  .stream-num {
+    position: absolute;
+    top: 28px; right: 28px;
+    font-size: 0.82rem;
+    color: var(--ink-mute);
+    font-weight: 600;
+  }
+
+  /* WINNING SECTION */
+  .winning {
+    background: var(--primary);
+    border-radius: var(--radius-xl);
+    padding: 72px 64px;
+    color: white;
+    position: relative;
+    overflow: hidden;
+    margin: 32px 0;
+  }
+  .winning::before {
+    content: '';
+    position: absolute;
+    top: -200px; right: -200px;
+    width: 500px; height: 500px;
+    background: radial-gradient(circle, rgba(255, 214, 107, 0.18) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+  .winning::after {
+    content: '✦';
+    position: absolute;
+    top: 64px; right: 64px;
+    color: var(--sun);
+    font-size: 2rem;
+    line-height: 1;
+  }
+  .winning-eyebrow {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 8px 16px 8px 14px;
+    border-radius: var(--radius-pill);
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--sun);
+    position: relative; z-index: 1;
+  }
+  .winning-eyebrow::before {
+    content: '';
+    width: 6px; height: 6px;
+    background: var(--sun);
+    border-radius: 50%;
+  }
+  .winning h2 {
+    color: white;
+    margin: 24px 0 24px;
+    max-width: 800px;
+    position: relative; z-index: 1;
+  }
+  .winning p {
+    color: rgba(255, 255, 255, 0.82);
+    font-size: 1.1rem;
+    max-width: 760px;
+    line-height: 1.55;
+    position: relative; z-index: 1;
+  }
+  .winning p + p { margin-top: 18px; }
+  .winning .closing {
+    color: var(--sun);
+    font-weight: 500;
+    font-style: italic;
+  }
+  @media (max-width: 720px) {
+    .winning { padding: 48px 32px; border-radius: var(--radius-lg); }
+    .winning::after { top: 36px; right: 36px; }
+  }
+
+  /* TABLES */
+  .table-card {
+    background: var(--card);
+    border-radius: var(--radius-lg);
+    padding: 8px;
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+  }
+  .table-wrap { overflow-x: auto; border-radius: calc(var(--radius-lg) - 8px); }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.94rem;
+    min-width: 640px;
+  }
+  thead { background: var(--card-2); }
+  th {
+    text-align: left;
+    padding: 16px 20px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--ink-soft);
+    letter-spacing: 0.02em;
+  }
+  td {
+    padding: 18px 20px;
+    border-top: 1px solid rgba(15, 27, 45, 0.05);
+    vertical-align: top;
+    color: var(--ink-soft);
+    line-height: 1.55;
+  }
+  tbody tr:first-child td { border-top: 1px solid rgba(15, 27, 45, 0.05); }
+  td:first-child {
+    color: var(--ink);
+    font-weight: 600;
+  }
+  td .pill {
+    display: inline-block;
+    padding: 5px 12px;
+    border-radius: var(--radius-pill);
+    font-size: 0.78rem;
+    font-weight: 600;
+    background: var(--card-2);
+    color: var(--ink-soft);
+    white-space: nowrap;
+  }
+  td .pill.sky { background: var(--sky); color: #2A547A; }
+  td .pill.coral { background: var(--coral); color: #8E3A24; }
+  td .pill.mint { background: var(--mint); color: #355031; }
+  td .pill.butter { background: var(--butter); color: #6D5915; }
+  td .pill.lilac { background: var(--lilac); color: #5B4884; }
+  td .pill.dark { background: var(--primary); color: white; }
+
+  td .id-chip {
+    display: inline-block;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-weight: 700;
+    font-size: 0.82rem;
+    color: var(--ink);
+    background: var(--bg);
+    padding: 4px 10px;
+    border-radius: 6px;
+    letter-spacing: 0.01em;
+  }
+
+  /* GOAL CARD */
+  .goal-card {
+    background: var(--card);
+    border-radius: var(--radius-lg);
+    padding: 40px;
+    margin: 24px 0;
+    box-shadow: var(--shadow-sm);
+  }
+  .goal-head {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+    padding-bottom: 28px;
+    margin-bottom: 28px;
+    border-bottom: 1px solid rgba(15, 27, 45, 0.06);
+  }
+  .goal-num-circle {
+    flex-shrink: 0;
+    width: 56px; height: 56px;
+    border-radius: 16px;
+    background: var(--sky);
+    display: inline-flex; align-items: center; justify-content: center;
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--ink);
+  }
+  .goal-card:nth-of-type(2) .goal-num-circle { background: var(--coral); }
+  .goal-card:nth-of-type(3) .goal-num-circle { background: var(--mint); }
+  .goal-head h3 { margin-bottom: 8px; }
+  .goal-measure {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--bg);
+    padding: 10px 16px;
+    border-radius: var(--radius-pill);
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+    margin-top: 14px;
+  }
+  .goal-measure strong {
+    color: var(--ink);
+    font-weight: 600;
+  }
+  .goal-measure::before {
+    content: '🎯';
+    font-size: 0.95rem;
+  }
+  .goal-section-title {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--ink);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin: 28px 0 14px;
+  }
+  .goal-section-title:first-of-type { margin-top: 0; }
+  @media (max-width: 600px) {
+    .goal-card { padding: 28px 20px; }
+    .goal-head { flex-direction: column; gap: 16px; }
+  }
+
+  /* RHYTHM */
+  .rhythm {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+  @media (max-width: 900px) { .rhythm { grid-template-columns: 1fr; } }
+  .rhythm-card {
+    background: var(--card);
+    border-radius: var(--radius-lg);
+    padding: 32px;
+    box-shadow: var(--shadow-sm);
+    position: relative;
+  }
+  .rhythm-card .day-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--sky);
+    color: var(--ink);
+    padding: 6px 14px;
+    border-radius: var(--radius-pill);
+    font-size: 0.82rem;
+    font-weight: 600;
+    margin-bottom: 16px;
+  }
+  .rhythm-card:nth-child(2) .day-badge { background: var(--butter); }
+  .rhythm-card:nth-child(3) .day-badge { background: var(--mint); }
+  .rhythm-card h4 { margin-bottom: 12px; }
+  .rhythm-card p { font-size: 0.95rem; line-height: 1.55; }
+
+  /* WEEK TIMELINE */
+  .week-card {
+    background: var(--card);
+    border-radius: var(--radius-lg);
+    padding: 40px;
+    box-shadow: var(--shadow-sm);
+  }
+  .week-row {
+    display: grid;
+    grid-template-columns: 120px 1fr;
+    gap: 28px;
+    padding: 18px 0;
+    border-top: 1px solid rgba(15, 27, 45, 0.06);
+    align-items: flex-start;
+  }
+  .week-row:first-child { border-top: 0; padding-top: 0; }
+  .week-row:last-child { padding-bottom: 0; }
+  .week-row .when {
+    display: inline-flex;
+    align-items: center;
+    background: var(--bg);
+    padding: 6px 14px;
+    border-radius: var(--radius-pill);
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--ink);
+  }
+  .week-row .what { color: var(--ink-soft); font-size: 0.98rem; line-height: 1.6; }
+  .week-row code {
+    display: inline-block;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-weight: 700;
+    font-size: 0.85rem;
+    background: var(--sky);
+    color: #2A547A;
+    padding: 2px 8px;
+    border-radius: 6px;
+  }
+  @media (max-width: 600px) {
+    .week-row { grid-template-columns: 1fr; gap: 8px; }
+    .week-row .when { justify-self: start; }
+  }
+
+  /* OWNERS */
+  .owners-card {
+    background: var(--card);
+    border-radius: var(--radius-lg);
+    padding: 12px;
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+  }
+  .owners-grid {
+    border-radius: calc(var(--radius-lg) - 12px);
+    overflow: hidden;
+  }
+  .owner-row {
+    display: grid;
+    grid-template-columns: 140px 1fr;
+    padding: 18px 24px;
+    border-top: 1px solid rgba(15, 27, 45, 0.05);
+    align-items: center;
+    gap: 16px;
+  }
+  .owner-row:first-child { border-top: 0; }
+  .owner-row .who {
+    font-weight: 700;
+    color: var(--ink);
+    font-size: 0.98rem;
+  }
+  .owner-row .what {
+    display: flex; flex-wrap: wrap; gap: 6px;
+  }
+  .owner-row .what .id-chip {
+    display: inline-block;
+    font-weight: 600;
+    font-size: 0.8rem;
+    background: var(--bg);
+    color: var(--ink);
+    padding: 4px 10px;
+    border-radius: 6px;
+  }
+  @media (max-width: 600px) {
+    .owner-row { grid-template-columns: 100px 1fr; }
+  }
+
+  /* CHECKLIST */
+  .checklist-card {
+    background: var(--card);
+    border-radius: var(--radius-lg);
+    padding: 40px;
+    box-shadow: var(--shadow-sm);
+    border: 2px solid var(--butter);
+  }
+  .checklist-card .check-eyebrow {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--butter);
+    color: #6D5915;
+    padding: 8px 16px 8px 14px;
+    border-radius: var(--radius-pill);
+    font-size: 0.82rem;
+    font-weight: 600;
+    margin-bottom: 16px;
+  }
+  .checklist-card .check-eyebrow::before {
+    content: '⚠';
+    font-size: 0.9rem;
+  }
+  .checklist-card h3 { margin-bottom: 12px; }
+  .checklist-card .warn-text {
+    color: var(--ink-soft);
+    margin-bottom: 28px;
+    font-size: 1rem;
+  }
+  .checklist-card ul { list-style: none; }
+  .checklist-card li {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 14px 0;
+    border-top: 1px dashed rgba(15, 27, 45, 0.1);
+    font-size: 0.98rem;
+    color: var(--ink);
+    line-height: 1.5;
+  }
+  .checklist-card li:first-of-type { border-top: 0; }
+  .checklist-card li::before {
+    content: '';
+    flex-shrink: 0;
+    width: 22px; height: 22px;
+    border-radius: 7px;
+    border: 1.5px solid var(--ink-faint);
+    margin-top: 1px;
+  }
+
+  /* PHASE NOTES */
+  .phase-note {
+    border-radius: var(--radius-lg);
+    padding: 36px;
+    margin: 20px 0;
+    position: relative;
+    overflow: hidden;
+  }
+  .phase-note.walk {
+    background: linear-gradient(135deg, #F4E4B0 0%, #F5CFC2 100%);
+  }
+  .phase-note.run {
+    background: linear-gradient(135deg, #CCDEC9 0%, #C9DEF1 100%);
+  }
+  .phase-note .phase-note-eyebrow {
+    display: inline-flex;
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(8px);
+    padding: 8px 16px;
+    border-radius: var(--radius-pill);
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--ink);
+    margin-bottom: 14px;
+  }
+  .phase-note h4 {
+    font-size: 1.4rem;
+    margin-bottom: 14px;
+  }
+  .phase-note p {
+    color: var(--ink);
+    font-size: 1rem;
+    line-height: 1.6;
+    max-width: 760px;
+  }
+  .phase-note strong {
+    background: rgba(255, 255, 255, 0.6);
+    padding: 1px 8px;
+    border-radius: 6px;
+    font-weight: 600;
+  }
+
+  /* DECORATIVE STARS */
+  .star {
+    display: inline-block;
+    color: var(--coral-deep);
+    font-size: 1.1rem;
+    margin: 0 4px;
+  }
+
+  /* FOOTER */
+  footer {
+    margin-top: 80px;
+    padding: 64px 24px;
+    text-align: center;
+  }
+  .footer-card {
+    max-width: 800px;
+    margin: 0 auto;
+    background: var(--card);
+    border-radius: var(--radius-xl);
+    padding: 64px 48px;
+    box-shadow: var(--shadow-sm);
+  }
+  .footer-card .smiley {
+    width: 64px; height: 64px;
+    background: var(--sun);
+    border-radius: 50%;
+    margin: 0 auto 24px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.8rem;
+  }
+  .footer-card h3 {
+    font-size: 1.6rem;
+    margin-bottom: 12px;
+  }
+  .footer-card p {
+    color: var(--ink-soft);
+    max-width: 540px;
+    margin: 0 auto;
+    font-size: 1rem;
+  }
+
+  /* ICON SVG */
+  .icon {
+    width: 22px; height: 22px;
+    stroke: var(--ink);
+    stroke-width: 1.6;
+    fill: none;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+</style>
+</head>
+<body>
+
+<nav class="topbar">
+  <div class="nav-inner">
+    <a href="#top" style="text-decoration:none; color:inherit;" class="brand">
+      <span class="brand-mark">★</span>
+      <span>Zostel · Destinations</span>
+    </a>
+    <div class="nav-links">
+      <a href="#overview">Overview</a>
+      <a href="#plan">Plan of Actions</a>
+      <a href="#plan" class="nav-cta">Get the playbook →</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ============== HERO ============== -->
+<header class="hero" id="top">
+  <div class="hero-card">
+    <div class="hero-content">
+      <span class="hero-eyebrow">A program brief · Internal</span>
+      <h1>The Destination<br>Program.</h1>
+      <p class="hero-lede">
+        Every destination has a story. We're going to tell it — and let the
+        destination, its people, and Zostel rise together.
+      </p>
+      <div class="hero-ctas">
+        <a href="#overview" class="btn btn-primary">
+          Read the overview <span class="arrow">→</span>
+        </a>
+        <a href="#plan" class="btn btn-secondary">
+          Jump to plan of actions
+        </a>
+      </div>
+
+      <div class="stats-strip">
+        <div class="stat-pill">
+          <div class="label">Scope</div>
+          <div class="value">100 destinations</div>
+        </div>
+        <div class="stat-pill">
+          <div class="label">Hero of the program</div>
+          <div class="value">Destination Hosts</div>
+        </div>
+        <div class="stat-pill">
+          <div class="label">Cadence</div>
+          <div class="value">Crawl · Walk · Run</div>
+        </div>
+        <div class="stat-pill">
+          <div class="label">Horizon</div>
+          <div class="value">12 months</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ============== PART I — OVERVIEW ============== -->
+<div id="overview" class="part-divider">
+  <div class="part-tag"><span class="num">1</span> Program Overview</div>
+  <h2>What we're building, and why it matters.</h2>
+  <p>The story of every place, told by someone who actually lives there.</p>
+</div>
+
+<!-- PREMISE -->
+<section class="container">
+  <div class="prose-card">
+    <p class="large">
+      Zostel is about to reach <span class="highlight">100 destinations</span> across
+      the map. But travellers don't fall in love with a hostel first — they fall in
+      love with a place. And right now, nobody is telling the story of those places
+      the way a local would.
+    </p>
+    <p>
+      The Destination Program fixes that. Every destination gets its own social
+      handle, brought to you by a local storyteller, surfacing the hidden gems,
+      the food, the heritage, the art, and the people that make a place worth the
+      trip — the biryani trail of Lucknow, the secret waterfall of Kempty, the
+      spots and legends only locals know.
+    </p>
+    <p>
+      This is not property marketing. Instead of selling beds, the Destination
+      Program surfaces the story of the places those beds are in.
+    </p>
+  </div>
+
+  <div class="split-quote">
+    <div class="q-grid">
+      <div>
+        <div class="q-label">A property handle says</div>
+        <div class="q-text">"Stay with us."</div>
+      </div>
+      <div>
+        <div class="q-label">A destination handle says</div>
+        <div class="q-text">"Come here, and here's why."</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- WHY IT MATTERS -->
+<section class="container">
+  <div class="section-head">
+    <span class="eyebrow coral">Why it matters</span>
+    <h2>We're not building handles. We're building a micro-ecosystem in every destination.</h2>
+    <p>
+      A living network where local artists, creators, and community collaborate
+      around the handles — with the handles as the anchor that brings them together.
+      We've already seen the shape of this at <strong style="color:var(--ink); font-weight:600;">Pokhara</strong>,
+      where travellers arrived and walked out as creators, and a collaboration
+      culture took place on its own.
+    </p>
+  </div>
+</section>
+
+<!-- HOST -->
+<section class="container">
+  <div class="section-head">
+    <span class="eyebrow sky">The hero of this program</span>
+    <h2>Meet the Destination Host.</h2>
+    <p>
+      A local storyteller and content creator who becomes the authentic voice of
+      their region. This is deliberately <em>not</em> the Vibe Curator model —
+      VCs are short-term volunteers tied to a single property; they churn, and
+      chasing them to post is a full-time job. A Destination Host is a local
+      creator with a real stake in their city and their own growth.
+    </p>
+  </div>
+
+  <div class="host-grid">
+    <div class="host-card light">
+      <span class="eyebrow">For the host</span>
+      <h4>What they get from us</h4>
+      <ul>
+        <li>A platform and an audience we actively help them build</li>
+        <li>Free stays, Zo Credit, real exposure, access to the Zostel network</li>
+        <li>Milestone rewards as content lands — view targets, follower milestones, streaks</li>
+      </ul>
+    </div>
+    <div class="host-card dark">
+      <span class="eyebrow" style="background: rgba(255,255,255,0.1); color:var(--sun); border-color: transparent;">For Zostel</span>
+      <h4>What we get</h4>
+      <ul>
+        <li>A voice that's genuinely local — and sustainable</li>
+        <li>Not a head-office feed pretending to be from the ground</li>
+        <li>Stories that compound as the host grows</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- FLYWHEEL -->
+<section class="container">
+  <div class="section-head">
+    <span class="eyebrow mint">The flywheel</span>
+    <h2>Built to spin on its own.</h2>
+    <p>
+      Each loop makes the next one easier. Our job early on is to push one stage —
+      the host, and a system that enables them. Once that's solid, the rest compounds.
+    </p>
+  </div>
+
+  <div class="flywheel-card">
+    <div class="flywheel-steps">
+      <span class="flywheel-step accent">Local host + system</span>
+      <span class="flywheel-arrow">→</span>
+      <span class="flywheel-step">Content gets out</span>
+      <span class="flywheel-arrow">→</span>
+      <span class="flywheel-step">Place gets discovered</span>
+      <span class="flywheel-arrow">→</span>
+      <span class="flywheel-step">Artists &amp; community join</span>
+      <span class="flywheel-arrow">→</span>
+      <span class="flywheel-step">Richer stories</span>
+      <span class="flywheel-arrow">→</span>
+      <span class="flywheel-step">Brand &amp; bookings rise</span>
+      <span class="flywheel-arrow"><span class="flywheel-loop">↺</span></span>
+      <span class="flywheel-step">More &amp; better hosts join</span>
+    </div>
+  </div>
+</section>
+
+<!-- CRAWL WALK RUN -->
+<section class="container">
+  <div class="section-head">
+    <span class="eyebrow lilac">How we'll build it</span>
+    <h2>Crawl. Walk. Run.</h2>
+  </div>
+
+  <div class="phases">
+    <div class="phase-card">
+      <div class="phase-bubble">10</div>
+      <div class="phase-label">Phase 01</div>
+      <h3>Crawl</h3>
+      <p>Get the foundation right: system, formats, and the playbook. HQ produces while the hosts learn.</p>
+    </div>
+    <div class="phase-card">
+      <div class="phase-bubble">30-35</div>
+      <div class="phase-label">Phase 02</div>
+      <h3>Walk</h3>
+      <p>Hand the wheel to the hosts, prove they can own it, refine the engine.</p>
+    </div>
+    <div class="phase-card">
+      <div class="phase-bubble">100%</div>
+      <div class="phase-label">Phase 03</div>
+      <h3>Run</h3>
+      <p>Every destination live, host-led. The ecosystem is running on its own with minimal intervention.</p>
+    </div>
+  </div>
+</section>
+
+<!-- WORK STREAMS -->
+<section class="container">
+  <div class="section-head">
+    <span class="eyebrow butter">Four work streams</span>
+    <h2>Because we're building from zero, there's room to shape each one.</h2>
+  </div>
+
+  <div class="streams-grid">
+    <div class="stream">
+      <span class="stream-num">01</span>
+      <div class="stream-icon">
+        <svg class="icon" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      </div>
+      <h4>Host &amp; Community</h4>
+      <p>Finding, growing, and keeping local creators and the artist / community network.</p>
+    </div>
+    <div class="stream">
+      <span class="stream-num">02</span>
+      <div class="stream-icon">
+        <svg class="icon" viewBox="0 0 24 24"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
+      </div>
+      <h4>Content Engine</h4>
+      <p>Formats, the pipeline, and the production that turns raw moments into stories.</p>
+    </div>
+    <div class="stream">
+      <span class="stream-num">03</span>
+      <div class="stream-icon">
+        <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      </div>
+      <h4>Platform &amp; Operations</h4>
+      <p>The handles, the tools, the source of truth, and the rhythm that keeps it all running.</p>
+    </div>
+    <div class="stream">
+      <span class="stream-num">04</span>
+      <div class="stream-icon">
+        <svg class="icon" viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+      </div>
+      <h4>Growth &amp; Ecosystem</h4>
+      <p>Audience, brand, and collaborations that make a destination come alive.</p>
+    </div>
+  </div>
+</section>
+
+<!-- WINNING -->
+<section class="container">
+  <div class="winning">
+    <span class="winning-eyebrow">What winning looks like</span>
+    <h2>A year from now —</h2>
+    <p>
+      100% of destinations with living, local-voiced handles. A network of creators
+      across India who grew their craft and audience with Zostel. Artists and
+      communities collaborating around the stories of their place. And Zostel
+      known as the brand that tells India's destination stories better than anyone.
+    </p>
+    <p class="closing">
+      We're not building a content calendar. We're building the connective tissue
+      between Zostel, a hundred places, and the people who make them worth visiting.
+    </p>
+  </div>
+</section>
+
+<!-- ============== PART II — PLAN OF ACTIONS ============== -->
+<div id="plan" class="part-divider">
+  <div class="part-tag"><span class="num">2</span> Plan of Actions</div>
+  <h2>The operational playbook.</h2>
+  <p>The operating model, the phased roadmap, and exactly who owns what.</p>
+</div>
+
+<!-- OPERATING MODEL -->
+<section class="container">
+  <div class="section-head">
+    <span class="eyebrow">The operating model</span>
+    <h2>Who owns what — and how it shifts.</h2>
+    <p>
+      The content owner isn't fixed; it shifts as the program matures. This is what
+      lets us be <em>authentic</em> (local hosts own the voice) without being
+      <em>fragile</em> (no handle depends on unproven volunteers).
+    </p>
+  </div>
+
+  <div class="table-card">
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th></th>
+            <th>Capture</th>
+            <th>Create &amp; Edit</th>
+            <th>Publish</th>
+            <th>HQ's role</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Phase 1 · Crawl</td>
+            <td><span class="pill">Host + VC</span></td>
+            <td><span class="pill dark">HQ</span></td>
+            <td><span class="pill dark">HQ</span></td>
+            <td>Operate the handles</td>
+          </tr>
+          <tr>
+            <td>Phase 2 · Walk</td>
+            <td><span class="pill">Host + VC</span></td>
+            <td><span class="pill butter">Host (HQ supports)</span></td>
+            <td><span class="pill butter">Host or HQ</span></td>
+            <td>Coach + backstop</td>
+          </tr>
+          <tr>
+            <td>Phase 3 · Run</td>
+            <td><span class="pill">Host + Collaborators + VC</span></td>
+            <td><span class="pill mint">Host</span></td>
+            <td><span class="pill mint">Hosts</span></td>
+            <td>Ideas, VC content feed, tools, backstop</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="split-quote" style="background: linear-gradient(135deg, var(--mint) 0%, var(--butter) 100%);">
+    <div style="position:relative; z-index:1; max-width: 800px;">
+      <div class="q-label" style="margin-bottom:12px;">Host Graduation Criteria</div>
+      <div class="q-text" style="font-size: 1.2rem; line-height: 1.4;">
+        A host moves from HQ-produced to host-led once they sustain ~4–5 weeks of
+        cadence without chasing, content clears the quality bar, and early audience
+        traction shows. Until they graduate, HQ produces — so a flaky host never
+        takes a handle dark.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ROADMAP -->
+<section class="container">
+  <div class="section-head">
+    <span class="eyebrow sky">Roadmap</span>
+    <h2>Three phases, one engine.</h2>
+  </div>
+
+  <div class="table-card">
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Phase</th>
+            <th>Handles</th>
+            <th>Timeframe</th>
+            <th>Goal</th>
+            <th>Run by</th>
+            <th>Exit gate</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Foundation</td>
+            <td><span class="pill sky">10</span></td>
+            <td>Days 1–60</td>
+            <td>Build the engine; prove it on 10 handles</td>
+            <td>HQ + interns</td>
+            <td>Checklist at end</td>
+          </tr>
+          <tr>
+            <td>Validate</td>
+            <td><span class="pill butter">25–30</span></td>
+            <td>Days 61–150</td>
+            <td>Hand off to hosts; prove retention</td>
+            <td>Mixed → host-led</td>
+            <td>&gt;70% hosts graduated, cadence holding</td>
+          </tr>
+          <tr>
+            <td>Scale</td>
+            <td><span class="pill mint">100%</span></td>
+            <td>Days 150+</td>
+            <td>Full coverage, host-led, ecosystem live</td>
+            <td>Host-led</td>
+            <td>Self-sustaining flywheel</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- GOAL 1 -->
+<section class="container">
+  <div class="section-head">
+    <span class="eyebrow coral">Goal 01</span>
+    <h2>Stand up the operating spine.</h2>
+  </div>
+
+  <div class="goal-card">
+    <div class="goal-head">
+      <div class="goal-num-circle">01</div>
+      <div>
+        <h3>Stand up the operating spine</h3>
+        <div class="goal-measure">
+          <span><strong>Measure:</strong> Every system, framework and dashboard below is live and in use by Day 60.</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="goal-section-title">Systems</div>
+    <div class="table-wrap" style="margin: 0 -8px;">
+      <table>
+        <thead>
+          <tr><th>ID</th><th>Project</th><th>Deliverable</th><th>Sub-phase</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><span class="id-chip">Sys-1</span></td><td>Single source of truth</td><td>One tracker, one row per destination: handle, host, properties, dates, login, status, meta status, host graduation stage</td><td><span class="pill coral">1A</span></td></tr>
+          <tr><td><span class="id-chip">Sys-2</span></td><td>Content asset management</td><td>Tool selected, tagging schema defined, library populated with first raw batch</td><td><span class="pill coral">1A</span></td></tr>
+          <tr><td><span class="id-chip">Sys-3</span></td><td>Content calendar &amp; scheduler</td><td>Scheduling tool live, all 10 handles' weekly slots planned</td><td><span class="pill coral">1A</span></td></tr>
+          <tr><td><span class="id-chip">Sys-4</span></td><td>Content intake flow</td><td>Structured intake into the content management tool</td><td><span class="pill coral">1A</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="goal-section-title">Frameworks</div>
+    <div class="table-wrap" style="margin: 0 -8px;">
+      <table>
+        <thead>
+          <tr><th>ID</th><th>Project</th><th>Deliverable</th><th>Sub-phase</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><span class="id-chip">FW-1</span></td><td>Content category &amp; format library v1</td><td>3–4 formats (Destination Diaries, Hidden Gems, Local Legends, Collaborators) — each a template + example + cadence</td><td><span class="pill coral">1A</span></td></tr>
+          <tr><td><span class="id-chip">FW-2</span></td><td>Host onboarding framework</td><td>Onboarding kit that gets a host active in &lt;48h: brief, do's/don'ts, capture guide, tool access</td><td><span class="pill coral">1A</span></td></tr>
+          <tr><td><span class="id-chip">FW-3</span></td><td>Content pipeline SOP</td><td>Document Idea → Capture → Create → Review → Publish with handoffs and SLAs</td><td><span class="pill coral">1A</span></td></tr>
+          <tr><td><span class="id-chip">FW-4</span></td><td>Reward, recognition &amp; milestone framework</td><td>Perks (free nights, Zo credits, exposure, cash) + milestone triggers (views, followers, streaks) + verification &amp; payment</td><td><span class="pill coral">1A</span></td></tr>
+          <tr><td><span class="id-chip">FW-5</span></td><td>Creator development playbook</td><td>The "what's in it for the host" engine — how we help them grow their personal audience</td><td><span class="pill butter">1B</span></td></tr>
+          <tr><td><span class="id-chip">FW-6</span></td><td>Host offboarding &amp; handover SOP</td><td>Document handover so a handle survives a host leaving</td><td><span class="pill butter">1B</span></td></tr>
+          <tr><td><span class="id-chip">FW-7</span></td><td>Host sourcing framework</td><td>Intake channels, outreach cadence and templates, selection framework</td><td><span class="pill butter">1B</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="goal-section-title">Dashboards</div>
+    <div class="table-wrap" style="margin: 0 -8px;">
+      <table>
+        <thead>
+          <tr><th>ID</th><th>Project</th><th>Deliverable</th><th>Sub-phase</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><span class="id-chip">DB-1</span></td><td>Coverage</td><td>Live view: destinations live, active hosts, meta connected, host timeline</td><td><span class="pill coral">1A</span></td></tr>
+          <tr><td><span class="id-chip">DB-2</span></td><td>Content / publishing</td><td>Planned vs published vs missed, cadence hit rate per handle</td><td><span class="pill butter">1B</span></td></tr>
+          <tr><td><span class="id-chip">DB-3</span></td><td>Host health</td><td>Time-to-active, retention, graduation stage, who's at risk</td><td><span class="pill butter">1B</span></td></tr>
+          <tr><td><span class="id-chip">DB-4</span></td><td>Growth &amp; engagement</td><td>Followers, reach/post, engagement rate per handle (baseline at 2 weeks)</td><td><span class="pill butter">1B</span></td></tr>
+          <tr><td><span class="id-chip">DB-5</span></td><td>Rewards &amp; ecosystem</td><td>Milestones hit, rewards owed, collaboration initiatives per destination</td><td><span class="pill butter">1B</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- GOAL 2 -->
+<section class="container">
+  <div class="section-head">
+    <span class="eyebrow mint">Goal 02</span>
+    <h2>Recruit, onboard &amp; activate hosts.</h2>
+  </div>
+
+  <div class="goal-card">
+    <div class="goal-head">
+      <div class="goal-num-circle">02</div>
+      <div>
+        <h3>Recruit, onboard &amp; activate 10 destination hosts</h3>
+        <div class="goal-measure">
+          <span><strong>Measure:</strong> 10 hosts signed, onboarded in &lt;48h each, all actively capturing by Day 60.</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="table-wrap" style="margin: 0 -8px;">
+      <table>
+        <thead>
+          <tr><th>ID</th><th>Project</th><th>Deliverable</th><th>Sub-phase</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><span class="id-chip">HT-1</span></td><td>Define host profile &amp; selection framework</td><td>Written profile prioritising existing local creators with intrinsic audience-growth motivation; scorecard</td><td><span class="pill coral">1A</span></td></tr>
+          <tr><td><span class="id-chip">HT-2</span></td><td>Recruit 10 hosts</td><td>Sourcing channels mapped, 10 hosts signed across 10 pilot destinations</td><td><span class="pill butter">1A–1B</span></td></tr>
+          <tr><td><span class="id-chip">HT-3</span></td><td>Onboard &amp; activate</td><td>All 10 run through FW-2; each capturing and feeding the intake (Sys-4) by Day 60</td><td><span class="pill butter">1B</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- GOAL 3 -->
+<section class="container">
+  <div class="section-head">
+    <span class="eyebrow lilac">Goal 03</span>
+    <h2>Get 10 handles live &amp; posting.</h2>
+  </div>
+
+  <div class="goal-card">
+    <div class="goal-head">
+      <div class="goal-num-circle">03</div>
+      <div>
+        <h3>Get 10 handles live and posting consistently (HQ-produced)</h3>
+        <div class="goal-measure">
+          <span><strong>Measure:</strong> 10 handles live; &gt;80% cadence hit rate sustained without chasing by Day 60.</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="table-wrap" style="margin: 0 -8px;">
+      <table>
+        <thead>
+          <tr><th>ID</th><th>Project</th><th>Deliverable</th><th>Sub-phase</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><span class="id-chip">Run-1</span></td><td>Launch 10 handles</td><td>10 handles created, claimed, connected to Meta Business Suite</td><td><span class="pill coral">1A</span></td></tr>
+          <tr><td><span class="id-chip">Run-2</span></td><td>Produce &amp; publish</td><td>Content produced from raw + format templates and posted to all 10 on cadence</td><td><span class="pill butter">1B</span></td></tr>
+          <tr><td><span class="id-chip">Run-3</span></td><td>Seed first collaborations</td><td>≥1 local collaboration initiated per destination (artist, local legend, event)</td><td><span class="pill butter">1B</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- OPERATING RHYTHM -->
+<section class="container">
+  <div class="section-head">
+    <span class="eyebrow sky">Operating rhythm</span>
+    <h2>Three huddles a week.</h2>
+  </div>
+
+  <div class="rhythm">
+    <div class="rhythm-card">
+      <div class="day-badge">Monday</div>
+      <h4>Operations</h4>
+      <p>Missing content, onboarding pipeline, blocked handles, week's plan, project updates.</p>
+    </div>
+    <div class="rhythm-card">
+      <div class="day-badge">Wednesday</div>
+      <h4>Content</h4>
+      <p>Best &amp; weakest posts, trends, next week's targets.</p>
+    </div>
+    <div class="rhythm-card">
+      <div class="day-badge">Friday</div>
+      <h4>Operations</h4>
+      <p>Posting completion rate, host health, milestones hit, nudge the next captures, project updates.</p>
+    </div>
+  </div>
+</section>
+
+<!-- SAMPLE WEEK -->
+<section class="container">
+  <div class="section-head">
+    <span class="eyebrow butter">A sample week · Phase 1</span>
+    <h2>What an actual week looks like.</h2>
+  </div>
+
+  <div class="week-card">
+    <div class="week-row">
+      <div class="when">Mon</div>
+      <div class="what">Interns pull the week's raw content from intake <code>Sys-4</code> and tag it in asset management <code>Sys-2</code>.</div>
+    </div>
+    <div class="week-row">
+      <div class="when">Tue – Wed</div>
+      <div class="what">Interns produce posts from raw material + format templates <code>FW-1</code>. Lead reviews the batch; Wednesday content huddle reviews quality and sets next week's targets.</div>
+    </div>
+    <div class="week-row">
+      <div class="when">Thu</div>
+      <div class="what">Posts scheduled across 10 handles <code>Sys-3</code>. Hosts review and approve their own destination posts — this is where they start learning.</div>
+    </div>
+    <div class="week-row">
+      <div class="when">Fri</div>
+      <div class="what">Ops huddle. Check cadence completion <code>DB-2</code>, host health <code>DB-3</code>, milestones owed <code>DB-5</code>. Interns nudge hosts for next week's capture.</div>
+    </div>
+    <div class="week-row">
+      <div class="when">Ongoing</div>
+      <div class="what">Hosts capture and drop into intake. Lead/host runs collaborator outreach.</div>
+    </div>
+  </div>
+</section>
+
+<!-- OWNERS -->
+<section class="container">
+  <div class="section-head">
+    <span class="eyebrow mint">Owners</span>
+    <h2>Who's accountable for what.</h2>
+  </div>
+
+  <div class="owners-card">
+    <div class="owners-grid">
+      <div class="owner-row">
+        <div class="who">Lead A</div>
+        <div class="what">
+          <span class="id-chip">Sys-1</span> <span class="id-chip">FW-4</span> <span class="id-chip">DB-1</span>
+          <span class="id-chip">DB-3</span> <span class="id-chip">DB-5</span> <span class="id-chip">HT-1</span>
+          <span class="id-chip">Run-3</span>
+        </div>
+      </div>
+      <div class="owner-row">
+        <div class="who">Lead B</div>
+        <div class="what">
+          <span class="id-chip">Sys-2</span> <span class="id-chip">FW-1</span> <span class="id-chip">FW-3</span>
+          <span class="id-chip">FW-5</span> <span class="id-chip">FW-6</span> <span class="id-chip">Run-2</span>
+        </div>
+      </div>
+      <div class="owner-row">
+        <div class="who">Team</div>
+        <div class="what">
+          <span class="id-chip">Sys-4</span> <span class="id-chip">FW-2</span> <span class="id-chip">HT-2</span>
+          <span class="id-chip">HT-3</span> <span class="id-chip">Run-1</span>
+        </div>
+      </div>
+      <div class="owner-row">
+        <div class="who">Interns</div>
+        <div class="what">
+          <span class="id-chip">Sys-3</span> <span class="id-chip">DB-2</span> <span class="id-chip">DB-4</span>
+          <span class="id-chip">Run-2</span>
+        </div>
+      </div>
+      <div class="owner-row">
+        <div class="who">Host</div>
+        <div class="what">
+          <span class="id-chip">Run-3</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- EXIT CHECKLIST -->
+<section class="container">
+  <div class="section-head">
+    <span class="eyebrow coral">Phase 1 exit gate</span>
+    <h2>Don't start Phase 2 until all of this is true.</h2>
+  </div>
+
+  <div class="checklist-card">
+    <span class="check-eyebrow">Hard gate</span>
+    <h3>Phase 1 exit checklist</h3>
+    <p class="warn-text">Every item below must be green before we begin handoff to hosts.</p>
+    <ul>
+      <li>10 handles live, claimed, Meta-connected.</li>
+      <li>&gt;80% posting cadence hit rate sustained for 3+ weeks without chasing.</li>
+      <li>All four systems live and in daily use (Sys-1 → Sys-4).</li>
+      <li>All six frameworks documented and applied (FW-1 → FW-6).</li>
+      <li>All five dashboards live with real data (DB-1 → DB-5).</li>
+      <li>10 hosts retained through the phase (churn test).</li>
+      <li>2–3 hosts showing graduation readiness: consistent capture, quality, early traction.</li>
+      <li>≥1 local collaboration per destination initiated.</li>
+      <li>Reward / milestone framework has paid out at least once cleanly.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- PHASE 2 & 3 NOTES -->
+<section class="container">
+  <div class="section-head">
+    <span class="eyebrow lilac">Looking ahead</span>
+    <h2>Notes for Phase 2 &amp; Phase 3.</h2>
+  </div>
+
+  <div class="phase-note walk">
+    <span class="phase-note-eyebrow">Phase 2 · Validation</span>
+    <h4>30–35 handles · Days 61–150</h4>
+    <p>
+      The handoff begins. Graduated hosts take over creation and posting for their
+      destinations; HQ shifts from operator to coach + backstop. Milestone rewards
+      become the primary retention lever now that hosts own output. We scale the
+      systems and frameworks built in Phase 1 rather than building new ones.
+      Watch <strong>DB-3 (Host health)</strong> closely — this phase proves whether
+      the perks-only model retains.
+    </p>
+  </div>
+
+  <div class="phase-note run">
+    <span class="phase-note-eyebrow">Phase 3 · Scale</span>
+    <h4>100% coverage · Days 150+</h4>
+    <p>
+      Host-led by default. HQ's job narrows to feeding ideas and VC-captured content,
+      maintaining tools, paying milestones, and backstopping the occasional gap.
+      Cross-platform (LinkedIn / X) opens for standout hosts via the creator
+      playbook <strong>(FW-5)</strong>. The micro-ecosystem — artists, collaborators,
+      local legends — becomes the main content engine, and the flywheel spins with
+      minimal push.
+    </p>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-card">
+    <div class="smiley">✦</div>
+    <h3>The connective tissue.</h3>
+    <p>
+      Between Zostel, a hundred places, and the people who make them worth visiting.
+    </p>
+  </div>
+</footer>
+
+</body>
+</html>
