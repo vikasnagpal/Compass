@@ -1043,9 +1043,111 @@
     stroke-linejoin: round;
   }
 
+  /* READING PROGRESS BAR */
+  .progress-bar {
+    position: fixed;
+    top: 0; left: 0;
+    height: 3px;
+    width: 0%;
+    background: linear-gradient(90deg, var(--sky-deep), var(--lilac-deep), var(--coral-deep));
+    z-index: 100;
+    transition: width .1s linear;
+  }
+
+  /* ANCHOR OFFSET — keep targets clear of the sticky nav */
+  [id] { scroll-margin-top: 96px; }
+
+  /* ACTIVE NAV STATE */
+  .nav-links a.active:not(.nav-cta) {
+    background: var(--bg);
+    color: var(--ink);
+  }
+
+  /* ID-CHIP / PILL TOOLTIP AFFORDANCE */
+  .id-chip[title], .pill[title] { cursor: help; }
+
+  /* OWNERS — unassigned row */
+  .owner-row.unassigned .who { color: var(--coral-deep); }
+  .owner-row.unassigned .id-chip {
+    background: var(--coral);
+    color: #8E3A24;
+  }
+
+  /* PHASE COMPARISON TABLE */
+  .compare-card { margin-bottom: 24px; }
+
+  /* BACK TO TOP */
+  .to-top {
+    position: fixed;
+    bottom: 28px; right: 28px;
+    width: 48px; height: 48px;
+    border-radius: 50%;
+    background: var(--primary);
+    color: var(--sun);
+    border: none;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: var(--shadow);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(8px);
+    transition: all .25s ease;
+    z-index: 60;
+    font-size: 1.1rem;
+  }
+  .to-top.show { opacity: 1; visibility: visible; transform: translateY(0); }
+  .to-top:hover { background: var(--primary-hover); transform: translateY(-2px); }
+
+  /* INTERACTIVE CHECKLIST */
+  .checklist-card li { cursor: pointer; user-select: none; transition: color .15s ease; }
+  .checklist-card li::before {
+    transition: background-color .15s ease, border-color .15s ease;
+    background-repeat: no-repeat;
+    background-position: center;
+  }
+  .checklist-card li.checked { color: var(--ink-mute); }
+  .checklist-card li.checked::before {
+    background-color: var(--mint-deep);
+    border-color: var(--mint-deep);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'%3E%3C/polyline%3E%3C/svg%3E");
+  }
+  .checklist-progress {
+    display: inline-flex; align-items: center; gap: 8px;
+    margin-top: 24px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--ink-soft);
+  }
+
+  /* MOBILE FLYWHEEL — stack vertically so arrows never orphan */
+  @media (max-width: 720px) {
+    .flywheel-steps { flex-direction: column; align-items: stretch; }
+    .flywheel-step { text-align: center; }
+    .flywheel-arrow { justify-content: center; transform: rotate(90deg); }
+  }
+
+  /* PRINT */
+  @media print {
+    nav.topbar, .progress-bar, .to-top { display: none !important; }
+    body { background: #fff; }
+    .hero-card, .winning, .part-tag, .host-card.dark, .split-quote,
+    .phase-note.walk, .phase-note.run {
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    section, .part-divider { padding: 20px 0; break-inside: avoid; }
+    .goal-card, .table-card, .checklist-card, .week-card, .owners-card,
+    .phase-card, .rhythm-card, .card { break-inside: avoid; box-shadow: none; }
+    table { break-inside: auto; }
+    tr { break-inside: avoid; }
+    a { text-decoration: none; color: inherit; }
+  }
+
 </style>
 </head>
 <body>
+
+<div class="progress-bar" id="progressBar"></div>
 
 <nav class="topbar">
   <div class="nav-inner">
@@ -1055,7 +1157,10 @@
     </a>
     <div class="nav-links">
       <a href="#overview">Overview</a>
-      <a href="#plan">Plan of Actions</a>
+      <a href="#plan">Plan</a>
+      <a href="#roadmap">Roadmap</a>
+      <a href="#goals">Goals</a>
+      <a href="#checklist">Checklist</a>
       <a href="#plan" class="nav-cta">Get the playbook →</a>
     </div>
   </div>
@@ -1266,7 +1371,7 @@
     <div class="stream">
       <span class="stream-num">01</span>
       <div class="stream-icon">
-        <svg class="icon" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        <svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
       </div>
       <h4>Host &amp; Community</h4>
       <p>Finding, growing, and keeping local creators and the artist / community network.</p>
@@ -1274,7 +1379,7 @@
     <div class="stream">
       <span class="stream-num">02</span>
       <div class="stream-icon">
-        <svg class="icon" viewBox="0 0 24 24"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
+        <svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
       </div>
       <h4>Content Engine</h4>
       <p>Formats, the pipeline, and the production that turns raw moments into stories.</p>
@@ -1282,7 +1387,7 @@
     <div class="stream">
       <span class="stream-num">03</span>
       <div class="stream-icon">
-        <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        <svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
       </div>
       <h4>Platform &amp; Operations</h4>
       <p>The handles, the tools, the source of truth, and the rhythm that keeps it all running.</p>
@@ -1290,7 +1395,7 @@
     <div class="stream">
       <span class="stream-num">04</span>
       <div class="stream-icon">
-        <svg class="icon" viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+        <svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
       </div>
       <h4>Growth &amp; Ecosystem</h4>
       <p>Audience, brand, and collaborations that make a destination come alive.</p>
@@ -1388,7 +1493,7 @@
 </section>
 
 <!-- ROADMAP -->
-<section class="container">
+<section class="container" id="roadmap">
   <div class="section-head">
     <span class="eyebrow sky">Roadmap</span>
     <h2>Three phases, one engine.</h2>
@@ -1418,7 +1523,7 @@
           </tr>
           <tr>
             <td>Validate</td>
-            <td><span class="pill butter">25–30</span></td>
+            <td><span class="pill butter">30–35</span></td>
             <td>Days 61–150</td>
             <td>Hand off to hosts; prove retention</td>
             <td>Mixed → host-led</td>
@@ -1430,7 +1535,7 @@
             <td>Days 150+</td>
             <td>Full coverage, host-led, ecosystem live</td>
             <td>Host-led</td>
-            <td>Self-sustaining flywheel</td>
+            <td>Self-sustaining flywheel; HQ mostly maintenance &amp; admin</td>
           </tr>
         </tbody>
       </table>
@@ -1439,7 +1544,7 @@
 </section>
 
 <!-- GOAL 1 -->
-<section class="container">
+<section class="container" id="goals">
   <div class="section-head">
     <span class="eyebrow coral">Goal 01</span>
     <h2>Stand up the operating spine.</h2>
@@ -1508,7 +1613,7 @@
 </section>
 
 <!-- GOAL 2 -->
-<section class="container">
+<section class="container" id="goal-2">
   <div class="section-head">
     <span class="eyebrow mint">Goal 02</span>
     <h2>Recruit, onboard &amp; activate hosts.</h2>
@@ -1541,7 +1646,7 @@
 </section>
 
 <!-- GOAL 3 -->
-<section class="container">
+<section class="container" id="goal-3">
   <div class="section-head">
     <span class="eyebrow lilac">Goal 03</span>
     <h2>Get 10 handles live &amp; posting.</h2>
@@ -1674,12 +1779,18 @@
           <span class="id-chip">Run-3</span>
         </div>
       </div>
+      <div class="owner-row unassigned">
+        <div class="who">Unassigned</div>
+        <div class="what">
+          <span class="id-chip">FW-7</span>
+        </div>
+      </div>
     </div>
   </div>
 </section>
 
 <!-- EXIT CHECKLIST -->
-<section class="container">
+<section class="container" id="checklist">
   <div class="section-head">
     <span class="eyebrow coral">Phase 1 exit gate</span>
     <h2>Don't start Phase 2 until all of this is true.</h2>
@@ -1696,10 +1807,11 @@
       <li>All six frameworks documented and applied (FW-1 → FW-6).</li>
       <li>All five dashboards live with real data (DB-1 → DB-5).</li>
       <li>10 hosts retained through the phase (churn test).</li>
-      <li>2–3 hosts showing graduation readiness: consistent capture, quality, early traction.</li>
+      <li>At least 2–3 hosts showing graduation readiness: consistent capture, quality, early traction.</li>
       <li>≥1 local collaboration per destination initiated.</li>
       <li>Reward / milestone framework has paid out at least once cleanly.</li>
     </ul>
+    <div class="checklist-progress" id="checklistProgress">0 of 9 complete</div>
   </div>
 </section>
 
@@ -1708,6 +1820,59 @@
   <div class="section-head">
     <span class="eyebrow lilac">Looking ahead</span>
     <h2>Notes for Phase 2 &amp; Phase 3.</h2>
+  </div>
+
+  <div class="table-card compare-card">
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>What changes</th>
+            <th>Phase 1 · Foundation</th>
+            <th>Phase 2 · Validate</th>
+            <th>Phase 3 · Scale</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Who produces</td>
+            <td><span class="pill dark">HQ + interns</span></td>
+            <td><span class="pill butter">Graduated hosts</span></td>
+            <td><span class="pill mint">Host-led</span></td>
+          </tr>
+          <tr>
+            <td>HQ's role</td>
+            <td>Operator</td>
+            <td>Coach + backstop</td>
+            <td>Ideas, tools, milestones, gap-fill</td>
+          </tr>
+          <tr>
+            <td>Primary retention lever</td>
+            <td>HQ does the work</td>
+            <td>Milestone rewards</td>
+            <td>Ecosystem + creator growth</td>
+          </tr>
+          <tr>
+            <td>Build vs scale</td>
+            <td>Build the systems</td>
+            <td>Scale existing systems</td>
+            <td>Maintain &amp; admin</td>
+          </tr>
+          <tr>
+            <td>Watch closely</td>
+            <td>Cadence hit rate</td>
+            <td>DB-3 Host health (perks-only retention)</td>
+            <td>Flywheel self-sustaining</td>
+          </tr>
+          <tr>
+            <td>Platforms</td>
+            <td>Instagram handles</td>
+            <td>Instagram handles</td>
+            <td>+ LinkedIn / X for standout hosts</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 
   <div class="phase-note walk">
@@ -1746,6 +1911,133 @@
     </p>
   </div>
 </footer>
+
+<button class="to-top" id="toTop" aria-label="Back to top">↑</button>
+
+<script>
+(function () {
+  // ---- Reading progress bar ----
+  var bar = document.getElementById('progressBar');
+  var toTop = document.getElementById('toTop');
+  function onScroll() {
+    var h = document.documentElement;
+    var scrolled = h.scrollTop;
+    var max = h.scrollHeight - h.clientHeight;
+    var pct = max > 0 ? (scrolled / max) * 100 : 0;
+    bar.style.width = pct + '%';
+    if (scrolled > 600) { toTop.classList.add('show'); }
+    else { toTop.classList.remove('show'); }
+  }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+
+  toTop.addEventListener('click', function () {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+
+  // ---- Active nav state via IntersectionObserver ----
+  var navLinks = Array.prototype.slice.call(
+    document.querySelectorAll('.nav-links a:not(.nav-cta)')
+  );
+  var sectionIds = navLinks
+    .map(function (a) { return a.getAttribute('href'); })
+    .filter(function (h) { return h && h.indexOf('#') === 0; });
+  var sections = sectionIds
+    .map(function (id) { return document.querySelector(id); })
+    .filter(Boolean);
+
+  function setActive(id) {
+    navLinks.forEach(function (a) {
+      a.classList.toggle('active', a.getAttribute('href') === id);
+    });
+  }
+
+  if ('IntersectionObserver' in window && sections.length) {
+    var visible = {};
+    var obs = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        visible[e.target.id] = e.isIntersecting ? e.intersectionRatio : 0;
+      });
+      // pick the section with the greatest visibility
+      var best = null, bestRatio = 0;
+      Object.keys(visible).forEach(function (id) {
+        if (visible[id] > bestRatio) { bestRatio = visible[id]; best = id; }
+      });
+      if (best) { setActive('#' + best); }
+    }, { rootMargin: '-100px 0px -55% 0px', threshold: [0, 0.25, 0.5, 1] });
+    sections.forEach(function (s) { obs.observe(s); });
+  }
+
+  // ---- Tooltips on project ID chips ----
+  var NAMES = {
+    'Sys-1': 'Single source of truth',
+    'Sys-2': 'Content asset management',
+    'Sys-3': 'Content calendar & scheduler',
+    'Sys-4': 'Content intake flow',
+    'FW-1': 'Content category & format library v1',
+    'FW-2': 'Host onboarding framework',
+    'FW-3': 'Content pipeline SOP',
+    'FW-4': 'Reward, recognition & milestone framework',
+    'FW-5': 'Creator development playbook',
+    'FW-6': 'Host offboarding & handover SOP',
+    'FW-7': 'Host sourcing framework',
+    'DB-1': 'Coverage',
+    'DB-2': 'Content / publishing',
+    'DB-3': 'Host health',
+    'DB-4': 'Growth & engagement',
+    'DB-5': 'Rewards & ecosystem',
+    'HT-1': 'Define host profile & selection framework',
+    'HT-2': 'Recruit 10 hosts',
+    'HT-3': 'Onboard & activate',
+    'Run-1': 'Launch 10 handles',
+    'Run-2': 'Produce & publish',
+    'Run-3': 'Seed first collaborations'
+  };
+  document.querySelectorAll('.id-chip').forEach(function (chip) {
+    var key = chip.textContent.trim();
+    if (NAMES[key] && !chip.hasAttribute('title')) {
+      chip.setAttribute('title', NAMES[key]);
+    }
+  });
+
+  // ---- Interactive exit checklist (persisted) ----
+  var KEY = 'destination-program-checklist';
+  var items = Array.prototype.slice.call(
+    document.querySelectorAll('.checklist-card li')
+  );
+  var progress = document.getElementById('checklistProgress');
+  var saved = {};
+  try { saved = JSON.parse(localStorage.getItem(KEY) || '{}'); } catch (e) {}
+
+  function updateProgress() {
+    var done = items.filter(function (li) { return li.classList.contains('checked'); }).length;
+    if (progress) { progress.textContent = done + ' of ' + items.length + ' complete'; }
+  }
+  function persist() {
+    var state = {};
+    items.forEach(function (li, i) { state[i] = li.classList.contains('checked'); });
+    try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {}
+  }
+
+  items.forEach(function (li, i) {
+    li.setAttribute('role', 'checkbox');
+    li.setAttribute('tabindex', '0');
+    if (saved[i]) { li.classList.add('checked'); }
+    li.setAttribute('aria-checked', li.classList.contains('checked') ? 'true' : 'false');
+    function toggle() {
+      li.classList.toggle('checked');
+      li.setAttribute('aria-checked', li.classList.contains('checked') ? 'true' : 'false');
+      persist();
+      updateProgress();
+    }
+    li.addEventListener('click', toggle);
+    li.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); }
+    });
+  });
+  updateProgress();
+})();
+</script>
 
 </body>
 </html>
