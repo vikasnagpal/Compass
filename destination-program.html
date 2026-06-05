@@ -161,7 +161,10 @@
   /* CONTAINER */
   .container { max-width: 1280px; margin: 0 auto; padding: 0 24px; }
   .narrow { max-width: 880px; }
-  section { padding: 56px 0; }
+  /* NOTE: section vertical rhythm is carried by .section-head's margin-top
+     (and card margins), not by section padding — `.container`'s padding
+     out-specifies a `section` type rule, so `section { padding: … 0 }`
+     would never apply. */
 
   /* HERO */
   .hero { padding: 56px 24px 24px; }
@@ -288,6 +291,7 @@
 
   /* SECTION HEADER */
   .section-head {
+    margin-top: 56px;
     margin-bottom: 40px;
     max-width: 720px;
   }
