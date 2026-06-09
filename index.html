@@ -2057,6 +2057,59 @@
     .empty h3 { font-size: 17px; color: var(--text); margin-bottom: 6px; }
     .empty p { font-size: 14px; margin-bottom: 16px; }
 
+    /* ── FIRST-RUN CHECKLIST (T3.1) ── */
+    .first-run {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 30px 28px;
+      max-width: 600px; margin: 24px auto;
+    }
+    .first-run-head { display: flex; align-items: center; gap: 18px; margin-bottom: 22px; }
+    .first-run-emoji { font-size: 42px; line-height: 1; }
+    .first-run-head h3 { font: 600 19px/1.3 'Poppins', sans-serif; color: var(--text); margin-bottom: 4px; }
+    .first-run-head p  { font: 400 14px/1.5 'Inter', sans-serif; color: var(--text-muted); }
+    .first-run-list { list-style: none; padding: 0; margin: 0; }
+    .first-run-list li {
+      display: grid; grid-template-columns: 32px 1fr auto;
+      gap: 14px; align-items: center;
+      padding: 14px 0;
+      border-top: 1px solid var(--border);
+    }
+    .first-run-list li:first-child { border-top: 0; }
+    .first-run-num {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 28px; height: 28px; border-radius: 50%;
+      background: var(--primary-light); color: var(--primary-dark);
+      font: 700 13px/1 'Inter', sans-serif;
+    }
+    .first-run-step-title { font: 600 14px/1.3 'Inter', sans-serif; color: var(--text); margin-bottom: 2px; }
+    .first-run-step-desc  { font: 400 13px/1.45 'Inter', sans-serif; color: var(--text-muted); }
+    .first-run-foot { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--border); text-align: center; }
+    .first-run-help { color: var(--text-muted); font: 500 13px/1.4 'Inter', sans-serif; cursor: pointer; }
+    .first-run-help:hover { color: var(--primary-dark); }
+
+    /* ── ONBOARDING TOUR (T3.10) ── */
+    .onboard { text-align: left; }
+    .onboard-emoji { font-size: 38px; text-align: center; margin-bottom: 6px; }
+    .onboard h2 {
+      font: 700 22px/1.25 'Poppins', sans-serif; color: var(--text);
+      text-align: center; margin-bottom: 8px;
+    }
+    .onboard-sub {
+      font: 400 14px/1.5 'Inter', sans-serif; color: var(--text-muted);
+      text-align: center; margin-bottom: 18px;
+    }
+    .onboard-list {
+      list-style: decimal inside; padding: 0; margin: 0 4px 16px;
+      font: 400 14px/1.6 'Inter', sans-serif; color: var(--text);
+    }
+    .onboard-list li { margin-bottom: 4px; }
+    .onboard-list strong { color: var(--primary-dark); font-weight: 600; }
+    .onboard-tip {
+      font: 400 13px/1.5 'Inter', sans-serif; color: var(--text-muted);
+      background: var(--bg); border-radius: var(--radius-sm);
+      padding: 10px 14px; margin-bottom: 4px;
+    }
+
     /* ── ANIMATIONS ── */
     @keyframes fadeUp {
       from { opacity: 0; transform: translateY(8px); }
@@ -3268,8 +3321,51 @@ function renderDashboard(el) {
       </div>
       <button class="btn btn-primary btn-sm" onclick="openGoalModal()">+ New Goal</button>
     </div>
-    ${!total ? `<div class="empty"><div class="empty-icon">🌄</div><h3>The horizon is clear</h3><p>What's the first goal worth chasing? Let's set it together.</p><button class="btn btn-primary" onclick="openGoalModal()">+ Set Your First Goal</button></div>`
-    : `<div class="goals-grid">${activeGoals.map(goalCard).join('')}</div>`}
+    ${!total
+      ? renderFirstRunChecklist()
+      : `<div class="goals-grid">${activeGoals.map(goalCard).join('')}</div>`}
+  </div>`;
+}
+
+// T3.1 — guided first-run checklist for the empty dashboard. Beats a single
+// CTA because it primes the user on the full hierarchy and gives a clear,
+// staged next step instead of just "+ Set Your First Goal".
+function renderFirstRunChecklist() {
+  return `<div class="first-run">
+    <div class="first-run-head">
+      <div class="first-run-emoji">🌄</div>
+      <div>
+        <h3>The horizon is clear</h3>
+        <p>Here's how Compass works — three short steps to get going.</p>
+      </div>
+    </div>
+    <ol class="first-run-list">
+      <li>
+        <span class="first-run-num">1</span>
+        <div>
+          <div class="first-run-step-title">Set a goal</div>
+          <div class="first-run-step-desc">The change you want to drive this quarter, in one ambitious sentence.</div>
+        </div>
+        <button class="btn btn-primary btn-sm" onclick="openGoalModal()">+ Set goal</button>
+      </li>
+      <li>
+        <span class="first-run-num">2</span>
+        <div>
+          <div class="first-run-step-title">Add a few measures</div>
+          <div class="first-run-step-desc">The signposts that prove the goal is happening — 3–5 numeric targets per goal.</div>
+        </div>
+      </li>
+      <li>
+        <span class="first-run-num">3</span>
+        <div>
+          <div class="first-run-step-title">Spin up initiatives</div>
+          <div class="first-run-step-desc">The concrete pieces of work each crew member owns. One done-state each.</div>
+        </div>
+      </li>
+    </ol>
+    <div class="first-run-foot">
+      <a class="first-run-help" onclick="goToHelp()" role="link" tabindex="0">How Compass works →</a>
+    </div>
   </div>`;
 }
 
@@ -5762,6 +5858,40 @@ async function bootApp() {
   // Safe to call when hash is empty: it just lands on the dashboard.
   if (window.location.hash) applyHashState();
   setupRealtime();
+  // T3.10 — show the onboarding tour once for true first-run users. Gate is
+  // "no goals visible AND haven't seen it" — existing teammates joining an
+  // already-populated workspace shouldn't get the tour either.
+  try {
+    const seen = localStorage.getItem('compassSeenTour');
+    if (!seen && !S.goals.length) {
+      // Delay so the dashboard paints first.
+      setTimeout(showOnboardingTour, 350);
+    }
+  } catch (e) { /* localStorage blocked — fine, no tour */ }
+}
+
+function showOnboardingTour() {
+  showModal(`
+    <div class="onboard">
+      <div class="onboard-emoji">🧭</div>
+      <h2>Welcome to Compass</h2>
+      <p class="onboard-sub">A simple hierarchy keeps the team pointing the same direction:</p>
+      <ol class="onboard-list">
+        <li><strong>Goals</strong> — the destinations you're chasing this quarter.</li>
+        <li><strong>Measures</strong> — the signposts that tell you you're winning.</li>
+        <li><strong>Initiatives</strong> — the concrete work each crew member owns.</li>
+        <li><strong>Ideas</strong> — sparks captured loose, before they're work.</li>
+      </ol>
+      <p class="onboard-tip">Once a quarter you plan. Every week you check in. Whenever a spark hits, you drop it on the Ideas wall.</p>
+      <div class="form-actions">
+        <button type="button" class="btn btn-outline" id="tourSkip">Skip the tour</button>
+        <button type="button" class="btn btn-primary" id="tourStart">Set my first goal</button>
+      </div>
+    </div>
+  `);
+  const markSeen = () => { try { localStorage.setItem('compassSeenTour', '1'); } catch (e) {} };
+  document.getElementById('tourSkip')?.addEventListener('click', () => { markSeen(); closeModal(); });
+  document.getElementById('tourStart')?.addEventListener('click', () => { markSeen(); closeModal(); openGoalModal(); });
 }
 
 // ═══════════════════════════════════════════
