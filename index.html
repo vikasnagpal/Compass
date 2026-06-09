@@ -3754,6 +3754,7 @@ function openDrawer(gid, krid, iid) {
   renderDrawerBody(init);
   document.getElementById('drawerOverlay').classList.add('show');
   document.getElementById('drawer').classList.add('open');
+  writeHashFromState();
 }
 
 function refreshDrawerMeta(init) {
@@ -4025,7 +4026,95 @@ function closeDrawer() {
   closeInitMenu();
   DX = null;
   pendingStatus = null;
+  writeHashFromState();
 }
+
+// ─── URL deep-linking (T2.3) ──────────────────────────────────────
+// Encode the current view + active goal + open drawer into the URL hash so
+// browser back navigates between views, refresh keeps your place, and you
+// can paste a link to a specific initiative into Slack. Format:
+//   ''                          → dashboard
+//   '#view=mywork'              → My Work / Ideas / Archive / Settings / Help
+//   '#goal=<gid>'               → goal detail
+//   '#goal=<gid>&init=<iid>'    → goal detail with drawer open
+//   '#init=<iid>'               → resolve init → its goal, open drawer
+let _suppressHashWrite = false;
+function writeHashFromState() {
+  if (_suppressHashWrite) return;
+  const parts = [];
+  const v = S.view || 'goals';
+  if (v === 'goals' && S.activeGoalId) {
+    parts.push(`goal=${S.activeGoalId}`);
+    if (DX?.iid) parts.push(`init=${DX.iid}`);
+  } else if (v !== 'goals') {
+    parts.push(`view=${v}`);
+  }
+  const newHash = parts.length ? '#' + parts.join('&') : '';
+  if (window.location.hash === newHash) return;
+  try {
+    const url = window.location.pathname + window.location.search + newHash;
+    window.history.pushState(null, '', url);
+  } catch (e) {}
+}
+function parseHashParams() {
+  const raw = (window.location.hash || '').replace(/^#/, '');
+  if (!raw) return {};
+  const out = {};
+  for (const part of raw.split('&')) {
+    if (!part) continue;
+    const eq = part.indexOf('=');
+    if (eq < 0) { out[part] = ''; continue; }
+    out[part.slice(0, eq)] = part.slice(eq + 1);
+  }
+  return out;
+}
+function applyHashState() {
+  const p = parseHashParams();
+  _suppressHashWrite = true;
+  try {
+    if (p.init && !p.goal) {
+      const found = findInitById(p.init);
+      if (found) {
+        S.view = 'goals';
+        S.activeGoalId = found.goal.id;
+        if (found.kr) S.openKRs.add(found.kr.id);
+        render();
+        openDrawer(found.goal.id, found.kr.id, p.init);
+        return;
+      }
+    }
+    if (p.goal) {
+      S.view = 'goals';
+      S.activeGoalId = p.goal;
+      const g = findGoal(p.goal);
+      if (g?.keyResults.length) S.openKRs.add(g.keyResults[0].id);
+      render();
+      if (p.init) {
+        const found = findInitById(p.init);
+        if (found) openDrawer(found.goal.id, found.kr.id, p.init);
+      } else if (DX) {
+        closeDrawer();
+      }
+      return;
+    }
+    if (p.view && ['mywork','ideas','archive','settings','help'].includes(p.view)) {
+      S.view = p.view;
+      S.activeGoalId = null;
+      if (DX) closeDrawer();
+      render();
+      return;
+    }
+    // No recognisable hash → dashboard
+    S.view = 'goals';
+    S.activeGoalId = null;
+    if (DX) closeDrawer();
+    render();
+  } finally {
+    _suppressHashWrite = false;
+  }
+}
+window.addEventListener('hashchange', applyHashState);
+window.addEventListener('popstate', applyHashState);
 
 // Resolve the currently-open drawer init, or bail cleanly if state diverged
 // (e.g. a realtime delete fired while the user was mid-edit). Returns null
@@ -4569,6 +4658,7 @@ function selectGoal(gid) {
   }
   render();
   closeSidebar();
+  writeHashFromState();
 }
 
 function goToIdeas() {
@@ -4576,6 +4666,7 @@ function goToIdeas() {
   S.activeGoalId = null;
   render();
   closeSidebar();
+  writeHashFromState();
 }
 
 function goToMyWork() {
@@ -4583,6 +4674,7 @@ function goToMyWork() {
   S.activeGoalId = null;
   render();
   closeSidebar();
+  writeHashFromState();
 }
 
 function goToArchive() {
@@ -4590,6 +4682,7 @@ function goToArchive() {
   S.activeGoalId = null;
   render();
   closeSidebar();
+  writeHashFromState();
 }
 
 function countMyInitiatives() {
@@ -4612,6 +4705,7 @@ function goToSettings() {
   S.activeGoalId = null;
   render();
   closeSidebar();
+  writeHashFromState();
 }
 
 function goToHelp() {
@@ -4620,6 +4714,7 @@ function goToHelp() {
   render();
   closeSidebar();
   document.getElementById('mainContent')?.scrollTo({ top: 0, behavior: 'instant' });
+  writeHashFromState();
 }
 
 function renderHelpPage(el) {
@@ -4898,6 +4993,9 @@ async function bootApp() {
     return;
   }
   render();
+  // T2.3 — restore state from URL hash if present (deep-link / refresh).
+  // Safe to call when hash is empty: it just lands on the dashboard.
+  if (window.location.hash) applyHashState();
   setupRealtime();
 }
 
