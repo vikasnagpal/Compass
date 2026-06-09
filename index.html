@@ -1269,6 +1269,8 @@
     .kr-progress-block { display: flex; align-items: center; gap: 10px; flex-shrink: 0; min-width: 150px; }
     .kr-prog-val { font-family: 'IBM Plex Sans', sans-serif; font-size: 13px; font-weight: 500; color: var(--text-muted); white-space: nowrap; }
     .kr-prog-bar { flex: 1; height: 6px; background: var(--neutral); border-radius: 3px; overflow: hidden; }
+    .kr-sparkline { flex-shrink: 0; opacity: .85; }
+    .kr-sparkline:hover { opacity: 1; }
     .kr-chevron { font-size: 16px; color: var(--text-muted); transition: transform .2s; flex-shrink: 0; }
     .kr-chevron.open { transform: rotate(180deg); }
     @media (max-width: 560px) { .kr-progress-block { display: none; } }
@@ -2256,7 +2258,9 @@ const db = {
     // used as a UI source (kept in DB for now, harmless).
     const [goalsRes, profilesRes, ideasRes] = await Promise.all([
       sb.from('goals')
-        .select('*, key_results(*, initiatives(*, initiative_history(*)))')
+        // T2.5 — pull measure_history alongside everything else so sparklines
+        // have data on the first paint without a follow-up request.
+        .select('*, key_results(*, initiatives(*, initiative_history(*)), measure_history(*))')
         .order('position'),
       sb.from('profiles').select('*').order('display_name'),
       sb.from('ideas').select('*').order('created_at', { ascending: false }),
@@ -2441,6 +2445,15 @@ function dbKRToState(kr) {
     current: Number(kr.current_value) || 0,
     unit: kr.unit || '',
     initiatives: (kr.initiatives || []).sort(byPos).map(dbInitToState),
+    // T2.5 — chronological measure_history snapshots for the trend sparkline.
+    history: (kr.measure_history || [])
+      .slice() // don't mutate source
+      .sort((a,b) => (a.created_at||'').localeCompare(b.created_at||''))
+      .map(h => ({
+        current: Number(h.current_value) || 0,
+        target:  h.target_value == null ? null : Number(h.target_value),
+        at:      h.created_at || '',
+      })),
   };
 }
 function dbInitToState(i) {
@@ -2667,6 +2680,25 @@ function onHistoryChange({ eventType, new: row }) {
   scheduleRerender();
 }
 
+// T2.5 — append a measure-history snapshot to its measure when one arrives
+// from the DB trigger. Only INSERT is fired (the trigger never edits or
+// deletes; cascade handles removal when the measure itself is deleted).
+function onMeasureHistoryChange({ eventType, new: row }) {
+  if (eventType !== 'INSERT') return;
+  const found = findKRById(row.key_result_id); if (!found) return;
+  const { kr } = found;
+  if (!kr.history) kr.history = [];
+  // The trigger fires after our own optimistic update too, so de-dupe by id.
+  if (kr.history.find(h => h.id === row.id)) return;
+  kr.history.push({
+    id: row.id,
+    current: Number(row.current_value) || 0,
+    target:  row.target_value == null ? null : Number(row.target_value),
+    at:      row.created_at || '',
+  });
+  scheduleRerender();
+}
+
 function onIdeaChange({ eventType, new: row, old: oldRow }) {
   if (eventType === 'INSERT') {
     if (S.ideas.find(i => i.id === row.id)) return;
@@ -2733,6 +2765,7 @@ function setupRealtime() {
     .on('postgres_changes', { event: '*', schema: 'public', table: 'key_results' },        onKRChange)
     .on('postgres_changes', { event: '*', schema: 'public', table: 'initiatives' },        onInitChange)
     .on('postgres_changes', { event: '*', schema: 'public', table: 'initiative_history' }, onHistoryChange)
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'measure_history' },    onMeasureHistoryChange)
     .on('postgres_changes', { event: '*', schema: 'public', table: 'ideas' },              onIdeaChange)
     .on('postgres_changes', { event: '*', schema: 'public', table: 'profiles' },           onProfileChange)
     .subscribe(status => {
@@ -3382,6 +3415,33 @@ function renderGoalDetail(el, g) {
   </div>`;
 }
 
+// T2.5 — sparkline of the measure's recent current_value snapshots. Returns
+// an empty string when there's only one data point (nothing to draw a trend
+// from yet — the bar already tells you the level). Last 12 points, 64×16.
+function renderKRSparkline(kr) {
+  const pts = (kr.history || []).slice(-12);
+  if (pts.length < 2) return '';
+  const W = 64, H = 16, PAD = 1;
+  const vals = pts.map(p => p.current);
+  const lo = Math.min(...vals), hi = Math.max(...vals);
+  const span = (hi - lo) || 1;
+  const x = i => PAD + (i * (W - PAD * 2)) / (pts.length - 1);
+  const y = v => H - PAD - ((v - lo) / span) * (H - PAD * 2);
+  const path = pts.map((p, i) => `${i ? 'L' : 'M'}${x(i).toFixed(1)},${y(p.current).toFixed(1)}`).join(' ');
+  // Up or down vs first point determines the colour mood. We use --green for
+  // upward, --text-muted for flat, --danger only if the *latest* is below
+  // the first by more than ~5% of span (avoid flapping on noisy data).
+  const first = pts[0].current, last = pts[pts.length - 1].current;
+  let stroke = 'var(--text-muted)';
+  if (last > first + span * 0.05) stroke = 'var(--green)';
+  else if (last < first - span * 0.05) stroke = 'var(--danger)';
+  const title = `Trend: ${pts.length} snapshots, ${fmtNum(first)} → ${fmtNum(last)}`;
+  return `<svg class="kr-sparkline" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" aria-label="${title}">
+    <title>${title}</title>
+    <path d="${path}" fill="none" stroke="${stroke}" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+  </svg>`;
+}
+
 function krCard(g, kr) {
   const p=krProgress(kr), open=S.openKRs.has(kr.id);
   const risk=kr.initiatives.filter(i=>i.status==='at_risk'||i.status==='blocked').length;
@@ -3402,6 +3462,7 @@ function krCard(g, kr) {
       <div class="kr-progress-block">
         <span class="kr-prog-val">${pDisp}</span>
         <div class="kr-prog-bar"><div class="prog-fill ${progColor(p)}" style="width:${p}%"></div></div>
+        ${renderKRSparkline(kr)}
       </div>
       <button class="btn btn-ghost btn-sm" style="flex-shrink:0" onclick="event.stopPropagation();openKRModal('${g.id}','${kr.id}')">Edit</button>
       <span class="kr-chevron${open?' open':''}">▾</span>
