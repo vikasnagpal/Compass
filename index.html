@@ -245,6 +245,15 @@
     .goal-nav-title {
       font-family: 'Poppins', sans-serif; font-weight: 600; font-size: 14px;
       line-height: 1.4; margin-bottom: 5px;
+      display: flex; align-items: flex-start; gap: 8px;
+    }
+    .goal-nav-title > span:first-child { flex: 1; }
+    /* T3.4 — at-risk chip in the sidebar so trouble surfaces without drilling in. */
+    .goal-nav-risk {
+      flex-shrink: 0; font: 600 11px/1 'IBM Plex Sans', sans-serif;
+      color: var(--danger);
+      background: var(--danger-light, rgba(220,38,38,.12));
+      border-radius: 999px; padding: 2px 7px; margin-top: 1px;
     }
     .goal-nav-chips { display: flex; gap: 8px; font-size: 12px; color: var(--text-muted); }
     .mini-bar { height: 3px; background: var(--neutral); border-radius: 2px; margin-top: 6px; overflow: hidden; }
@@ -1334,9 +1343,29 @@
       align-items: center;
       padding: 13px 20px;
       border-top: 1px solid var(--border);
-      cursor: pointer; transition: background .13s;
+      cursor: pointer;
+      transition: background .13s, border-left-color .13s;
+      border-left: 3px solid transparent;
+      position: relative;
     }
-    .init-row:hover { background: var(--bg-soft); }
+    /* T3.8 — clear hover affordance so the row reads as clickable on first
+       sight: subtle bg shift + left accent stripe + a small "→" trailing
+       the title that fades in. */
+    .init-row:hover {
+      background: var(--bg-soft);
+      border-left-color: var(--primary);
+    }
+    .init-row > .init-name::after {
+      content: ' →';
+      color: var(--text-muted);
+      opacity: 0; margin-left: 4px;
+      transition: opacity .15s, transform .15s;
+      transform: translateX(-3px); display: inline-block;
+    }
+    .init-row:hover > .init-name::after { opacity: 1; transform: translateX(0); }
+    @media (prefers-reduced-motion: reduce) {
+      .init-row > .init-name::after { transition: none; }
+    }
     .init-row > .init-dot {
       grid-column: 1;
       width: 10px; height: 10px; border-radius: 50%;
@@ -1748,6 +1777,24 @@
       border-color: var(--text);
       box-shadow: 0 0 0 1px var(--text);
     }
+    /* T3.3 — Pop animation when moving to Completed, with a green ring beat. */
+    @keyframes pillPop {
+      0%   { transform: scale(1); }
+      40%  { transform: scale(1.18); box-shadow: 0 0 0 6px rgba(34,197,94,.20); }
+      100% { transform: scale(1); box-shadow: 0 0 0 1px var(--text); }
+    }
+    .status-pill.just-completed {
+      animation: pillPop .42s cubic-bezier(.2,.8,.3,1);
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .status-pill.just-completed { animation: none; }
+    }
+    /* T3.3 — Comment box gets a friendly green tint when the staged status
+       is 'completed' to invite a "what did you ship?" note. */
+    .comment-box.is-completing textarea {
+      border-color: var(--green);
+      background: rgba(34,197,94,.06);
+    }
     @media (max-width: 520px) {
       /* On phone widths, lay pills out as a uniform 3-column grid so they
          don't end up at three different widths across three ragged rows. */
@@ -1993,6 +2040,15 @@
     }
     .app-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
     .app-toast.err { background: var(--danger); }
+    .app-toast.with-action {
+      display: inline-flex; align-items: center; gap: 14px;
+      padding: 10px 10px 10px 18px; pointer-events: auto;
+    }
+    .app-toast .app-toast-btn {
+      background: var(--primary); color: var(--text-on-primary, #1F1F1F);
+      border: 0; border-radius: 100px; padding: 6px 12px;
+      font: 600 12.5px/1 'Inter', sans-serif; cursor: pointer;
+    }
 
     .empty {
       text-align: center; padding: 40px 20px; color: var(--text-muted);
@@ -2800,6 +2856,27 @@ function showToast(text, isError = false) {
   host._t = setTimeout(() => host.classList.remove('show'), 3500);
 }
 
+// T3.5 — like showToast but with a CTA button that fires `onClick` once.
+// Used for promote, etc. — celebrates the action AND offers the natural
+// next step ("View it") in one beat. message may contain HTML.
+function showActionToast(message, actionLabel, onClick) {
+  let host = document.getElementById('appToast');
+  if (!host) {
+    host = document.createElement('div');
+    host.id = 'appToast';
+    host.className = 'app-toast';
+    document.body.appendChild(host);
+  }
+  host.className = 'app-toast show with-action';
+  host.innerHTML = `<span class="app-toast-msg">${message}</span><button type="button" class="app-toast-btn">${esc(actionLabel)}</button>`;
+  host.querySelector('.app-toast-btn').onclick = () => {
+    try { onClick(); } catch (e) { console.error(e); }
+    host.classList.remove('show');
+  };
+  clearTimeout(host._t);
+  host._t = setTimeout(() => host.classList.remove('show'), 6000);
+}
+
 // ─── Undo-on-delete toast manager ───
 // Pattern: on delete, hide from UI immediately, show a 5s toast with
 // an "Undo" button. The actual DB delete only fires when the timer
@@ -3146,8 +3223,12 @@ function renderSidebar() {
     const p=goalProgress(g), krC=g.keyResults.length;
     const iC=g.keyResults.reduce((a,k)=>a+k.initiatives.length,0);
     const isActive = S.view === 'goals' && g.id === S.activeGoalId;
+    // T3.4 — surface trouble at a glance so the user doesn't have to drill
+    // into each goal to find at-risk/blocked initiatives.
+    const risk = g.keyResults.reduce((a,k) => a + k.initiatives.filter(i => i.status==='at_risk' || i.status==='blocked').length, 0);
+    const riskChip = risk ? `<span class="goal-nav-risk" title="${risk} initiative${risk>1?'s':''} need a hand">⚠ ${risk}</span>` : '';
     return `<div class="goal-nav-item${isActive?' active':''}" onclick="selectGoal('${g.id}')">
-      <div class="goal-nav-title">${esc(g.title)}</div>
+      <div class="goal-nav-title"><span>${esc(g.title)}</span>${riskChip}</div>
       <div class="goal-nav-chips"><span>${g.quarter}</span><span>${krC} measure${krC!==1?'s':''}</span><span>${iC} initiative${iC!==1?'s':''}</span></div>
       <div class="mini-bar"><div class="mini-bar-fill" style="width:${p}%"></div></div>
     </div>`;
@@ -3247,7 +3328,7 @@ function renderMyWorkPage(el) {
     const dueClass = overdueFlag ? 'mw-due overdue' : 'mw-due';
     const flagChip = overdueFlag
       ? `<span class="flag-chip flag-overdue" title="Past its due date">!</span>`
-      : (isStale ? `<span class="flag-chip flag-stale" title="No activity in ${staleDays} days">~</span>` : '');
+      : (isStale ? `<span class="flag-chip flag-stale" title="This initiative's been quiet for ${staleDays} days — might need a check-in 🧭">~</span>` : '');
     return `<div class="mw-row" onclick="openDrawer('${r.g.id}','${r.kr.id}','${init.id}')">
       <div class="init-dot dot-${init.status}"></div>
       <div class="mw-main">
@@ -3408,7 +3489,7 @@ function renderGoalDetail(el, g) {
       <button class="btn btn-primary btn-sm" onclick="openKRModal('${g.id}')">+ Add Measure</button>
     </div>
     ${!g.keyResults.length
-      ?`<div class="empty"><div class="empty-icon">🗺️</div><h3>No measures yet</h3><p>How will we know we've arrived? Add a measure to track our progress.</p><button class="btn btn-primary" onclick="openKRModal('${g.id}')">+ Add First Measure</button></div>`
+      ?`<div class="empty"><div class="empty-icon">🗺️</div><h3>No measures yet</h3><p>Measures are the signposts that prove the goal is happening — usually numeric targets like "70% of properties active" or "under 14 days application-to-offer." Aim for 3–5 per goal.</p><button class="btn btn-primary" onclick="openKRModal('${g.id}')">+ Add First Measure</button></div>`
       : g.keyResults.map(kr=>krCard(g,kr)).join('')
     }
     ${renderGoalIdeasSection(g)}
@@ -3473,7 +3554,7 @@ function krCard(g, kr) {
         <button class="btn btn-primary btn-sm" onclick="openInitModal('${g.id}','${kr.id}')">+ Add Initiative</button>
       </div>
       ${!kr.initiatives.length
-        ?`<div style="padding:20px;font-size:14px;color:var(--text-muted);text-align:center">No initiatives yet — add the first one to get this journey started!</div>`
+        ?`<div style="padding:20px;font-size:14px;color:var(--text-muted);text-align:center;line-height:1.5">No initiatives yet — these are the concrete pieces of work that'll move this measure. One owner, one done-state, one date. Add the first to get the journey started.</div>`
         : kr.initiatives.map(i=>initRow(g,kr,i)).join('')
       }
     </div></div></div>
@@ -3508,7 +3589,7 @@ function initRow(g, kr, init) {
   const dueClass = overdueFlag ? 'ir-due overdue' : 'ir-due';
   const flagChip = overdueFlag
     ? `<span class="flag-chip flag-overdue" title="Past its due date">!</span>`
-    : (isStale ? `<span class="flag-chip flag-stale" title="No activity in ${staleDays} days">~</span>` : '');
+    : (isStale ? `<span class="flag-chip flag-stale" title="This initiative's been quiet for ${staleDays} days — might need a check-in 🧭">~</span>` : '');
   return `<div class="init-row${overdueFlag?' is-overdue':''}${isStale?' is-stale':''}" onclick="openDrawer('${g.id}','${kr.id}','${init.id}')">
     <div class="init-dot dot-${init.status}"></div>
     <div class="init-name">${flagChip}${esc(init.title)}</div>
@@ -3936,6 +4017,9 @@ async function promoteIdea(iid) {
   S.activeGoalId = gid;
   S.openKRs.add(krid);
   render();
+  // T3.5 — richer celebration toast with a quick "View it" action that opens
+  // the new initiative's drawer. Beats the previous silent disappearance.
+  showActionToast(`💡 → 🚀  Promoted to “${esc(kr.title)}”`, 'View it', () => openDrawer(gid, krid, init.id));
 }
 
 async function setIdeaStatus(iid, status, note) {
@@ -4186,8 +4270,8 @@ function renderDrawerBody(init) {
         </div>
       </div>
       <div class="form-label" style="margin-bottom:6px">Comment <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--text-muted)">(optional)</span></div>
-      <div class="comment-box">
-        <textarea id="commentInput" placeholder="How's it going? Share progress, roadblocks, or a little win to celebrate…" rows="3"
+      <div class="comment-box${pendingStatus==='completed' && init.status!=='completed' ? ' is-completing' : ''}" id="commentBox">
+        <textarea id="commentInput" placeholder="${pendingStatus==='completed' && init.status!=='completed' ? 'What did you ship? 🎯' : 'How\'s it going? Share progress, roadblocks, or a little win to celebrate…'}" rows="3"
           onkeydown="if((event.ctrlKey||event.metaKey)&&event.key==='Enter')shareUpdate()"></textarea>
         <div class="comment-box-foot">
           <span class="comment-hint">Ctrl+Enter to share</span>
@@ -4210,6 +4294,25 @@ function stageStatus(newStatus) {
   const hint = document.getElementById('statusPendingHint');
   if (hint && init) {
     hint.style.display = (newStatus !== init.status) ? '' : 'none';
+  }
+  // T3.3 — celebrate moving to Completed: pop the chosen pill, tint the
+  // comment box, and swap in a "What did you ship?" placeholder. Restraint:
+  // only fire when this is an actual *change* to completed, not a re-click.
+  if (newStatus === 'completed' && init && init.status !== 'completed') {
+    const pill = document.querySelector(`#statusPills .status-pill[data-status="completed"]`);
+    if (pill) {
+      pill.classList.remove('just-completed');
+      // Restart the animation: force reflow before re-adding the class.
+      void pill.offsetWidth;
+      pill.classList.add('just-completed');
+    }
+    const box = document.getElementById('commentBox');
+    const ta = document.getElementById('commentInput');
+    if (box) box.classList.add('is-completing');
+    if (ta && !ta.value) ta.placeholder = 'What did you ship? 🎯';
+  } else {
+    const box = document.getElementById('commentBox');
+    if (box) box.classList.remove('is-completing');
   }
 }
 
