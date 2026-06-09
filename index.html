@@ -4,6 +4,10 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Zostel Compass</title>
+  <!-- Inline SVG favicon — a compass needle on a dark disc. Lives in the
+       HTML so there's no extra file to host alongside index.html on GitHub
+       Pages, and ships in the same network request as the page itself. -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='15' fill='%231F2937'/%3E%3Cpolygon points='16,4 19,16 13,16' fill='%23F4B400'/%3E%3Cpolygon points='16,28 19,16 13,16' fill='%239CA3AF'/%3E%3Ccircle cx='16' cy='16' r='2' fill='%23F4B400'/%3E%3C/svg%3E" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500&display=swap" rel="stylesheet" />
   <script>
@@ -2345,6 +2349,12 @@ function onGoalChange({ eventType, new: row, old: oldRow }) {
       closeDrawer();
     }
     S.goals = S.goals.filter(g => g.id !== id);
+    // T1.3 — DB has `on delete set null` for ideas.goal_id/key_result_id; mirror
+    // that in local state so the ideas wall doesn't render orphaned references
+    // that crash when clicked.
+    for (const idea of S.ideas) {
+      if (idea.goalId === id) { idea.goalId = null; idea.krId = null; }
+    }
     if (wasActive) {
       S.activeGoalId = null;
       showToast('A goal you were viewing was deleted.');
@@ -2377,13 +2387,20 @@ function onKRChange({ eventType, new: row, old: oldRow }) {
     scheduleRerender();
   } else if (eventType === 'DELETE') {
     const id = oldRow?.id; if (!id) return;
-    // Close the drawer if it's open on an initiative inside this measure
+    // Close the drawer if it's open on an initiative inside this measure.
+    // Toast for symmetry with onInitChange DELETE — silent close was disorienting.
     if (DX && DX.krid === id) {
       closeDrawer();
+      showToast('The measure you were viewing was deleted.');
     }
     for (const g of S.goals) {
       const idx = g.keyResults.findIndex(k => k.id === id);
       if (idx >= 0) { g.keyResults.splice(idx, 1); break; }
+    }
+    // Mirror the DB's `on delete set null` cascade on ideas.key_result_id so
+    // we don't render dangling references to a deleted measure.
+    for (const idea of S.ideas) {
+      if (idea.krId === id) idea.krId = null;
     }
     S.openKRs.delete(id);
     scheduleRerender();
@@ -2483,8 +2500,19 @@ function onProfileChange({ eventType, new: row, old: oldRow }) {
     });
     scheduleRerender();
   } else if (eventType === 'UPDATE') {
-    const m = S.members.find(m => m.id === row.id);
-    if (m) {
+    let m = S.members.find(m => m.id === row.id);
+    // T1.10 — if this is a first-time UPDATE before the INSERT echo landed,
+    // make sure the member row exists *before* we touch S.profile, so any
+    // render reading both observes a consistent state.
+    if (!m) {
+      m = {
+        id: row.id,
+        name: row.display_name || row.email || 'Teammate',
+        email: row.email || '',
+        avatar_url: row.avatar_url || '',
+      };
+      S.members.push(m);
+    } else {
       m.name = row.display_name || row.email || 'Teammate';
       m.email = row.email || '';
       m.avatar_url = row.avatar_url || '';
@@ -3526,8 +3554,9 @@ async function addIdeaFromForm() {
 
 async function addQuickIdea(gid) {
   const input = document.getElementById('goalIdeaInput');
-  const text = (input?.value||'').trim();
-  if (!text || !input) return;
+  if (!input) return;
+  const text = (input.value||'').trim();
+  if (!text) { flashError('goalIdeaInput', 'Type the idea first, then we’ll catch it.'); return; }
   const rect = input.getBoundingClientRect();
   const newIdea = await db.createIdea({ text, goalId: gid, krId: null });
   if (!newIdea) return;
@@ -3739,9 +3768,8 @@ function refreshDrawerMeta(init) {
 }
 
 function startEditMeta(field) {
-  if (!DX) return;
-  const g = findGoal(DX.gid), kr = findKR(g, DX.krid), init = findInit(kr, DX.iid);
-  if (!init) return;
+  const ctx = getDrawerInit(); if (!ctx) return;
+  const { init } = ctx;
   const btn = document.querySelector(`#dMeta [data-edit="${field}"]`);
   if (!btn) return;
 
@@ -3806,9 +3834,8 @@ function renderInitDesc(init) {
 }
 
 function startEditDesc() {
-  if (!DX) return;
-  const init = findInit(findKR(findGoal(DX.gid), DX.krid), DX.iid);
-  if (!init) return;
+  const ctx = getDrawerInit(); if (!ctx) return;
+  const { init } = ctx;
   const block = document.getElementById('initDesc');
   if (!block) return;
 
@@ -3825,7 +3852,16 @@ function startEditDesc() {
 
   const ta = document.getElementById('descInput');
   ta.value = init.desc || '';
-  const autosize = () => { ta.style.height = 'auto'; ta.style.height = (ta.scrollHeight + 2) + 'px'; };
+  // T1.9 — cap auto-resize at 40vh on mobile so a long description doesn't
+  // push the rest of the drawer off-screen. Past the cap the textarea scrolls.
+  ta.style.maxHeight = '40vh';
+  ta.style.overflowY = 'auto';
+  const autosize = () => {
+    ta.style.height = 'auto';
+    const desired = ta.scrollHeight + 2;
+    const cap = Math.floor(window.innerHeight * 0.4);
+    ta.style.height = Math.min(desired, cap) + 'px';
+  };
   autosize();
   ta.addEventListener('input', autosize);
   ta.focus();
@@ -3857,9 +3893,8 @@ function formatEditNote(field, oldValue, newValue) {
 }
 
 async function commitDesc() {
-  if (!DX) return;
-  const init = findInit(findKR(findGoal(DX.gid), DX.krid), DX.iid);
-  if (!init) return;
+  const ctx = getDrawerInit(); if (!ctx) return;
+  const { init } = ctx;
   const newDesc = (document.getElementById('descInput')?.value || '').trim();
   const oldDesc = init.desc || '';
   if (newDesc === oldDesc) { renderDrawerBody(init); return; }
@@ -3920,9 +3955,11 @@ function stageStatus(newStatus) {
 }
 
 async function shareUpdate() {
-  if(!DX) return;
-  const g=findGoal(DX.gid), kr=findKR(g,DX.krid), init=findInit(kr,DX.iid);
-  if(!init) return;
+  // getDrawerInit handles the "init was deleted while drawer was open" race:
+  // closes the drawer and surfaces a toast instead of silently swallowing the
+  // share, which previously made users think their update went through.
+  const ctx = getDrawerInit(); if (!ctx) return;
+  const { init } = ctx;
   const text=(document.getElementById('commentInput')?.value||'').trim();
   const statusChanged = pendingStatus && pendingStatus !== init.status;
   if (!statusChanged && !text) return; // nothing to share
@@ -3984,22 +4021,53 @@ function renderTimeline(init) {
 function closeDrawer() {
   document.getElementById('drawerOverlay').classList.remove('show');
   document.getElementById('drawer').classList.remove('open');
+  // T1.8 — also collapse the kebab menu so it doesn't flash open next time.
+  closeInitMenu();
   DX = null;
   pendingStatus = null;
+}
+
+// Resolve the currently-open drawer init, or bail cleanly if state diverged
+// (e.g. a realtime delete fired while the user was mid-edit). Returns null
+// in the bail case so callers can early-return without crashing.
+function getDrawerInit() {
+  if (!DX) return null;
+  const g = findGoal(DX.gid);
+  const kr = findKR(g, DX.krid);
+  const init = findInit(kr, DX.iid);
+  if (!init) {
+    closeDrawer();
+    showToast('That initiative is no longer here.');
+    return null;
+  }
+  return { g, kr, init };
 }
 
 // ═══════════════════════════════════════════
 //  MODALS
 // ═══════════════════════════════════════════
 
+// Remember which element launched the modal so we can return focus to it on
+// close — without this, keyboard users land on document.body and lose context.
+let _modalReturnFocus = null;
 function showModal(html) {
+  _modalReturnFocus = (document.activeElement && document.activeElement !== document.body)
+    ? document.activeElement : null;
   document.getElementById('modalRoot').innerHTML =
     `<div class="modal-wrap">
        <div class="modal-bg" onclick="closeModal()"></div>
        <div class="modal-box">${html}</div>
      </div>`;
 }
-function closeModal() { document.getElementById('modalRoot').innerHTML=''; }
+function closeModal() {
+  document.getElementById('modalRoot').innerHTML='';
+  // Restore focus to the launching control. Wrap in try/catch in case the
+  // element was removed from the DOM in the interim.
+  if (_modalReturnFocus) {
+    try { _modalReturnFocus.focus(); } catch (e) {}
+    _modalReturnFocus = null;
+  }
+}
 
 // GOAL MODAL
 function openGoalModal(gid) {
@@ -4333,8 +4401,17 @@ async function saveKR(gid, krid) {
   const g=findGoal(gid); if(!g) return;
   const title=(document.getElementById('mKRTitle')?.value||'').trim();
   if(!title){ flashError('mKRTitle','Tell us what this signpost marks!'); return; }
-  const cur=parseFloat(document.getElementById('mKRCur')?.value)||0;
-  const target=parseFloat(document.getElementById('mKRTarget')?.value)||100;
+  // T1.6 — sanitize numeric inputs. parseFloat happily accepts negatives, NaN,
+  // and Infinity; pre-validate and surface a friendly error instead of letting
+  // bogus values reach the DB.
+  const curRaw=parseFloat(document.getElementById('mKRCur')?.value);
+  const targetRaw=parseFloat(document.getElementById('mKRTarget')?.value);
+  const curIn=Number.isFinite(curRaw)?curRaw:0;
+  const targetIn=Number.isFinite(targetRaw)?targetRaw:100;
+  if (curIn < 0)    { flashError('mKRCur',    'Current value can’t be negative.'); return; }
+  if (targetIn < 0) { flashError('mKRTarget', 'Target value can’t be negative.');  return; }
+  if (curIn > 1e12 || targetIn > 1e12) { flashError('mKRTarget', 'Whoa — let’s keep this within reason.'); return; }
+  const cur = curIn, target = targetIn;
   const unit=(document.getElementById('mKRUnit')?.value||'').trim()||'%';
   const destGid=document.getElementById('mKRGoal')?.value||gid;
   if(krid) {
@@ -4373,7 +4450,12 @@ function deleteKR(gid, krid) {
   showUndoToast(
     `Measure "${snapshot.title}" deleted`,
     () => {
-      g.keyResults.splice(idx, 0, snapshot);
+      // T1.4 — resolve the goal fresh by id rather than relying on the closure-
+      // captured `g`. If the goal itself was deleted in the 5s undo window we'd
+      // otherwise splice into a detached array and end up with an orphan measure.
+      const goal = findGoal(gid);
+      if (!goal) { showToast('That goal is gone too — can’t restore the measure.', true); return; }
+      goal.keyResults.splice(Math.min(idx, goal.keyResults.length), 0, snapshot);
       if (wasOpen) S.openKRs.add(krid);
       render();
     },
