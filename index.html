@@ -2110,6 +2110,66 @@
       padding: 10px 14px; margin-bottom: 4px;
     }
 
+    /* ── CLOSE-GOAL CELEBRATION (T3.2) ── */
+    .goal-celebrate {
+      position: fixed; inset: 0; z-index: 9998;
+      pointer-events: none; opacity: 0; transition: opacity .28s ease;
+      display: flex; align-items: center; justify-content: center;
+      background: radial-gradient(circle at center, rgba(244,180,0,.16) 0%, rgba(0,0,0,0) 60%);
+      overflow: hidden;
+    }
+    .goal-celebrate.show { opacity: 1; }
+    .gc-card {
+      background: var(--surface); border: 1px solid var(--border);
+      box-shadow: 0 20px 60px rgba(0,0,0,.22);
+      border-radius: 16px; padding: 28px 36px;
+      text-align: center; max-width: 92vw;
+      transform: scale(.94);
+      animation: gcCardIn .35s cubic-bezier(.2,.8,.3,1) forwards;
+    }
+    @keyframes gcCardIn { to { transform: scale(1); } }
+    .gc-emoji { font-size: 44px; line-height: 1; margin-bottom: 4px; }
+    .gc-headline { font: 700 22px/1.2 'Poppins', sans-serif; color: var(--text); margin-bottom: 4px; }
+    .gc-score {
+      font: 700 32px/1 'Poppins', sans-serif; color: var(--primary-dark);
+      margin: 8px 0 6px;
+    }
+    .gc-title { font: 500 14px/1.4 'Inter', sans-serif; color: var(--text); margin-bottom: 4px; max-width: 380px; }
+    .gc-sub   { font: 400 13px/1.45 'Inter', sans-serif; color: var(--text-muted); margin-top: 4px; }
+    .gc-bit {
+      position: absolute; top: -10px;
+      width: 9px; height: 13px; border-radius: 2px;
+      opacity: 0;
+      animation-name: gcFall;
+      animation-timing-function: cubic-bezier(.55,.15,.6,.85);
+      animation-fill-mode: forwards;
+    }
+    @keyframes gcFall {
+      0%   { transform: translateY(-10px) rotate(0); opacity: 0; }
+      10%  { opacity: 1; }
+      100% { transform: translateY(100vh) rotate(720deg); opacity: .9; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .goal-celebrate, .gc-card, .gc-bit { animation: none; transition: none; }
+    }
+
+    /* ── ARCHIVE RADIAL SCORE BADGE (T3.9) ── */
+    .score-badge {
+      position: relative; width: 44px; height: 44px;
+      display: inline-flex; align-items: center; justify-content: center;
+      margin: 0 auto;
+    }
+    .score-badge svg { position: absolute; inset: 0; }
+    .score-badge-val {
+      position: relative; font: 700 13px/1 'IBM Plex Sans', sans-serif;
+      color: var(--text);
+    }
+    .score-badge-val small { font-size: 9px; font-weight: 500; margin-left: 1px; }
+    .score-badge.band-good { color: var(--green); }
+    .score-badge.band-mid  { color: #F59E0B; }
+    .score-badge.band-low  { color: var(--danger); }
+    .score-badge.no-score  { color: var(--text-muted); font: 600 13px/1 'IBM Plex Sans', sans-serif; }
+
     /* ── ANIMATIONS ── */
     @keyframes fadeUp {
       from { opacity: 0; transform: translateY(8px); }
@@ -3467,6 +3527,29 @@ function renderMyWorkPage(el) {
   </div>`;
 }
 
+// T3.9 — radial ring around the score percentage. Three colour bands match
+// the OKR rule of thumb (0.7+ green, 0.4–0.6 amber, <0.4 red). Returns a
+// muted placeholder if no score was set at close-out.
+function renderScoreBadge(score) {
+  if (score == null) {
+    return `<div class="score-badge no-score" title="No score set">—</div>`;
+  }
+  const pct = Math.max(0, Math.min(100, Math.round(score * 100)));
+  const band = pct >= 70 ? 'good' : pct >= 40 ? 'mid' : 'low';
+  // SVG ring: r=18 → C=2πr≈113.1. dasharray fills proportional to pct.
+  const C = 113.1;
+  const offset = (C * (1 - pct / 100)).toFixed(1);
+  return `<div class="score-badge band-${band}" title="Scored ${pct}%">
+    <svg viewBox="0 0 44 44" width="44" height="44" aria-hidden="true">
+      <circle cx="22" cy="22" r="18" fill="none" stroke="currentColor" stroke-width="3.5" opacity=".18" />
+      <circle cx="22" cy="22" r="18" fill="none" stroke="currentColor" stroke-width="3.5"
+        stroke-dasharray="${C}" stroke-dashoffset="${offset}" stroke-linecap="round"
+        transform="rotate(-90 22 22)" />
+    </svg>
+    <span class="score-badge-val">${pct}<small>%</small></span>
+  </div>`;
+}
+
 function renderArchivePage(el) {
   const closed = S.goals.filter(g => g.status === 'closed')
     .sort((a,b) => (b.closedAt||'').localeCompare(a.closedAt||''));
@@ -3491,7 +3574,7 @@ function renderArchivePage(el) {
   const goalRow = (g) => {
     const iC = g.keyResults.reduce((a,k)=>a+k.initiatives.length,0);
     const done = g.keyResults.reduce((a,k)=>a+k.initiatives.filter(i=>i.status==='completed').length,0);
-    const scoreTxt = g.score != null ? `${Math.round(g.score*100)}%` : '—';
+    const scoreBadge = renderScoreBadge(g.score);
     return `<div class="arch-row" onclick="selectGoal('${g.id}')">
       <div class="arch-main">
         <div class="arch-title">${esc(g.title)}</div>
@@ -3506,7 +3589,7 @@ function renderArchivePage(el) {
         <div><div class="arch-stat-val">${g.keyResults.length}</div><div class="arch-stat-lab">Measures</div></div>
         <div><div class="arch-stat-val">${iC}</div><div class="arch-stat-lab">Initiatives</div></div>
         <div><div class="arch-stat-val" style="color:var(--green)">${done}</div><div class="arch-stat-lab">Done</div></div>
-        <div><div class="arch-stat-val">${scoreTxt}</div><div class="arch-stat-lab">Score</div></div>
+        <div>${scoreBadge}<div class="arch-stat-lab">Score</div></div>
       </div>
     </div>`;
   };
@@ -5050,9 +5133,55 @@ async function closeGoal(gid) {
   g.score = score;
   g.reflection = reflection;
   closeModal();
-  showToast(`Goal closed${score !== null ? ` at ${Math.round(score*100)}%` : ''} — see it in Archive.`);
+  // T3.2 — full-screen celebration before navigating to Archive. Beats the
+  // silent close that the goal flow had before — a quarter ending deserves
+  // a beat. The overlay self-dismisses after ~2s.
+  celebrateGoalClose(g.title, score);
   S.activeGoalId = null;
   render();
+}
+
+// T3.2 — full-bleed overlay with confetti dots and a score callout. We
+// generate ~26 little squares animated with random delays + start positions
+// so the burst feels organic without needing a 3rd-party library.
+function celebrateGoalClose(title, score) {
+  // Respect motion preferences — fall back to a plain toast.
+  const reduceMotion = matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+  if (reduceMotion) {
+    showToast(`🎉 Goal closed${score !== null ? ` at ${Math.round(score*100)}%` : ''} — see it in Archive.`);
+    return;
+  }
+  let host = document.getElementById('goalCelebrate');
+  if (!host) {
+    host = document.createElement('div');
+    host.id = 'goalCelebrate';
+    host.className = 'goal-celebrate';
+    document.body.appendChild(host);
+  }
+  const scoreLine = score !== null
+    ? `<div class="gc-score">${Math.round(score*100)}%</div>`
+    : '';
+  const colors = ['#F4B400','#22c55e','#ec4899','#3b82f6','#a855f7'];
+  const confetti = Array.from({ length: 26 }, (_, i) => {
+    const left = Math.round(((i * 53) % 100));
+    const delay = (i * 37) % 800;
+    const dur = 1100 + ((i * 91) % 700);
+    const rot = (i * 47) % 360;
+    const color = colors[i % colors.length];
+    return `<span class="gc-bit" style="left:${left}%;background:${color};animation-delay:${delay}ms;animation-duration:${dur}ms;transform:rotate(${rot}deg)"></span>`;
+  }).join('');
+  host.innerHTML = `
+    ${confetti}
+    <div class="gc-card">
+      <div class="gc-emoji">🎉</div>
+      <div class="gc-headline">Goal closed</div>
+      ${scoreLine}
+      <div class="gc-title">${esc(title)}</div>
+      <div class="gc-sub">It'll live in Archive — onward to what's next.</div>
+    </div>`;
+  host.classList.add('show');
+  clearTimeout(host._t);
+  host._t = setTimeout(() => host.classList.remove('show'), 2200);
 }
 
 async function reopenGoal(gid) {
