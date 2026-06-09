@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Zostel Compass</title>
+  <title>Compass</title>
   <!-- Inline SVG favicon — a compass needle on a dark disc. Lives in the
        HTML so there's no extra file to host alongside index.html on GitHub
        Pages, and ships in the same network request as the page itself. -->
@@ -2262,7 +2262,7 @@
         <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/>
       </svg>
     </div>
-      <span class="logo-name">Zostel <em>Compass</em></span>
+      <span class="logo-name"><em>Compass</em></span>
     </div>
   </div>
   <div class="header-right">
@@ -6037,7 +6037,7 @@ function renderSettingsPage(el) {
   el.innerHTML = `<div class="fade-up">
     <div class="settings-hero">
       <h2>Settings</h2>
-      <p>People here are everyone who's signed into Zostel Compass. They show up automatically in every "Led by" dropdown — no manual add needed.</p>
+      <p>People here are everyone who's signed into Compass. They show up automatically in every "Led by" dropdown — no manual add needed.</p>
     </div>
 
     <div class="settings-section">
@@ -6088,7 +6088,7 @@ function renderSettingsPage(el) {
 function exportWorkspace() {
   const data = {
     exported_at: new Date().toISOString(),
-    workspace: 'Zostel Compass',
+    workspace: 'Compass',
     exported_by: { id: S.session?.user?.id, email: S.session?.user?.email, name: S.profile?.display_name },
     counts: {
       goals: S.goals.length,
@@ -6162,7 +6162,7 @@ function renderSignInScreen(opts = {}) {
             <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/>
           </svg>
         </div>
-        <h1 class="signin-title">Zostel <em>Compass</em></h1>
+        <h1 class="signin-title"><em>Compass</em></h1>
         <p class="signin-sub">A goal-tracking workspace for the team.<br/>Sign in with your work email to continue.</p>
         ${err}
         <button class="signin-google" type="button" onclick="signInWithGoogle()">
@@ -6307,7 +6307,7 @@ function friendlyAuthError(code, desc) {
     d.includes('email domain') ||
     d.includes('not allowed')
   ) {
-    return 'Zostel Compass is only open to the Zostel team. Please sign in with your @zostel.com or @zo.xyz Google account.';
+    return 'Compass is only open to the Zostel team. Please sign in with your @zostel.com or @zo.xyz Google account.';
   }
   if (code === 'access_denied') {
     return 'Sign-in was cancelled. Click "Continue with Google" to try again.';
