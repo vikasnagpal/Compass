@@ -1,0 +1,904 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Careers — Zostel</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: #EDE9E3;
+  min-height: 100vh;
+  padding: 48px 40px;
+}
+
+.jobs-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+.card-wrapper {
+  position: relative;
+  z-index: 1;
+  transition: z-index 0s;
+}
+.card-wrapper:hover { z-index: 100; }
+
+.job-card {
+  background: #E2DDD7;
+  border-radius: 16px;
+  padding: 28px 26px 22px;
+  display: flex;
+  flex-direction: column;
+  min-height: 260px;
+  position: relative;
+  overflow: hidden;
+  transition: background 0.6s ease, box-shadow 0.6s ease, border-color 0.6s ease;
+  border: 2px solid transparent;
+  cursor: pointer;
+}
+
+.job-card .card-body { flex: 1; }
+
+.job-card h2 {
+  font-family: 'Poppins', sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  color: #1a1a1a;
+  line-height: 1.25;
+  margin-bottom: 5px;
+}
+
+.job-card .experience {
+  font-size: 12px;
+  color: #888;
+  font-weight: 500;
+  margin-bottom: 14px;
+}
+
+.job-card .description {
+  font-size: 13px;
+  color: #666;
+  line-height: 1.65;
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.job-card .card-footer {
+  border-top: 1px solid #CBC5BE;
+  padding-top: 14px;
+  margin-top: 18px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.job-card .apply-by { font-size: 12px; color: #999; }
+
+.job-card .apply-now {
+  font-size: 13px;
+  font-weight: 700;
+  color: #1a1a1a;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  transition: gap 0.3s ease;
+}
+.job-card:not(.vibe-card):hover .apply-now { gap: 9px; }
+
+
+/* ═══════════════════════════════════════════════
+   VIBE CURATOR — Indian folk art hover
+   ═══════════════════════════════════════════════ */
+
+.vibe-wrapper:hover .vibe-card {
+  background: #FDF6E4;
+  border-color: #D4780A;
+  box-shadow:
+    0 0 0 4px rgba(212,120,10,0.15),
+    0 28px 72px rgba(212,120,10,0.2),
+    0 8px 24px rgba(0,0,0,0.07);
+  overflow: visible;
+}
+
+.vibe-wrapper:hover .vibe-card .card-footer {
+  border-top-color: rgba(212,120,10,0.3);
+}
+.vibe-wrapper:hover .vibe-card .apply-now {
+  color: #C05E08;
+  gap: 9px;
+}
+
+.vibe-card .card-body  { position: relative; z-index: 10; }
+.vibe-card .card-footer { position: relative; z-index: 30; }
+
+/* ── Folk element base — slower, eased ── */
+.folk {
+  position: absolute;
+  pointer-events: none;
+  opacity: 0;
+  transition-property: opacity, transform;
+  transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+  transition-duration: 0.85s;
+}
+.vibe-wrapper:hover .folk { opacity: 1; }
+
+/* ── Mandala ── */
+.folk-mandala {
+  width: 280px; height: 280px;
+  top: 50%; left: 50%;
+  transform: translate(-50%,-50%) scale(0) rotate(0deg);
+  transition-duration: 1.1s;
+  transition-timing-function: ease;
+  transition-delay: 0s;
+  z-index: 0;
+}
+.vibe-wrapper:hover .folk-mandala {
+  transform: translate(-50%,-50%) scale(1) rotate(22deg);
+  opacity: 0.065;
+}
+
+/* ── Backpack — right side sneak-out ── */
+.folk-backpack {
+  width: 88px; height: 100px;
+  top: 78px; right: -44px;
+  transform: scale(0) rotate(-10deg);
+  transform-origin: center right;
+  transition-delay: 0.12s;
+  z-index: 20;
+}
+.vibe-wrapper:hover .folk-backpack { transform: scale(1) rotate(0deg); }
+
+/* ── Lotus — top-left sneak-out ── */
+.folk-lotus {
+  width: 70px; height: 70px;
+  top: -28px; left: -26px;
+  transform: scale(0) rotate(20deg);
+  transform-origin: top left;
+  transition-delay: 0.06s;
+  z-index: 20;
+}
+.vibe-wrapper:hover .folk-lotus { transform: scale(1) rotate(0deg); }
+
+/* ── Paisley — top-right sneak-out ── */
+.folk-paisley {
+  width: 50px; height: 72px;
+  top: -36px; right: 32px;
+  transform: scale(0) rotate(10deg);
+  transform-origin: top center;
+  transition-delay: 0.18s;
+  z-index: 20;
+}
+.vibe-wrapper:hover .folk-paisley { transform: scale(1) rotate(0deg); }
+
+/* ── Bonfire — bottom sneak-out ── */
+.folk-bonfire {
+  width: 82px; height: 94px;
+  bottom: -36px; left: 26px;
+  transform: scale(0);
+  transform-origin: bottom left;
+  transition-delay: 0.24s;
+  z-index: 20;
+}
+.vibe-wrapper:hover .folk-bonfire { transform: scale(1); }
+
+/* ── Chai cheers — left side sneak-out ── */
+.folk-chai {
+  width: 80px; height: 80px;
+  top: 78px; left: -44px;
+  transform: scale(0) rotate(-6deg);
+  transform-origin: center left;
+  transition-delay: 0.18s;
+  z-index: 20;
+}
+.vibe-wrapper:hover .folk-chai { transform: scale(1) rotate(0deg); }
+
+/* ── Small interior flowers ── */
+.folk-f1 { width:36px; height:36px; top:58px; right:20px; transform:scale(0) rotate(0deg); transition-delay:0.3s; z-index:3; }
+.folk-f2 { width:28px; height:28px; top:92px; left:22px; transform:scale(0); transition-delay:0.36s; z-index:3; }
+.folk-f3 { width:24px; height:24px; top:44px; right:64px; transform:scale(0) rotate(-30deg); transition-delay:0.42s; z-index:3; }
+.vibe-wrapper:hover .folk-f1 { transform:scale(1) rotate(35deg); }
+.vibe-wrapper:hover .folk-f2 { transform:scale(1); }
+.vibe-wrapper:hover .folk-f3 { transform:scale(1) rotate(0deg); }
+
+/* ── Accent dots ── */
+.folk-dot { border-radius:50%; z-index:3; }
+.fd1{width:8px;height:8px;top:40px;left:36px;background:#D4780A;transform:scale(0);transition-delay:0.48s;}
+.fd2{width:6px;height:6px;top:72px;right:34px;background:#1565C0;transform:scale(0);transition-delay:0.52s;}
+.fd3{width:7px;height:7px;top:108px;right:50px;background:#2E7D32;transform:scale(0);transition-delay:0.56s;}
+.fd4{width:6px;height:6px;top:128px;left:42px;background:#AD1457;transform:scale(0);transition-delay:0.6s;}
+.vibe-wrapper:hover .folk-dot { transform:scale(1); }
+
+/* ── Vines ── */
+.folk-vine {
+  width:100%; height:40px; top:0; left:0;
+  transform:scaleX(0); transform-origin:left;
+  transition-timing-function:ease; transition-delay:0.04s; transition-duration:1s;
+  z-index:1;
+}
+.vibe-wrapper:hover .folk-vine { transform:scaleX(1); }
+
+.folk-vine-b {
+  width:100%; height:32px; bottom:54px; left:0;
+  transform:scaleX(0); transform-origin:right;
+  transition-timing-function:ease; transition-delay:0.1s; transition-duration:1s;
+  z-index:1;
+}
+.vibe-wrapper:hover .folk-vine-b { transform:scaleX(1); }
+
+/* ── Bob float on sneak-out elements ── */
+@keyframes folkBob {
+  0%,100% { translate: 0 0px; }
+  50%      { translate: 0 -7px; }
+}
+.vibe-wrapper:hover .folk-backpack { animation: folkBob 3.4s ease-in-out infinite 1s; }
+.vibe-wrapper:hover .folk-lotus    { animation: folkBob 3.6s ease-in-out infinite 1.1s; }
+.vibe-wrapper:hover .folk-bonfire   { animation: folkBob 3s ease-in-out infinite 0.9s; }
+.vibe-wrapper:hover .folk-paisley  { animation: folkBob 3.2s ease-in-out infinite 1.2s; }
+.vibe-wrapper:hover .folk-chai     { animation: folkBob 3.8s ease-in-out infinite 1.3s; }
+</style>
+</head>
+<body>
+<div class="jobs-grid">
+
+  <!-- 1. Property Manager -->
+  <div class="card-wrapper">
+    <div class="job-card">
+      <div class="card-body">
+        <h2>Property Manager</h2>
+        <p class="experience">Experience: 2 years</p>
+        <p class="description">We're looking for an exceptional and passionate Property Managers, with opportunities across our network. If you're a natural leader, a people person who thrives in dynamic environments and loves the world of travel and hospitality, we want you on our team.</p>
+      </div>
+      <div class="card-footer">
+        <span class="apply-by">Apply by Dec 30, 2026</span>
+        <a href="#" class="apply-now">Apply Now &rarr;</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. Housekeeping Team -->
+  <div class="card-wrapper">
+    <div class="job-card">
+      <div class="card-body">
+        <h2>Housekeeping Team</h2>
+        <p class="experience">Experience: 1 year</p>
+        <p class="description">Join our Housekeeping Team to ensure property cleanliness and hygiene, foster a welcoming atmosphere, and deliver the signature Zostel vibe through every detail. Cleanliness is our love language.</p>
+      </div>
+      <div class="card-footer">
+        <span class="apply-by">Apply by Dec 30, 2026</span>
+        <a href="#" class="apply-now">Apply Now &rarr;</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. Kitchen Team -->
+  <div class="card-wrapper">
+    <div class="job-card">
+      <div class="card-body">
+        <h2>Kitchen Team</h2>
+        <p class="experience">Experience: 1 year</p>
+        <p class="description">Join the Kitchen Team to prepare nourishing daily meals and occasional feasts, fueling the Zostel community. Your kitchen is the heart of the house — a place where travellers gather, bond, and share stories over good food.</p>
+      </div>
+      <div class="card-footer">
+        <span class="apply-by">Apply by Dec 30, 2026</span>
+        <a href="#" class="apply-now">Apply Now &rarr;</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. Front Desk Manager -->
+  <div class="card-wrapper">
+    <div class="job-card">
+      <div class="card-body">
+        <h2>Front Desk Manager</h2>
+        <p class="experience">Experience: 1 year</p>
+        <p class="description">As a Front Desk Manager at Zostel, you'll be the first smile our travellers meet. You'll run the front desk, host guests, and make sure every stay starts and ends on a high note — warm, smooth, and thoroughly Zostel.</p>
+      </div>
+      <div class="card-footer">
+        <span class="apply-by">Apply by Dec 30, 2026</span>
+        <a href="#" class="apply-now">Apply Now &rarr;</a>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ═══════════════════════════════════════════
+       5. Community Volunteer (Vibe Curator) ★
+       ═══════════════════════════════════════════ -->
+  <div class="card-wrapper vibe-wrapper">
+
+    <!-- ══ BACKPACK — bottom-right sneak-out ══ -->
+    <!--
+      Rajasthani embroidered backpack.
+      Deep indigo body, zari-gold embroidery, mirror-work discs, tassel fringe.
+    -->
+    <svg class="folk folk-backpack" viewBox="0 0 130 148" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <clipPath id="bagBody">
+          <rect x="16" y="18" width="98" height="106" rx="12"/>
+        </clipPath>
+        <clipPath id="pocketClip">
+          <rect x="20" y="88" width="90" height="32" rx="8"/>
+        </clipPath>
+      </defs>
+
+      <!-- Shoulder straps (behind body) -->
+      <path d="M38,18 C30,50 28,90 34,130" stroke="#121858" stroke-width="10" stroke-linecap="round" fill="none"/>
+      <path d="M92,18 C100,50 102,90 96,130" stroke="#121858" stroke-width="10" stroke-linecap="round" fill="none"/>
+      <!-- Strap buckles -->
+      <rect x="30" y="108" width="10" height="7" rx="2" fill="#FFB300" stroke="#C68000" stroke-width="1"/>
+      <rect x="90" y="108" width="10" height="7" rx="2" fill="#FFB300" stroke="#C68000" stroke-width="1"/>
+
+      <!-- Main body -->
+      <rect x="16" y="18" width="98" height="106" rx="12" fill="#1A237E" stroke="#0D1642" stroke-width="2.5"/>
+
+      <!-- Top carry handle -->
+      <path d="M46,18 Q65,5 84,18" stroke="#0D1642" stroke-width="9" fill="none" stroke-linecap="round"/>
+      <path d="M46,18 Q65,6 84,18" stroke="#3949AB" stroke-width="6" fill="none" stroke-linecap="round"/>
+
+      <!-- Main embroidery panel (inset rectangle with gold border) -->
+      <rect x="22" y="24" width="86" height="60" rx="7" fill="#283593" stroke="#FFB300" stroke-width="2"/>
+      <!-- Gold dot border inside panel -->
+      <rect x="27" y="29" width="76" height="50" rx="5" fill="none" stroke="#FFB300" stroke-width="1" stroke-dasharray="3.5 3.5"/>
+
+      <!-- Central medallion — 8-petal lotus in gold & magenta -->
+      <circle cx="65" cy="54" r="20" fill="#1A237E" stroke="#FFB300" stroke-width="2"/>
+      <circle cx="65" cy="54" r="16" fill="#283593" stroke="#FFB300" stroke-width="1"/>
+      <!-- 8 petals -->
+      <path d="M65,36 Q60,45 65,54 Q70,45 65,36Z" fill="#FFB300" stroke="#C68000" stroke-width="1"/>
+      <path d="M65,36 Q60,45 65,54 Q70,45 65,36Z" fill="#D81B60" stroke="#880E4F" stroke-width="1" transform="rotate(45,65,54)"/>
+      <path d="M65,36 Q60,45 65,54 Q70,45 65,36Z" fill="#FFB300" stroke="#C68000" stroke-width="1" transform="rotate(90,65,54)"/>
+      <path d="M65,36 Q60,45 65,54 Q70,45 65,36Z" fill="#D81B60" stroke="#880E4F" stroke-width="1" transform="rotate(135,65,54)"/>
+      <path d="M65,36 Q60,45 65,54 Q70,45 65,36Z" fill="#FFB300" stroke="#C68000" stroke-width="1" transform="rotate(180,65,54)"/>
+      <path d="M65,36 Q60,45 65,54 Q70,45 65,36Z" fill="#D81B60" stroke="#880E4F" stroke-width="1" transform="rotate(225,65,54)"/>
+      <path d="M65,36 Q60,45 65,54 Q70,45 65,36Z" fill="#FFB300" stroke="#C68000" stroke-width="1" transform="rotate(270,65,54)"/>
+      <path d="M65,36 Q60,45 65,54 Q70,45 65,36Z" fill="#D81B60" stroke="#880E4F" stroke-width="1" transform="rotate(315,65,54)"/>
+      <!-- Medallion centre -->
+      <circle cx="65" cy="54" r="6.5" fill="#E65100" stroke="#C62828" stroke-width="1.2"/>
+      <circle cx="65" cy="54" r="3"   fill="#FFF176"/>
+
+      <!-- Four mirror-work discs at panel corners -->
+      <circle cx="30" cy="32" r="5" fill="#E91E8C" stroke="#880E4F" stroke-width="1.2"/>
+      <circle cx="30" cy="32" r="2.5" fill="#FFF8F8"/>
+      <circle cx="100" cy="32" r="5" fill="#E91E8C" stroke="#880E4F" stroke-width="1.2"/>
+      <circle cx="100" cy="32" r="2.5" fill="#FFF8F8"/>
+      <circle cx="30" cy="76" r="5" fill="#E91E8C" stroke="#880E4F" stroke-width="1.2"/>
+      <circle cx="30" cy="76" r="2.5" fill="#FFF8F8"/>
+      <circle cx="100" cy="76" r="5" fill="#E91E8C" stroke="#880E4F" stroke-width="1.2"/>
+      <circle cx="100" cy="76" r="2.5" fill="#FFF8F8"/>
+
+      <!-- Diamond accent dots mid-panel edges -->
+      <circle cx="65" cy="30" r="3" fill="#00BCD4"/>
+      <circle cx="65" cy="78" r="3" fill="#00BCD4"/>
+      <circle cx="22" cy="54" r="3" fill="#00BCD4"/>
+      <circle cx="108" cy="54" r="3" fill="#00BCD4"/>
+
+      <!-- Front pocket -->
+      <rect x="20" y="88" width="90" height="32" rx="8" fill="#283593" stroke="#0D1642" stroke-width="2"/>
+      <!-- Pocket block-print chevron fill -->
+      <g clip-path="url(#pocketClip)" stroke="#3949AB" stroke-width="1" fill="none" opacity="0.7">
+        <path d="M20,96 L28,88 M28,96 L36,88 M36,96 L44,88 M44,96 L52,88 M52,96 L60,88 M60,96 L68,88 M68,96 L76,88 M76,96 L84,88 M84,96 L92,88 M92,96 L100,88 M100,96 L108,88"/>
+      </g>
+      <!-- Pocket zipper — curved gold dashed line -->
+      <path d="M26,88 Q65,82 104,88" fill="none" stroke="#FFB300" stroke-width="2" stroke-dasharray="5 3"/>
+      <!-- Zipper pull tab -->
+      <circle cx="65" cy="84" r="4" fill="#FFB300" stroke="#C68000" stroke-width="1.2"/>
+      <rect x="63" y="87" width="4" height="6" rx="2" fill="#C68000"/>
+      <!-- Pocket centre flower -->
+      <path d="M65,97 Q61,103 65,108 Q69,103 65,97Z" fill="#FFB300"/>
+      <path d="M65,97 Q61,103 65,108 Q69,103 65,97Z" fill="#D81B60" transform="rotate(90,65,103)"/>
+      <circle cx="65" cy="103" r="3.5" fill="#FFF176" stroke="#C68000" stroke-width="0.8"/>
+
+      <!-- Tassel fringe at bottom of bag -->
+      <g stroke-width="1.8" stroke-linecap="round">
+        <line x1="30" y1="124" x2="28" y2="136" stroke="#FFB300"/>
+        <circle cx="28" cy="137" r="3" fill="#FFB300"/>
+        <line x1="42" y1="124" x2="40" y2="138" stroke="#D81B60"/>
+        <circle cx="40" cy="139" r="3" fill="#D81B60"/>
+        <line x1="54" y1="124" x2="52" y2="140" stroke="#FFB300"/>
+        <circle cx="52" cy="141" r="3" fill="#FFB300"/>
+        <line x1="65" y1="124" x2="65" y2="142" stroke="#00BCD4"/>
+        <circle cx="65" cy="143" r="3" fill="#00BCD4"/>
+        <line x1="76" y1="124" x2="78" y2="140" stroke="#FFB300"/>
+        <circle cx="78" cy="141" r="3" fill="#FFB300"/>
+        <line x1="88" y1="124" x2="90" y2="138" stroke="#D81B60"/>
+        <circle cx="90" cy="139" r="3" fill="#D81B60"/>
+        <line x1="100" y1="124" x2="102" y2="136" stroke="#FFB300"/>
+        <circle cx="102" cy="137" r="3" fill="#FFB300"/>
+      </g>
+    </svg>
+
+
+    <!-- ══ BONFIRE — bottom-left sneak-out ══ -->
+    <!-- Festival bonfire — crisscross log pile, organic 2-peak flame, teardrop sparks -->
+    <svg class="folk folk-bonfire" viewBox="0 0 88 100" xmlns="http://www.w3.org/2000/svg">
+
+      <!-- EMBER BASE GLOW -->
+      <ellipse cx="44" cy="72" rx="26" ry="7"   fill="#BF360C" stroke="#7B0000" stroke-width="1.5"/>
+      <ellipse cx="44" cy="72" rx="18" ry="4.5" fill="#E65100"/>
+      <ellipse cx="44" cy="72" rx="10" ry="2.5" fill="#FF8F00"/>
+
+      <!-- MAIN FLAME — compact 2-peak silhouette -->
+      <path d="M34,72 C24,60 28,44 40,32 C42,28 43,26 44,28 C45,30 48,42 50,48
+               C52,38 54,30 56,32 C60,38 63,56 62,72 Z"
+            fill="#BF360C" stroke="#4E1200" stroke-width="2.2"/>
+      <path d="M36,72 C27,60 31,46 42,34 C43,30 44,28 44,30 C45,32 48,42 50,48
+               C52,40 54,32 56,34 C59,40 62,56 60,72 Z" fill="#E65100"/>
+      <path d="M38,72 C30,60 33,48 44,36 C45,32 46,30 46,32 C47,34 49,44 50,48
+               C52,42 53,36 55,38 C57,44 60,56 58,72 Z" fill="#FF8F00"/>
+      <path d="M41,72 C35,60 37,50 46,40 C47,36 48,34 48,36 C49,38 50,44 51,48
+               C52,44 53,38 54,40 C56,46 57,56 55,72 Z" fill="#FFD54F"/>
+      <path d="M44,72 C39,62 40,52 47,44 C48,40 49,38 49,40 C50,42 51,46 52,48
+               C52,44 53,40 54,42 C55,48 55,58 53,72 Z" fill="#FFF9C4"/>
+      <!-- Madhubani chevrons -->
+      <path d="M45,60 Q48,56 51,60" fill="none" stroke="#FF8F00" stroke-width="1.1" stroke-linecap="round"/>
+      <path d="M44,52 Q47,48 50,52" fill="none" stroke="#FF8F00" stroke-width="1.1" stroke-linecap="round"/>
+
+      <!-- SECONDARY LEFT FLAME -->
+      <path d="M25,72 C17,62 20,48 26,38 C28,32 29,28 28,30 C29,34 31,42 29,52
+               C32,44 33,36 31,32 C35,38 35,56 32,70 Z"
+            fill="#E65100" stroke="#4E1200" stroke-width="1.8"/>
+      <path d="M27,72 C20,62 23,50 28,42 C30,36 30,32 29,34 C30,38 32,46 30,54
+               C33,46 34,40 32,36 C35,42 36,56 33,70 Z" fill="#FF8F00"/>
+      <path d="M29,72 C23,62 25,52 29,46 C31,40 31,36 31,38 C31,42 33,48 31,56
+               C33,50 34,44 33,40 C36,46 36,58 34,70 Z" fill="#FFD54F"/>
+
+      <!-- LOGS — 3 crisscross pairs, back to front -->
+      <!-- Pair 1: back (flattest) -->
+      <line x1="2"  y1="78" x2="86" y2="72" stroke="#5D4037" stroke-width="8"   stroke-linecap="round"/>
+      <line x1="86" y1="80" x2="2"  y2="74" stroke="#6D4C41" stroke-width="8"   stroke-linecap="round"/>
+      <!-- Pair 2: middle -->
+      <line x1="4"  y1="88" x2="82" y2="66" stroke="#4E342E" stroke-width="8.5" stroke-linecap="round"/>
+      <line x1="84" y1="88" x2="6"  y2="66" stroke="#5D4037" stroke-width="8.5" stroke-linecap="round"/>
+      <!-- Folk art bands on middle pair -->
+      <line x1="18" y1="85" x2="24" y2="74" stroke="#FFB300" stroke-width="1.5" stroke-linecap="round"/>
+      <line x1="26" y1="83" x2="31" y2="73" stroke="#D81B60" stroke-width="1.2" stroke-linecap="round" opacity="0.9"/>
+      <line x1="70" y1="83" x2="64" y2="73" stroke="#FFB300" stroke-width="1.5" stroke-linecap="round"/>
+      <line x1="62" y1="84" x2="57" y2="73" stroke="#D81B60" stroke-width="1.2" stroke-linecap="round" opacity="0.9"/>
+      <!-- Pair 3: front (steepest) -->
+      <line x1="2"  y1="96" x2="72" y2="64" stroke="#4E342E" stroke-width="9"   stroke-linecap="round"/>
+      <line x1="86" y1="96" x2="16" y2="64" stroke="#5D4037" stroke-width="9"   stroke-linecap="round"/>
+
+      <!-- LOG END FACES — back pair (r=4.5) -->
+      <circle cx="2"  cy="78" r="4.5" fill="#DBA870" stroke="#6D3415" stroke-width="1.5"/>
+      <circle cx="2"  cy="78" r="2.4" fill="none" stroke="#C4874A" stroke-width="1"/>
+      <circle cx="86" cy="72" r="4.5" fill="#DBA870" stroke="#6D3415" stroke-width="1.5"/>
+      <circle cx="86" cy="72" r="2.4" fill="none" stroke="#C4874A" stroke-width="1"/>
+      <circle cx="86" cy="80" r="4.5" fill="#DBA870" stroke="#6D3415" stroke-width="1.5"/>
+      <circle cx="86" cy="80" r="2.4" fill="none" stroke="#C4874A" stroke-width="1"/>
+      <circle cx="2"  cy="74" r="4.5" fill="#DBA870" stroke="#6D3415" stroke-width="1.5"/>
+      <circle cx="2"  cy="74" r="2.4" fill="none" stroke="#C4874A" stroke-width="1"/>
+      <!-- Middle pair ends (r=5.5 with center dot) -->
+      <circle cx="4"  cy="88" r="5.5" fill="#DBA870" stroke="#6D3415" stroke-width="1.8"/>
+      <circle cx="4"  cy="88" r="3"   fill="none" stroke="#C4874A" stroke-width="1"/>
+      <circle cx="4"  cy="88" r="1.2" fill="#6D3415"/>
+      <circle cx="82" cy="66" r="5.5" fill="#DBA870" stroke="#6D3415" stroke-width="1.8"/>
+      <circle cx="82" cy="66" r="3"   fill="none" stroke="#C4874A" stroke-width="1"/>
+      <circle cx="82" cy="66" r="1.2" fill="#6D3415"/>
+      <circle cx="84" cy="88" r="5.5" fill="#DBA870" stroke="#6D3415" stroke-width="1.8"/>
+      <circle cx="84" cy="88" r="3"   fill="none" stroke="#C4874A" stroke-width="1"/>
+      <circle cx="84" cy="88" r="1.2" fill="#6D3415"/>
+      <circle cx="6"  cy="66" r="5.5" fill="#DBA870" stroke="#6D3415" stroke-width="1.8"/>
+      <circle cx="6"  cy="66" r="3"   fill="none" stroke="#C4874A" stroke-width="1"/>
+      <circle cx="6"  cy="66" r="1.2" fill="#6D3415"/>
+      <!-- Front pair ends (r=6.5, most prominent) -->
+      <circle cx="2"  cy="96" r="6.5" fill="#E2B080" stroke="#6D3415" stroke-width="2"/>
+      <circle cx="2"  cy="96" r="3.8" fill="none" stroke="#C4874A" stroke-width="1.2"/>
+      <circle cx="2"  cy="96" r="1.6" fill="#6D3415"/>
+      <circle cx="72" cy="64" r="6.5" fill="#E2B080" stroke="#6D3415" stroke-width="2"/>
+      <circle cx="72" cy="64" r="3.8" fill="none" stroke="#C4874A" stroke-width="1.2"/>
+      <circle cx="72" cy="64" r="1.6" fill="#6D3415"/>
+      <circle cx="86" cy="96" r="6.5" fill="#E2B080" stroke="#6D3415" stroke-width="2"/>
+      <circle cx="86" cy="96" r="3.8" fill="none" stroke="#C4874A" stroke-width="1.2"/>
+      <circle cx="86" cy="96" r="1.6" fill="#6D3415"/>
+      <circle cx="16" cy="64" r="6.5" fill="#E2B080" stroke="#6D3415" stroke-width="2"/>
+      <circle cx="16" cy="64" r="3.8" fill="none" stroke="#C4874A" stroke-width="1.2"/>
+      <circle cx="16" cy="64" r="1.6" fill="#6D3415"/>
+
+      <!-- TEARDROP SPARKS -->
+      <path d="M18,60 Q14,52 18,46 Q22,52 18,60Z" fill="#FFB300" stroke="#E65100" stroke-width="1.2" transform="rotate(-25,18,53)"/>
+      <path d="M72,56 Q68,48 72,42 Q76,48 72,56Z" fill="#FFB300" stroke="#E65100" stroke-width="1.2" transform="rotate(20,72,49)"/>
+      <path d="M10,68 Q7,61  10,56 Q13,61 10,68Z" fill="#FF8F00" stroke="#BF360C" stroke-width="1"   transform="rotate(-32,10,62)"/>
+      <path d="M80,64 Q77,57 80,52 Q83,57 80,64Z" fill="#FF8F00" stroke="#BF360C" stroke-width="1"   transform="rotate(28,80,58)"/>
+      <path d="M28,44 Q26,39 28,35 Q30,39 28,44Z" fill="#FFD54F" stroke="#FFB300" stroke-width="0.8" transform="rotate(-15,28,39)"/>
+      <path d="M62,42 Q60,37 62,33 Q64,37 62,42Z" fill="#FFD54F" stroke="#FFB300" stroke-width="0.8" transform="rotate(18,62,37)"/>
+      <path d="M41,34 Q40,30 41,27 Q42,30 41,34Z" fill="#FFF9C4" stroke="#FFD54F" stroke-width="0.7"/>
+      <path d="M51,32 Q50,28 51,25 Q52,28 51,32Z" fill="#FFF9C4" stroke="#FFD54F" stroke-width="0.7" transform="rotate(14,51,28)"/>
+      <circle cx="22" cy="50" r="2"   fill="#FFB300"/>
+      <circle cx="68" cy="48" r="2"   fill="#FFB300"/>
+      <circle cx="32" cy="38" r="1.5" fill="#FFD54F"/>
+      <circle cx="58" cy="36" r="1.5" fill="#FFD54F"/>
+
+      <!-- Folk flowers at base -->
+      <path d="M6,99 Q4,94 8,93 Q10,98 6,99Z"     fill="#4CAF50" stroke="#2E7D32" stroke-width="1"/>
+      <path d="M6,99 Q8,94 4,93 Q2,98 6,99Z"      fill="#4CAF50" stroke="#2E7D32" stroke-width="1"/>
+      <circle cx="6"  cy="99" r="2" fill="#FFB300"/>
+      <path d="M82,99 Q80,94 84,93 Q86,98 82,99Z" fill="#4CAF50" stroke="#2E7D32" stroke-width="1"/>
+      <path d="M82,99 Q84,94 80,93 Q78,98 82,99Z" fill="#4CAF50" stroke="#2E7D32" stroke-width="1"/>
+      <circle cx="82" cy="99" r="2" fill="#FFB300"/>
+    </svg>
+
+
+    <!-- Chai cheers — two cutting-chai glasses clinking -->
+    <svg class="folk folk-chai" viewBox="0 0 88 88" xmlns="http://www.w3.org/2000/svg">
+
+      <!-- LEFT GLASS — rotated 22° clockwise, pivot at top-right (clink point) -->
+      <g transform="translate(44,20) rotate(22)">
+        <!-- Glass body -->
+        <path d="M0,0 L-27,0 L-23,48 L-3,48 Z" fill="#F5EDD8" stroke="#2C1810" stroke-width="2.2" stroke-linejoin="round"/>
+        <!-- Chai fill (lower ~68%) -->
+        <path d="M-26.2,15 L-0.8,15 L-3,48 L-23,48 Z" fill="#7B3A10"/>
+        <!-- Chai warmth layer -->
+        <path d="M-24,15 L-1.5,15 L-4,48 L-22,48 Z" fill="#A0582A" opacity="0.55"/>
+        <!-- Vertical highlight stripes on chai -->
+        <line x1="-20" y1="16" x2="-18.5" y2="47" stroke="#C8793A" stroke-width="3"   stroke-linecap="round" opacity="0.7"/>
+        <line x1="-13" y1="15.5" x2="-12" y2="47" stroke="#C8793A" stroke-width="2"   stroke-linecap="round" opacity="0.5"/>
+        <line x1="-7"  y1="15.5" x2="-6.5" y2="47" stroke="#C8793A" stroke-width="1.5" stroke-linecap="round" opacity="0.38"/>
+        <!-- Clear glass area above chai -->
+        <path d="M0,0 L-27,0 L-26.2,15 L-0.8,15 Z" fill="white" opacity="0.72"/>
+        <!-- Left-edge glass sheen -->
+        <path d="M-27,0 L-25,15 L-24,48 L-23,48 L-24.5,14 Z" fill="white" opacity="0.32"/>
+        <!-- Chai surface line -->
+        <line x1="-26" y1="15" x2="-1" y2="15" stroke="#5C2800" stroke-width="1.2" stroke-linecap="round" opacity="0.45"/>
+        <!-- Folk art rim band -->
+        <line x1="-26" y1="4" x2="-1" y2="4" stroke="#FFB300" stroke-width="1.3" opacity="0.85"/>
+        <!-- Folk dots on rim band -->
+        <circle cx="-20" cy="8" r="1.3" fill="#D81B60" opacity="0.85"/>
+        <circle cx="-13" cy="8" r="1.3" fill="#FFB300" opacity="0.85"/>
+        <circle cx="-6"  cy="8" r="1.3" fill="#D81B60" opacity="0.85"/>
+      </g>
+
+      <!-- RIGHT GLASS — rotated 22° counter-clockwise, pivot at top-left (clink point) -->
+      <g transform="translate(44,20) rotate(-22)">
+        <!-- Glass body -->
+        <path d="M0,0 L27,0 L23,48 L3,48 Z" fill="#F5EDD8" stroke="#2C1810" stroke-width="2.2" stroke-linejoin="round"/>
+        <!-- Chai fill -->
+        <path d="M0.8,15 L26.2,15 L23,48 L3,48 Z" fill="#7B3A10"/>
+        <!-- Chai warmth layer -->
+        <path d="M1.5,15 L24,15 L22,48 L4,48 Z" fill="#A0582A" opacity="0.55"/>
+        <!-- Vertical highlight stripes -->
+        <line x1="7"   y1="15.5" x2="6.5"  y2="47" stroke="#C8793A" stroke-width="1.5" stroke-linecap="round" opacity="0.38"/>
+        <line x1="13"  y1="15.5" x2="12"   y2="47" stroke="#C8793A" stroke-width="2"   stroke-linecap="round" opacity="0.5"/>
+        <line x1="20"  y1="16"   x2="18.5" y2="47" stroke="#C8793A" stroke-width="3"   stroke-linecap="round" opacity="0.7"/>
+        <!-- Clear glass area above chai -->
+        <path d="M0,0 L27,0 L26.2,15 L0.8,15 Z" fill="white" opacity="0.72"/>
+        <!-- Right-edge glass sheen -->
+        <path d="M27,0 L25,15 L24,48 L23,48 L24.5,14 Z" fill="white" opacity="0.32"/>
+        <!-- Chai surface line -->
+        <line x1="1" y1="15" x2="26" y2="15" stroke="#5C2800" stroke-width="1.2" stroke-linecap="round" opacity="0.45"/>
+        <!-- Folk art rim band -->
+        <line x1="1" y1="4" x2="26" y2="4" stroke="#FFB300" stroke-width="1.3" opacity="0.85"/>
+        <circle cx="6"  cy="8" r="1.3" fill="#D81B60" opacity="0.85"/>
+        <circle cx="13" cy="8" r="1.3" fill="#FFB300" opacity="0.85"/>
+        <circle cx="20" cy="8" r="1.3" fill="#D81B60" opacity="0.85"/>
+      </g>
+
+      <!-- STEAM WISPS rising from clink point -->
+      <path d="M38,18 C34,12 38,6 35,2"  fill="none" stroke="#FFF9C4" stroke-width="2"   stroke-linecap="round" opacity="0.9"/>
+      <path d="M44,16 C48,10 44,4  47,0"  fill="none" stroke="#FFF9C4" stroke-width="2"   stroke-linecap="round" opacity="0.9"/>
+      <path d="M50,18 C54,12 50,6  53,2"  fill="none" stroke="#FFF9C4" stroke-width="2"   stroke-linecap="round" opacity="0.9"/>
+
+      <!-- SUNBURST SPARKLE at clink point -->
+      <g transform="translate(44,20)">
+        <line x1="0"  y1="-10" x2="0"  y2="-4"  stroke="#FFD54F" stroke-width="1.6" stroke-linecap="round"/>
+        <line x1="0"  y1="4"   x2="0"  y2="10"  stroke="#FFD54F" stroke-width="1.6" stroke-linecap="round"/>
+        <line x1="-10" y1="0"  x2="-4" y2="0"   stroke="#FFD54F" stroke-width="1.6" stroke-linecap="round"/>
+        <line x1="4"  y1="0"   x2="10" y2="0"   stroke="#FFD54F" stroke-width="1.6" stroke-linecap="round"/>
+        <line x1="-7" y1="-7"  x2="-3" y2="-3"  stroke="#FFD54F" stroke-width="1.3" stroke-linecap="round"/>
+        <line x1="7"  y1="-7"  x2="3"  y2="-3"  stroke="#FFD54F" stroke-width="1.3" stroke-linecap="round"/>
+        <line x1="-7" y1="7"   x2="-3" y2="3"   stroke="#FFD54F" stroke-width="1.3" stroke-linecap="round"/>
+        <line x1="7"  y1="7"   x2="3"  y2="3"   stroke="#FFD54F" stroke-width="1.3" stroke-linecap="round"/>
+        <circle cx="0" cy="0" r="2.8" fill="#FFF9C4" stroke="#FFB300" stroke-width="1.2"/>
+      </g>
+
+      <!-- Small accent sparkles flanking the glasses -->
+      <g transform="translate(18,32)">
+        <line x1="0" y1="-5" x2="0" y2="5" stroke="#FFD54F" stroke-width="1.1" stroke-linecap="round"/>
+        <line x1="-5" y1="0" x2="5" y2="0" stroke="#FFD54F" stroke-width="1.1" stroke-linecap="round"/>
+      </g>
+      <g transform="translate(70,30)">
+        <line x1="0" y1="-5" x2="0" y2="5" stroke="#FFD54F" stroke-width="1.1" stroke-linecap="round"/>
+        <line x1="-5" y1="0" x2="5" y2="0" stroke="#FFD54F" stroke-width="1.1" stroke-linecap="round"/>
+      </g>
+      <circle cx="8"  cy="50" r="1.8" fill="#FFD54F" opacity="0.6"/>
+      <circle cx="80" cy="48" r="1.8" fill="#FFD54F" opacity="0.6"/>
+
+
+    </svg>
+
+
+    <!-- ══ THE CARD ITSELF ══ -->
+    <div class="job-card vibe-card">
+
+      <!-- Background mandala -->
+      <svg class="folk folk-mandala" viewBox="0 0 280 280" xmlns="http://www.w3.org/2000/svg">
+        <g transform="translate(140,140)">
+          <circle r="130" fill="none" stroke="#D4780A" stroke-width="1.5"/>
+          <circle r="110" fill="none" stroke="#D81B60" stroke-width="1"/>
+          <circle r="90"  fill="none" stroke="#1565C0" stroke-width="1.5"/>
+          <circle r="70"  fill="none" stroke="#2E7D32" stroke-width="1"/>
+          <circle r="50"  fill="none" stroke="#D4780A" stroke-width="1.5"/>
+          <circle r="30"  fill="none" stroke="#D81B60" stroke-width="1"/>
+          <line x1="0" y1="-130" x2="0"    y2="130"   stroke="#D4780A" stroke-width="0.8"/>
+          <line x1="-130" y1="0" x2="130"  y2="0"     stroke="#D4780A" stroke-width="0.8"/>
+          <line x1="-92"  y1="-92" x2="92" y2="92"    stroke="#1565C0" stroke-width="0.8"/>
+          <line x1="92"   y1="-92" x2="-92" y2="92"   stroke="#1565C0" stroke-width="0.8"/>
+          <line x1="-50"  y1="-120" x2="50" y2="120"  stroke="#2E7D32" stroke-width="0.6"/>
+          <line x1="50"   y1="-120" x2="-50" y2="120" stroke="#2E7D32" stroke-width="0.6"/>
+          <line x1="-120" y1="-50" x2="120" y2="50"   stroke="#2E7D32" stroke-width="0.6"/>
+          <line x1="120"  y1="-50" x2="-120" y2="50"  stroke="#2E7D32" stroke-width="0.6"/>
+          <ellipse rx="9" ry="17" cy="-90" fill="#D81B60" opacity="0.7"/>
+          <ellipse rx="9" ry="17" cy="-90" fill="#D81B60" opacity="0.7" transform="rotate(45)"/>
+          <ellipse rx="9" ry="17" cy="-90" fill="#D81B60" opacity="0.7" transform="rotate(90)"/>
+          <ellipse rx="9" ry="17" cy="-90" fill="#D81B60" opacity="0.7" transform="rotate(135)"/>
+          <ellipse rx="9" ry="17" cy="-90" fill="#D81B60" opacity="0.7" transform="rotate(180)"/>
+          <ellipse rx="9" ry="17" cy="-90" fill="#D81B60" opacity="0.7" transform="rotate(225)"/>
+          <ellipse rx="9" ry="17" cy="-90" fill="#D81B60" opacity="0.7" transform="rotate(270)"/>
+          <ellipse rx="9" ry="17" cy="-90" fill="#D81B60" opacity="0.7" transform="rotate(315)"/>
+          <circle r="8" fill="#D4780A"/>
+          <circle r="4" fill="#FFF176"/>
+        </g>
+      </svg>
+
+      <!-- Top vine -->
+      <svg class="folk folk-vine" viewBox="0 0 400 40" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M0,20 Q25,4 50,20 Q75,36 100,20 Q125,4 150,20 Q175,36 200,20 Q225,4 250,20 Q275,36 300,20 Q325,4 350,20 Q375,36 400,20"
+              fill="none" stroke="#2E7D32" stroke-width="2.8"/>
+        <ellipse cx="50"  cy="11" rx="8" ry="4.5" fill="#4CAF50" transform="rotate(-30,50,11)"/>
+        <ellipse cx="100" cy="29" rx="8" ry="4.5" fill="#388E3C" transform="rotate(30,100,29)"/>
+        <ellipse cx="150" cy="11" rx="8" ry="4.5" fill="#4CAF50" transform="rotate(-30,150,11)"/>
+        <ellipse cx="200" cy="29" rx="8" ry="4.5" fill="#388E3C" transform="rotate(30,200,29)"/>
+        <ellipse cx="250" cy="11" rx="8" ry="4.5" fill="#4CAF50" transform="rotate(-30,250,11)"/>
+        <ellipse cx="300" cy="29" rx="8" ry="4.5" fill="#388E3C" transform="rotate(30,300,29)"/>
+        <ellipse cx="350" cy="11" rx="8" ry="4.5" fill="#4CAF50" transform="rotate(-30,350,11)"/>
+        <circle cx="25" cy="4"   r="6" fill="#E65100"/><circle cx="25"  cy="4"   r="3" fill="#FFD54F"/>
+        <circle cx="75" cy="36"  r="6" fill="#D81B60"/><circle cx="75"  cy="36"  r="3" fill="#FFF176"/>
+        <circle cx="125" cy="4"  r="6" fill="#E65100"/><circle cx="125" cy="4"   r="3" fill="#FFD54F"/>
+        <circle cx="175" cy="36" r="6" fill="#D81B60"/><circle cx="175" cy="36"  r="3" fill="#FFF176"/>
+        <circle cx="225" cy="4"  r="6" fill="#E65100"/><circle cx="225" cy="4"   r="3" fill="#FFD54F"/>
+        <circle cx="275" cy="36" r="6" fill="#D81B60"/><circle cx="275" cy="36"  r="3" fill="#FFF176"/>
+        <circle cx="325" cy="4"  r="6" fill="#E65100"/><circle cx="325" cy="4"   r="3" fill="#FFD54F"/>
+        <circle cx="375" cy="36" r="6" fill="#D81B60"/><circle cx="375" cy="36"  r="3" fill="#FFF176"/>
+      </svg>
+
+      <!-- Bottom vine -->
+      <svg class="folk folk-vine-b" viewBox="0 0 400 32" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M0,16 Q25,2 50,16 Q75,30 100,16 Q125,2 150,16 Q175,30 200,16 Q225,2 250,16 Q275,30 300,16 Q325,2 350,16 Q375,30 400,16"
+              fill="none" stroke="#D4780A" stroke-width="2.2"/>
+        <ellipse cx="50"  cy="9"  rx="7" ry="4" fill="#FF8F00" transform="rotate(-30,50,9)"/>
+        <ellipse cx="100" cy="23" rx="7" ry="4" fill="#E65100" transform="rotate(30,100,23)"/>
+        <ellipse cx="150" cy="9"  rx="7" ry="4" fill="#FF8F00" transform="rotate(-30,150,9)"/>
+        <ellipse cx="200" cy="23" rx="7" ry="4" fill="#E65100" transform="rotate(30,200,23)"/>
+        <circle cx="25"  cy="2"  r="4.5" fill="#1565C0"/><circle cx="25"  cy="2"  r="2" fill="#FFF176"/>
+        <circle cx="75"  cy="30" r="4.5" fill="#2E7D32"/><circle cx="75"  cy="30" r="2" fill="#FFF176"/>
+        <circle cx="125" cy="2"  r="4.5" fill="#1565C0"/>
+        <circle cx="175" cy="30" r="4.5" fill="#2E7D32"/>
+        <circle cx="225" cy="2"  r="4.5" fill="#D81B60"/>
+      </svg>
+
+      <!-- Small interior flowers -->
+      <svg class="folk folk-f1" viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg">
+        <path d="M18,2 Q12,10 18,18 Q24,10 18,2Z" fill="#E65100"/>
+        <path d="M18,2 Q12,10 18,18 Q24,10 18,2Z" fill="#FF8F00" transform="rotate(45,18,18)"/>
+        <path d="M18,2 Q12,10 18,18 Q24,10 18,2Z" fill="#E65100" transform="rotate(90,18,18)"/>
+        <path d="M18,2 Q12,10 18,18 Q24,10 18,2Z" fill="#FF8F00" transform="rotate(135,18,18)"/>
+        <path d="M18,2 Q12,10 18,18 Q24,10 18,2Z" fill="#E65100" transform="rotate(180,18,18)"/>
+        <path d="M18,2 Q12,10 18,18 Q24,10 18,2Z" fill="#FF8F00" transform="rotate(225,18,18)"/>
+        <path d="M18,2 Q12,10 18,18 Q24,10 18,2Z" fill="#E65100" transform="rotate(270,18,18)"/>
+        <path d="M18,2 Q12,10 18,18 Q24,10 18,2Z" fill="#FF8F00" transform="rotate(315,18,18)"/>
+        <circle cx="18" cy="18" r="6" fill="#FFB300" stroke="#C68000" stroke-width="1"/>
+        <circle cx="18" cy="18" r="3" fill="#FFF176"/>
+      </svg>
+
+      <svg class="folk folk-f2" viewBox="0 0 28 28" xmlns="http://www.w3.org/2000/svg">
+        <path d="M14,2 Q9,9 14,16 Q19,9 14,2Z" fill="#1565C0"/>
+        <path d="M14,2 Q9,9 14,16 Q19,9 14,2Z" fill="#0D47A1" transform="rotate(60,14,14)"/>
+        <path d="M14,2 Q9,9 14,16 Q19,9 14,2Z" fill="#1976D2" transform="rotate(120,14,14)"/>
+        <path d="M14,2 Q9,9 14,16 Q19,9 14,2Z" fill="#1565C0" transform="rotate(180,14,14)"/>
+        <path d="M14,2 Q9,9 14,16 Q19,9 14,2Z" fill="#0D47A1" transform="rotate(240,14,14)"/>
+        <path d="M14,2 Q9,9 14,16 Q19,9 14,2Z" fill="#1976D2" transform="rotate(300,14,14)"/>
+        <circle cx="14" cy="14" r="5" fill="#FFB300" stroke="#E65100" stroke-width="1"/>
+        <circle cx="14" cy="14" r="2.5" fill="white"/>
+      </svg>
+
+      <svg class="folk folk-f3" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12,1 Q9,8 12,12 Q15,8 12,1Z" fill="#2E7D32"/>
+        <path d="M12,1 Q9,8 12,12 Q15,8 12,1Z" fill="#388E3C" transform="rotate(72,12,12)"/>
+        <path d="M12,1 Q9,8 12,12 Q15,8 12,1Z" fill="#2E7D32" transform="rotate(144,12,12)"/>
+        <path d="M12,1 Q9,8 12,12 Q15,8 12,1Z" fill="#388E3C" transform="rotate(216,12,12)"/>
+        <path d="M12,1 Q9,8 12,12 Q15,8 12,1Z" fill="#2E7D32" transform="rotate(288,12,12)"/>
+        <circle cx="12" cy="12" r="4.5" fill="#D81B60" stroke="#880E4F" stroke-width="0.8"/>
+        <circle cx="12" cy="12" r="2" fill="#FFF176"/>
+      </svg>
+
+      <!-- Accent dots -->
+      <div class="folk folk-dot fd1"></div>
+      <div class="folk folk-dot fd2"></div>
+      <div class="folk folk-dot fd3"></div>
+      <div class="folk folk-dot fd4"></div>
+
+      <!-- ── LOTUS — top-left sneak-out ── -->
+      <!-- (inside card-div so it can sneak through overflow:visible on hover) -->
+
+      <!-- Card content -->
+      <div class="card-body">
+        <h2>Community Volunteer (Vibe Curator)</h2>
+        <p class="experience">Experience: 1 year</p>
+        <p class="description">Community Volunteer is the Vibe Curator of a Zostel. As a Vibe Curator, you're the heartbeat of Zostel, shaping unforgettable experiences, fostering community, and making every traveller feel at home.</p>
+      </div>
+      <div class="card-footer">
+        <span class="apply-by">Apply by Dec 30, 2026</span>
+        <a href="#" class="apply-now">Apply Now &rarr;</a>
+      </div>
+    </div><!-- end vibe-card -->
+
+    <!-- Lotus and Paisley are siblings of the card (sneak out of wrapper) -->
+
+    <!-- ══ LOTUS — top-left ══ -->
+    <svg class="folk folk-lotus" viewBox="0 0 92 92" xmlns="http://www.w3.org/2000/svg">
+      <g>
+        <path d="M46,8 Q38,22 46,46 Q54,22 46,8Z" fill="#C2185B" stroke="#880E4F" stroke-width="1.8"/>
+        <line x1="46" y1="10" x2="46" y2="44" stroke="#880E4F" stroke-width="1" opacity="0.5"/>
+      </g>
+      <g transform="rotate(45,46,46)">
+        <path d="M46,8 Q38,22 46,46 Q54,22 46,8Z" fill="#D81B60" stroke="#880E4F" stroke-width="1.8"/>
+        <line x1="46" y1="10" x2="46" y2="44" stroke="#880E4F" stroke-width="1" opacity="0.5"/>
+      </g>
+      <g transform="rotate(90,46,46)">
+        <path d="M46,8 Q38,22 46,46 Q54,22 46,8Z" fill="#C2185B" stroke="#880E4F" stroke-width="1.8"/>
+        <line x1="46" y1="10" x2="46" y2="44" stroke="#880E4F" stroke-width="1" opacity="0.5"/>
+      </g>
+      <g transform="rotate(135,46,46)">
+        <path d="M46,8 Q38,22 46,46 Q54,22 46,8Z" fill="#D81B60" stroke="#880E4F" stroke-width="1.8"/>
+        <line x1="46" y1="10" x2="46" y2="44" stroke="#880E4F" stroke-width="1" opacity="0.5"/>
+      </g>
+      <g transform="rotate(180,46,46)">
+        <path d="M46,8 Q38,22 46,46 Q54,22 46,8Z" fill="#C2185B" stroke="#880E4F" stroke-width="1.8"/>
+        <line x1="46" y1="10" x2="46" y2="44" stroke="#880E4F" stroke-width="1" opacity="0.5"/>
+      </g>
+      <g transform="rotate(225,46,46)">
+        <path d="M46,8 Q38,22 46,46 Q54,22 46,8Z" fill="#D81B60" stroke="#880E4F" stroke-width="1.8"/>
+        <line x1="46" y1="10" x2="46" y2="44" stroke="#880E4F" stroke-width="1" opacity="0.5"/>
+      </g>
+      <g transform="rotate(270,46,46)">
+        <path d="M46,8 Q38,22 46,46 Q54,22 46,8Z" fill="#C2185B" stroke="#880E4F" stroke-width="1.8"/>
+        <line x1="46" y1="10" x2="46" y2="44" stroke="#880E4F" stroke-width="1" opacity="0.5"/>
+      </g>
+      <g transform="rotate(315,46,46)">
+        <path d="M46,8 Q38,22 46,46 Q54,22 46,8Z" fill="#D81B60" stroke="#880E4F" stroke-width="1.8"/>
+        <line x1="46" y1="10" x2="46" y2="44" stroke="#880E4F" stroke-width="1" opacity="0.5"/>
+      </g>
+      <g transform="rotate(22.5,46,46)">
+        <path d="M46,14 Q40,26 46,44 Q52,26 46,14Z" fill="#F48FB1" stroke="#C2185B" stroke-width="1.2"/>
+      </g>
+      <g transform="rotate(67.5,46,46)">
+        <path d="M46,14 Q40,26 46,44 Q52,26 46,14Z" fill="#FCE4EC" stroke="#C2185B" stroke-width="1.2"/>
+      </g>
+      <g transform="rotate(112.5,46,46)">
+        <path d="M46,14 Q40,26 46,44 Q52,26 46,14Z" fill="#F48FB1" stroke="#C2185B" stroke-width="1.2"/>
+      </g>
+      <g transform="rotate(157.5,46,46)">
+        <path d="M46,14 Q40,26 46,44 Q52,26 46,14Z" fill="#FCE4EC" stroke="#C2185B" stroke-width="1.2"/>
+      </g>
+      <g transform="rotate(202.5,46,46)">
+        <path d="M46,14 Q40,26 46,44 Q52,26 46,14Z" fill="#F48FB1" stroke="#C2185B" stroke-width="1.2"/>
+      </g>
+      <g transform="rotate(247.5,46,46)">
+        <path d="M46,14 Q40,26 46,44 Q52,26 46,14Z" fill="#FCE4EC" stroke="#C2185B" stroke-width="1.2"/>
+      </g>
+      <g transform="rotate(292.5,46,46)">
+        <path d="M46,14 Q40,26 46,44 Q52,26 46,14Z" fill="#F48FB1" stroke="#C2185B" stroke-width="1.2"/>
+      </g>
+      <g transform="rotate(337.5,46,46)">
+        <path d="M46,14 Q40,26 46,44 Q52,26 46,14Z" fill="#FCE4EC" stroke="#C2185B" stroke-width="1.2"/>
+      </g>
+      <circle cx="46" cy="46" r="15" fill="#E65100" stroke="#BF360C" stroke-width="1.8"/>
+      <circle cx="46" cy="46" r="11" fill="#FFB300" stroke="#E65100" stroke-width="1"/>
+      <circle cx="46" cy="46" r="7"  fill="#FFD54F"/>
+      <circle cx="42" cy="43" r="2" fill="#BF360C"/>
+      <circle cx="46" cy="41" r="2" fill="#BF360C"/>
+      <circle cx="50" cy="43" r="2" fill="#BF360C"/>
+      <circle cx="43" cy="48" r="2" fill="#BF360C"/>
+      <circle cx="46" cy="50" r="2" fill="#BF360C"/>
+      <circle cx="49" cy="48" r="2" fill="#BF360C"/>
+      <circle cx="46" cy="46" r="3.5" fill="#FFF8E7"/>
+    </svg>
+
+    <!-- ══ PAISLEY — top-right ══ -->
+    <svg class="folk folk-paisley" viewBox="0 0 68 96" xmlns="http://www.w3.org/2000/svg">
+      <path d="M34,6 C48,6 62,20 62,40 C62,62 48,80 34,92 C26,80 6,64 6,42 C6,22 18,6 34,6Z"
+            fill="#E65100" stroke="#7B2D00" stroke-width="2.2"/>
+      <path d="M34,14 C44,14 54,26 54,42 C54,60 44,75 34,85 C28,75 16,62 16,42 C16,28 24,14 34,14Z"
+            fill="#FF8F00" stroke="#BF360C" stroke-width="1.8"/>
+      <path d="M34,22 C41,22 48,32 48,42 C48,56 41,68 34,78 C28,68 20,56 20,42 C20,32 27,22 34,22Z"
+            fill="#D81B60" stroke="#880E4F" stroke-width="1.5"/>
+      <path d="M34,90 C28,82 20,74 26,66 C30,60 38,64 36,72 C34,78 28,76 30,70"
+            fill="none" stroke="#7B2D00" stroke-width="2.2" stroke-linecap="round"/>
+      <ellipse cx="34" cy="42" rx="9" ry="14" fill="#FF8F00" stroke="#E65100" stroke-width="1.2"/>
+      <circle cx="34" cy="42" r="6" fill="#FFF176" stroke="#E65100" stroke-width="1"/>
+      <circle cx="34" cy="42" r="3" fill="#E65100"/>
+      <circle cx="34" cy="8"  r="3.5" fill="#FFB300" stroke="#E65100" stroke-width="1"/>
+      <circle cx="26" cy="12" r="3"   fill="#FFF176"/>
+      <circle cx="42" cy="12" r="3"   fill="#FFF176"/>
+      <circle cx="8"  cy="42" r="2.8" fill="#FFB300"/>
+      <circle cx="60" cy="42" r="2.8" fill="#FFB300"/>
+      <path d="M22,32 Q18,38 22,44" fill="none" stroke="#FFF176" stroke-width="1.5" stroke-linecap="round"/>
+      <path d="M46,32 Q50,38 46,44" fill="none" stroke="#FFF176" stroke-width="1.5" stroke-linecap="round"/>
+    </svg>
+
+  </div><!-- end vibe-wrapper -->
+
+
+  <!-- 6. Junior Interior Designer -->
+  <div class="card-wrapper">
+    <div class="job-card">
+      <div class="card-body">
+        <h2>Junior Interior Designer</h2>
+        <p class="experience">Experience: 1 year</p>
+        <p class="description">We're seeking a Junior Interior Designer to craft Zostel's properties. From layouts and finishes to BOQs and sourcing, you'll help bring our design vision to life across hostels and resorts.</p>
+      </div>
+      <div class="card-footer">
+        <span class="apply-by">Apply by Oct 30, 2025</span>
+        <a href="#" class="apply-now">Apply Now &rarr;</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- 7. Junior Architect -->
+  <div class="card-wrapper">
+    <div class="job-card">
+      <div class="card-body">
+        <h2>Junior Architect</h2>
+        <p class="experience">Experience: 1 year</p>
+        <p class="description">Shape Zostel's next generation of hostels &amp; resorts. As Junior Architect, you'll contribute to design, detailing, sourcing, and execution.</p>
+      </div>
+      <div class="card-footer">
+        <span class="apply-by">Apply by Nov 29, 2025</span>
+        <a href="#" class="apply-now">Apply Now &rarr;</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- 8. Visual Product Designer -->
+  <div class="card-wrapper">
+    <div class="job-card">
+      <div class="card-body">
+        <h2>Visual Product Designer</h2>
+        <p class="experience">Experience: 2 years</p>
+        <p class="description">Design-obsessed? We need someone who lives for typography, brand systems &amp; beautiful UI. 2–4 yrs, Figma-native, AI-powered. Help travellers discover the world beautifully.</p>
+      </div>
+      <div class="card-footer">
+        <span class="apply-by">Apply by Mar 30, 2026</span>
+        <a href="#" class="apply-now">Apply Now &rarr;</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- 9. Hospitality Operations & Training Associate -->
+  <div class="card-wrapper">
+    <div class="job-card">
+      <div class="card-body">
+        <h2>Hospitality Operations &amp; Training Associate &mdash; Zo House</h2>
+        <p class="experience">Experience: 1 year</p>
+        <p class="description">Zostel is hiring for Zo House, Bangalore — a premium co-living space for founders &amp; creators. We need a Hospitality Trainee to help build daily operations from the ground up.</p>
+      </div>
+      <div class="card-footer">
+        <span class="apply-by">Apply by Mar 30, 2026</span>
+        <a href="#" class="apply-now">Apply Now &rarr;</a>
+      </div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

@@ -401,6 +401,54 @@
     }
     .help-credit a:hover { color: var(--primary-dark); border-bottom-color: var(--primary-dark); }
 
+    /* ── ABOUT / PRODUCT STUDY PAGE ── */
+    .about-back {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 13px; color: var(--text-muted); cursor: pointer;
+      margin-bottom: 14px; background: none; border: none; padding: 4px 0;
+    }
+    .about-back:hover { color: var(--text); }
+    .about-lede {
+      font-size: 15.5px; line-height: 1.7; color: var(--text);
+      max-width: 720px; margin-bottom: 4px;
+    }
+    .about-lede strong { font-weight: 600; }
+    /* Use-case cards */
+    .usecase-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 12px; margin-top: 4px;
+    }
+    .usecase-card {
+      background: var(--bg-soft); border: 1px solid var(--border);
+      border-radius: 12px; padding: 16px 18px;
+    }
+    .usecase-card-icon { font-size: 22px; line-height: 1; margin-bottom: 8px; }
+    .usecase-card-title { font-weight: 600; font-size: 14.5px; margin-bottom: 4px; color: var(--text); }
+    .usecase-card-desc { font-size: 13px; line-height: 1.55; color: var(--text-muted); }
+    /* Problem → feature mapping table */
+    .study-map { display: flex; flex-direction: column; gap: 0; margin-top: 4px; }
+    .study-map-row {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 18px;
+      padding: 14px 0; border-bottom: 1px solid var(--border);
+      align-items: start;
+    }
+    .study-map-row:last-child { border-bottom: none; }
+    .study-map-head {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 18px;
+      padding-bottom: 8px; border-bottom: 2px solid var(--border);
+      font-size: 11px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: .6px; color: var(--text-muted);
+    }
+    .study-problem { font-size: 14px; line-height: 1.5; color: var(--text); }
+    .study-problem::before { content: '“'; color: var(--text-muted); }
+    .study-problem::after  { content: '”'; color: var(--text-muted); }
+    .study-feature { font-size: 13.5px; line-height: 1.5; color: var(--text-muted); }
+    .study-feature strong { color: var(--text); font-weight: 600; }
+    @media (max-width: 620px) {
+      .study-map-row, .study-map-head { grid-template-columns: 1fr; gap: 6px; }
+      .study-map-head span:last-child { display: none; }
+    }
+
     /* ── IDEAS PAGE ── */
     .idea-capture {
       background: var(--surface); border: 1.5px solid var(--border);
@@ -3353,7 +3401,8 @@ function renderSidebar() {
   const helpBtn = document.getElementById('navHelpBtn');
   if (helpBtn) helpBtn.classList.toggle('active', S.view === 'help');
   const settingsBtn = document.getElementById('navSettingsBtn');
-  if (settingsBtn) settingsBtn.classList.toggle('active', S.view === 'settings');
+  // 'about' is a sub-page of Settings, so keep Settings highlighted there too.
+  if (settingsBtn) settingsBtn.classList.toggle('active', S.view === 'settings' || S.view === 'about');
 
   const el = document.getElementById('sidebarList');
   const activeGoals = S.goals.filter(g => g.status !== 'closed');
@@ -3377,6 +3426,7 @@ function renderSidebar() {
 function renderMain() {
   const el = document.getElementById('mainContent');
   if(S.view === 'help')     { renderHelpPage(el);     return; }
+  if(S.view === 'about')    { renderAboutPage(el);    return; }
   if(S.view === 'settings') { renderSettingsPage(el); return; }
   if(S.view === 'ideas')    { renderIdeasPage(el);    return; }
   if(S.view === 'mywork')   { renderMyWorkPage(el);   return; }
@@ -4663,7 +4713,7 @@ function applyHashState() {
       }
       return;
     }
-    if (p.view && ['mywork','ideas','archive','settings','help'].includes(p.view)) {
+    if (p.view && ['mywork','ideas','archive','settings','help','about'].includes(p.view)) {
       S.view = p.view;
       S.activeGoalId = null;
       if (DX) closeDrawer();
@@ -5733,6 +5783,154 @@ function goToHelp() {
   writeHashFromState();
 }
 
+function goToAbout() {
+  S.view = 'about';
+  S.activeGoalId = null;
+  render();
+  closeSidebar();
+  document.getElementById('mainContent')?.scrollTo({ top: 0, behavior: 'instant' });
+  writeHashFromState();
+}
+
+function renderAboutPage(el) {
+  // Problem → feature mapping. Each row: the small, concrete problem a team
+  // actually hits, and the specific feature(s) in Compass that answer it.
+  const map = [
+    ['Plans live in decks and sheets that nobody reopens after kickoff.',
+     'The living <strong>Goals → Measures → Initiatives</strong> hierarchy is the workspace itself — not a snapshot. It updates as the team moves.'],
+    ['By the time we hear an initiative is slipping, it’s too late to react.',
+     'Per-initiative <strong>status pills</strong>, plus <strong>overdue</strong> and <strong>stale</strong> chips and a sidebar <strong>at-risk</strong> marker, surface trouble before the quarter ends.'],
+    ['Updating every initiative each week is tedious, so people stop.',
+     'The <strong>Weekly Check-in</strong> walks you through just the initiatives you own, one card at a time — six updates in under a minute.'],
+    ['I know the work exists but I can’t find the one row I need.',
+     '<strong>Global search</strong> (⌘K / Ctrl-K) matches across goals, measures, initiatives, owners, and ideas instantly.'],
+    ['I want to point a teammate at exactly this initiative in Slack.',
+     '<strong>URL deep-linking</strong> encodes the open view, goal, and drawer — paste the link and it opens to the same place.'],
+    ['Good ideas surface mid-week and then evaporate.',
+     'The <strong>Ideas wall</strong> captures sparks instantly, with a lifecycle (captured → parked → promoted → rejected) and one-click <strong>promote to initiative</strong>.'],
+    ['Operational metrics we just want to watch distort our OKR scoring.',
+     '<strong>Measures can stand alone</strong> with no initiatives — a watched metric (e.g. onboarding time) lives in the framework without dragging a score.'],
+    ['Curator and intern turnover wipes out the context behind decisions.',
+     'The <strong>Activity Trail</strong>, owner attribution, and rich descriptions keep the "why" attached to the work, not in someone’s head.'],
+    ['Are we actually at 60%, or trending the wrong way?',
+     '<strong>Trend sparklines</strong> on each measure turn a single number into a direction of travel over the quarter.'],
+    ['Re-creating near-identical initiatives every quarter is busywork.',
+     '<strong>Initiative templates</strong> and duplicate-from-drawer collapse repetitive setup into a couple of clicks.'],
+    ['The quarter ends and the plan just… goes quiet.',
+     '<strong>Close-out</strong> captures a score and reflection, <strong>carry-forward</strong> clones what continues, and the <strong>Archive</strong> keeps the record.'],
+    ['Two people edit at once and clobber each other’s changes.',
+     '<strong>Realtime sync</strong> keeps every client live; optimistic updates feel instant and reconcile safely.'],
+    ['One mis-click deletes something important.',
+     'Every delete offers a <strong>5-second undo</strong> before it commits — mistakes are cheap.'],
+    ['New teammates don’t understand the model and bounce off.',
+     'A first-run <strong>onboarding tour</strong>, a guided <strong>"start here" checklist</strong>, and the <strong>Help</strong> page teach the hierarchy in seconds.'],
+  ];
+
+  el.innerHTML = `<div class="fade-up">
+    <button class="about-back" type="button" onclick="goToSettings()">← Back to Settings</button>
+    <div class="banner" style="--banner-icon: '🧭'">
+      <h2>About Compass — a product study</h2>
+      <p>Why this product exists, who it’s for, and how each piece of the experience answers a real problem teams hit when they try to run a quarter.</p>
+    </div>
+
+    <div class="help-section">
+      <div class="help-section-title">The problem we set out to solve</div>
+      <div class="help-section-sub">Most goal-tracking fails not for lack of ambition, but in the gap between strategy and the messy middle of execution.</div>
+      <p class="about-lede">
+        Teams are good at setting ambitious quarterly goals and good at doing the daily work — but the
+        thread <strong>between</strong> the two snaps almost immediately. The plan gets written in a deck or a
+        spreadsheet, presented once, and then quietly abandoned. Status becomes invisible until a goal is
+        already missed. Ideas surface in the hallway and vanish. And when people rotate out — especially in a
+        high-turnover, distributed operation — the context behind every decision leaves with them.
+      </p>
+      <p class="about-lede">
+        <strong>Compass exists to keep that thread intact.</strong> It makes the plan a living thing the team
+        touches every week, makes progress legible at a glance, gives loose ideas a home, and keeps the
+        reasoning attached to the work. The bet is simple: a plan you revisit weekly is worth ten plans you
+        present once.
+      </p>
+    </div>
+
+    <div class="help-section">
+      <div class="help-section-title">Who it’s for — the core use cases</div>
+      <div class="help-section-sub">Built for a distributed hospitality-community brand, but the shape fits any team running outcomes on a cadence.</div>
+      <div class="usecase-grid">
+        <div class="usecase-card">
+          <div class="usecase-card-icon">🧭</div>
+          <div class="usecase-card-title">Quarterly planning</div>
+          <div class="usecase-card-desc">Set 2–4 outcome-led goals, define the measures that prove them, and line up the initiatives that move the needle.</div>
+        </div>
+        <div class="usecase-card">
+          <div class="usecase-card-icon">🗓️</div>
+          <div class="usecase-card-title">The weekly operating rhythm</div>
+          <div class="usecase-card-desc">Run the Monday/Wednesday/Friday huddle off live status — the check-in flow makes updating fast enough to actually happen.</div>
+        </div>
+        <div class="usecase-card">
+          <div class="usecase-card-icon">🚀</div>
+          <div class="usecase-card-title">Running a program at scale</div>
+          <div class="usecase-card-desc">Stand up a multi-location program (like the Destination Host Program) with systems, frameworks, and watched metrics in one frame.</div>
+        </div>
+        <div class="usecase-card">
+          <div class="usecase-card-icon">💡</div>
+          <div class="usecase-card-title">Capturing & triaging ideas</div>
+          <div class="usecase-card-desc">Catch sparks the moment they appear, then promote the best ones into real initiatives at planning time.</div>
+        </div>
+        <div class="usecase-card">
+          <div class="usecase-card-icon">👀</div>
+          <div class="usecase-card-title">Leadership visibility</div>
+          <div class="usecase-card-desc">See what’s on track, at risk, and shipped — without chasing anyone for a status update.</div>
+        </div>
+        <div class="usecase-card">
+          <div class="usecase-card-icon">🤝</div>
+          <div class="usecase-card-title">Onboarding through turnover</div>
+          <div class="usecase-card-desc">New owners inherit the full Activity Trail and the "why" behind each initiative, so context survives the handover.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="help-section">
+      <div class="help-section-title">How the small problems map to features</div>
+      <div class="help-section-sub">Every feature in Compass earns its place by answering one concrete frustration. Here’s the mapping.</div>
+      <div class="study-map-head"><span>The problem (in the team’s words)</span><span>The feature that answers it</span></div>
+      <div class="study-map">
+        ${map.map(([p, f]) => `<div class="study-map-row">
+          <div class="study-problem">${p}</div>
+          <div class="study-feature">${f}</div>
+        </div>`).join('')}
+      </div>
+    </div>
+
+    <div class="help-section">
+      <div class="help-section-title">The design principles underneath</div>
+      <div class="help-section-sub">The rules that decided what got built — and, more often, what didn’t.</div>
+      <ul class="help-principles">
+        <li><strong>Outcomes over output.</strong> A goal is the change you want to create, not a list of tasks. Measures, not activity, define winning.</li>
+        <li><strong>Make the honest path the easy path.</strong> If checking in weekly is hard, people won’t — so the check-in flow is the fastest action in the app, not the slowest.</li>
+        <li><strong>Legibility beats completeness.</strong> A glanceable at-risk chip is worth more than a perfect report no one reads.</li>
+        <li><strong>Capture is free, commitment is deliberate.</strong> Ideas cost nothing to drop in; promoting one to an initiative is the considered step.</li>
+        <li><strong>Forgiving by default.</strong> Undo on deletes, safe realtime reconciliation, and clear empty states mean the product never punishes a wrong move.</li>
+        <li><strong>Single-file, no build, no lock-in.</strong> The whole app is one HTML file on a static host with an exportable JSON snapshot — easy to run, easy to leave.</li>
+      </ul>
+    </div>
+
+    <div class="help-section">
+      <div class="help-section-title">What success looks like</div>
+      <div class="help-section-sub">The signal that Compass is doing its job.</div>
+      <ul class="help-list">
+        <li>The plan is opened <strong>every week</strong>, not just at kickoff and post-mortem.</li>
+        <li>Leadership answers "how are we doing?" by <strong>looking</strong>, not by asking.</li>
+        <li>A slipping initiative gets a conversation <strong>weeks before</strong> the deadline, not after.</li>
+        <li>When someone rotates out, the next owner reads the trail and <strong>keeps moving</strong>.</li>
+        <li>At quarter-end the team plans the next leg from <strong>real ground truth</strong>, not memory.</li>
+      </ul>
+    </div>
+
+    <div class="help-credit">
+      A product study by <a href="https://www.linkedin.com/in/vikasnagpal/?skipRedirect=true" target="_blank" rel="noopener noreferrer">Vikas N.</a> · Lead Product Designer
+    </div>
+  </div>`;
+}
+
 function renderHelpPage(el) {
   el.innerHTML = `<div class="fade-up">
     <div class="banner" style="--banner-icon: '🧭'">
@@ -5875,6 +6073,14 @@ function renderSettingsPage(el) {
         <div class="settings-section-sub">Download a snapshot of everything in this workspace — goals, measures, initiatives, history, ideas, and the team list — as a JSON file. Useful for month-end reports, backups, or board reviews.</div>
       </div>
       <button class="btn btn-outline" type="button" onclick="exportWorkspace()">⬇ Export workspace as JSON</button>
+    </div>
+
+    <div class="settings-section">
+      <div class="settings-section-header">
+        <div class="settings-section-title">About Compass</div>
+        <div class="settings-section-sub">A product study — the problems Compass solves, who it’s for, and how each feature maps to a real need. A deeper read than the Help page, tucked away here for the curious.</div>
+      </div>
+      <button class="btn btn-outline" type="button" onclick="goToAbout()">🧭 Read the product study</button>
     </div>
   </div>`;
 }
