@@ -859,6 +859,10 @@
       padding: 24px;
       opacity: 0; transition: opacity .18s ease;
     }
+    /* Same critical fix as .search-scrim: without this, `display: flex`
+       defeats the `hidden` attribute and leaves a transparent full-screen
+       scrim intercepting all clicks. */
+    .checkin-scrim[hidden] { display: none; }
     .checkin-scrim:not([hidden]) { opacity: 1; }
     .checkin-shell {
       width: 100%; max-width: 560px;
@@ -1524,6 +1528,12 @@
       padding: 80px 16px 16px;
       opacity: 0; transition: opacity .15s ease;
     }
+    /* CRITICAL: the `hidden` attribute is overridden by the `display: flex`
+       above (the UA [hidden]{display:none} rule has lower specificity), which
+       would leave a transparent full-screen scrim swallowing every click.
+       This explicit rule restores hidden behaviour — same pattern as the
+       .d-menu / .gd-menu dropdowns. */
+    .search-scrim[hidden] { display: none; }
     .search-scrim:not([hidden]) { opacity: 1; }
     .search-shell {
       width: 100%; max-width: 640px;
@@ -2425,12 +2435,23 @@ const db = {
     // The team is now derived from `profiles` — i.e. anyone who has
     // signed into the app. The standalone `members` table is no longer
     // used as a UI source (kept in DB for now, harmless).
-    const [goalsRes, profilesRes, ideasRes] = await Promise.all([
-      sb.from('goals')
-        // T2.5 — pull measure_history alongside everything else so sparklines
-        // have data on the first paint without a follow-up request.
-        .select('*, key_results(*, initiatives(*, initiative_history(*)), measure_history(*))')
-        .order('position'),
+    //
+    // T2.5 pulls measure_history for sparklines. That table only exists
+    // once migration-004 is run — so the join is OPTIONAL. If it's missing
+    // the whole goals query would otherwise fail and brick boot. Try the
+    // rich query first; on a measure_history-shaped error, retry without it
+    // and disable the sparkline feature for this session.
+    const richSelect = '*, key_results(*, initiatives(*, initiative_history(*)), measure_history(*))';
+    const leanSelect = '*, key_results(*, initiatives(*, initiative_history(*)))';
+    let goalsRes = await sb.from('goals').select(richSelect).order('position');
+    if (goalsRes.error && /measure_history/i.test(goalsRes.error.message || '')) {
+      console.warn('[Compass] measure_history not found — run migration-004 to enable trend sparklines. Loading without it.');
+      window._hasMeasureHistory = false;
+      goalsRes = await sb.from('goals').select(leanSelect).order('position');
+    } else if (!goalsRes.error) {
+      window._hasMeasureHistory = true;
+    }
+    const [profilesRes, ideasRes] = await Promise.all([
       sb.from('profiles').select('*').order('display_name'),
       sb.from('ideas').select('*').order('created_at', { ascending: false }),
     ]);
@@ -2929,14 +2950,19 @@ function setupRealtime() {
     try { sb.removeChannel(window._rtChannel); } catch (e) {}
   }
   if (_rtReconnectTimer) { clearTimeout(_rtReconnectTimer); _rtReconnectTimer = null; }
-  const channel = sb.channel('compass-room')
+  let channel = sb.channel('compass-room')
     .on('postgres_changes', { event: '*', schema: 'public', table: 'goals' },              onGoalChange)
     .on('postgres_changes', { event: '*', schema: 'public', table: 'key_results' },        onKRChange)
     .on('postgres_changes', { event: '*', schema: 'public', table: 'initiatives' },        onInitChange)
     .on('postgres_changes', { event: '*', schema: 'public', table: 'initiative_history' }, onHistoryChange)
-    .on('postgres_changes', { event: '*', schema: 'public', table: 'measure_history' },    onMeasureHistoryChange)
     .on('postgres_changes', { event: '*', schema: 'public', table: 'ideas' },              onIdeaChange)
-    .on('postgres_changes', { event: '*', schema: 'public', table: 'profiles' },           onProfileChange)
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'profiles' },           onProfileChange);
+  // Only subscribe to measure_history if migration-004 has been applied —
+  // otherwise a missing table can churn the channel into a reconnect loop.
+  if (window._hasMeasureHistory !== false) {
+    channel = channel.on('postgres_changes', { event: '*', schema: 'public', table: 'measure_history' }, onMeasureHistoryChange);
+  }
+  channel = channel
     .subscribe(status => {
       console.log('[Compass] Realtime channel status:', status);
       // Without explicit reconnect handling, a brief network blip leaves the
