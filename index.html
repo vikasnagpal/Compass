@@ -1848,6 +1848,25 @@
     @media (max-width: 480px) { .form-row { grid-template-columns: 1fr; } }
     .form-actions { display: flex; gap: 9px; align-items: center; justify-content: flex-end; margin-top: 20px; }
 
+    /* ── INITIATIVE TEMPLATE CHIPS (T2.4) ── */
+    .init-template-row {
+      display: flex; align-items: center; flex-wrap: wrap; gap: 6px;
+      padding: 8px 10px; margin-bottom: 16px;
+      background: var(--bg); border-radius: 10px;
+      border: 1px dashed var(--border);
+    }
+    .init-template-label {
+      font: 600 11px/1 'Inter', sans-serif; text-transform: uppercase;
+      letter-spacing: .06em; color: var(--text-muted); margin-right: 4px;
+    }
+    .init-template-chip {
+      border: 1px solid var(--border); background: var(--surface);
+      color: var(--text); border-radius: 999px; padding: 5px 11px;
+      font: 500 12px/1 'Inter', sans-serif; cursor: pointer;
+      transition: border-color .15s, background .15s;
+    }
+    .init-template-chip:hover { border-color: var(--primary); background: var(--bg); }
+
     /* ── EMPTY STATES ── */
     /* ── SIGN-IN SCREEN ── */
     .signin-shell {
@@ -2122,6 +2141,7 @@
           <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg>
         </button>
         <div class="d-menu" id="dMenu" role="menu" hidden>
+          <button class="d-menu-item" type="button" role="menuitem" onclick="closeInitMenu();duplicateCurrentInit()"><span class="d-menu-icon">⎘</span> Duplicate initiative</button>
           <button class="d-menu-item" type="button" role="menuitem" onclick="closeInitMenu();openMoveInitModal()"><span class="d-menu-icon">↪</span> Move to another measure</button>
           <div class="d-menu-sep"></div>
           <button class="d-menu-item d-menu-danger" type="button" role="menuitem" onclick="closeInitMenu();deleteCurrentInit()"><span class="d-menu-icon">✕</span> Delete initiative</button>
@@ -5076,9 +5096,30 @@ function deleteKR(gid, krid) {
 }
 
 // INITIATIVE MODAL
+// T2.4 — quick-fill templates for common initiative shapes. Saves typing the
+// boilerplate "Document X SOP" / "Build the Y framework" lines that recur
+// when loading workshop output (Destination Host program had 11+ of these).
+const INIT_TEMPLATES = [
+  { key: 'framework', label: '🧱 Framework',
+    title: 'Build the … framework',
+    desc:  'Define the standard approach, document it, and roll it out to the team.' },
+  { key: 'sop', label: '📋 SOP',
+    title: '… SOP',
+    desc:  'Document who does what, when, and how — with handoffs and SLAs at every step.' },
+  { key: 'dashboard', label: '📊 Dashboard',
+    title: '… dashboard',
+    desc:  'Define metrics, pick a source, and stand up a refresh cadence.' },
+  { key: 'campaign', label: '📣 Campaign',
+    title: '… campaign',
+    desc:  'Define the goal, audience, channel mix, timeline, and success criteria.' },
+];
 function openInitModal(gid, krid) {
   showModal(`
     <div class="modal-title">${icon('initiative','icon-lg')} New Initiative</div>
+    <div class="init-template-row">
+      <span class="init-template-label">Quick-fill:</span>
+      ${INIT_TEMPLATES.map(t => `<button type="button" class="init-template-chip" data-tpl="${t.key}">${t.label}</button>`).join('')}
+    </div>
     <div class="form-group">
       <label class="form-label">Initiative</label>
       <input class="form-input" id="mInitTitle" placeholder="e.g. Host community-building workshops for property managers" />
@@ -5117,6 +5158,43 @@ function openInitModal(gid, krid) {
   const initSaveBtn = document.getElementById('mInitSave');
   initSaveBtn?.addEventListener('click', () => withButtonBusy(initSaveBtn, () => saveInit(gid, krid)));
   document.getElementById('mInitCancel')?.addEventListener('click', closeModal);
+  // Quick-fill template chips — populate title/desc, then focus the title so
+  // the user can type the specific thing right where the "…" placeholder is.
+  document.querySelectorAll('.init-template-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      const tpl = INIT_TEMPLATES.find(t => t.key === chip.dataset.tpl);
+      if (!tpl) return;
+      const title = document.getElementById('mInitTitle');
+      const desc  = document.getElementById('mInitDesc');
+      if (title) { title.value = tpl.title; title.focus(); const i = title.value.indexOf('…'); if (i >= 0) title.setSelectionRange(i, i + 1); }
+      if (desc && !desc.value) desc.value = tpl.desc;
+    });
+  });
+}
+
+// T2.4 — clone the open drawer initiative into the same measure. New row gets
+// "(copy)" suffix and a fresh 'not_started' status; description, owner, due
+// date all carry forward so it's a real starting point, not a blank.
+async function duplicateCurrentInit() {
+  if (!DX) return;
+  const ctx = getDrawerInit(); if (!ctx) return;
+  const { g, kr, init } = ctx;
+  const newTitle = init.title.endsWith('(copy)') ? init.title : `${init.title} (copy)`;
+  const created = await db.createInitiative(kr.id, {
+    title: newTitle,
+    desc: init.desc || '',
+    status: 'not_started',
+    owner: init.owner || '',
+    dueDate: '',
+    position: kr.initiatives.length,
+  });
+  if (!created) return;
+  const entry = await db.addHistory(created.id, { type: 'created', date: today(), note: `Cloned from "${init.title}"` });
+  if (entry) created.history.push(entry);
+  kr.initiatives.push(created);
+  render();
+  openDrawer(g.id, kr.id, created.id);
+  showToast('Initiative duplicated. Tweak the title before you ship.');
 }
 
 async function saveInit(gid, krid) {
