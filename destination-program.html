@@ -759,6 +759,19 @@
     white-space: nowrap;
   }
 
+  /* Phase colour cue — consistent identity across roadmap, phase cards & operating model */
+  .ph-dot {
+    display: inline-block;
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    margin-right: 9px;
+    vertical-align: middle;
+    background: var(--ink-faint);
+  }
+  .ph-dot.sky { background: var(--sky-deep); }
+  .ph-dot.butter { background: var(--butter-deep); }
+  .ph-dot.mint { background: var(--mint-deep); }
+
   /* GOAL CARD */
   .goal-card {
     background: var(--card);
@@ -1187,6 +1200,33 @@
     .flywheel-arrow { justify-content: center; transform: rotate(90deg); }
   }
 
+  /* MOTION — scroll reveal (class added by JS only when motion is OK) */
+  .reveal {
+    opacity: 0;
+    transform: translateY(16px);
+    transition: opacity .6s cubic-bezier(.2,.6,.2,1), transform .6s cubic-bezier(.2,.6,.2,1);
+    will-change: opacity, transform;
+  }
+  .reveal.in { opacity: 1; transform: none; }
+
+  /* Flywheel loop hint — gentle, slow */
+  @media (prefers-reduced-motion: no-preference) {
+    .flywheel-loop { animation: loop-spin 9s linear infinite; }
+    @keyframes loop-spin { to { transform: rotate(360deg); } }
+  }
+
+  /* Respect reduced-motion: no transitions/animations, no smooth scroll */
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+      scroll-behavior: auto !important;
+    }
+    .reveal { opacity: 1 !important; transform: none !important; }
+  }
+
   /* PRINT */
   @media print {
     nav.topbar, .progress-bar, .to-top { display: none !important; }
@@ -1529,21 +1569,21 @@
         </thead>
         <tbody>
           <tr>
-            <td>Phase 1 · Crawl</td>
+            <td><span class="ph-dot sky"></span>Phase 1 · Crawl</td>
             <td><span class="pill">Host + VC</span></td>
             <td><span class="pill dark">HQ</span></td>
             <td><span class="pill dark">HQ</span></td>
             <td>Operate the handles</td>
           </tr>
           <tr>
-            <td>Phase 2 · Walk</td>
+            <td><span class="ph-dot butter"></span>Phase 2 · Walk</td>
             <td><span class="pill">Host + VC</span></td>
             <td><span class="pill butter">Host (HQ supports)</span></td>
             <td><span class="pill butter">Host or HQ</span></td>
             <td>Coach + backstop</td>
           </tr>
           <tr>
-            <td>Phase 3 · Run</td>
+            <td><span class="ph-dot mint"></span>Phase 3 · Run</td>
             <td><span class="pill">Host + Collaborators + VC</span></td>
             <td><span class="pill mint">Host</span></td>
             <td><span class="pill mint">Hosts</span></td>
@@ -2147,6 +2187,59 @@
     });
   });
   updateProgress();
+
+  // ---- Motion: scroll-reveal + number count-up (only when motion is welcome) ----
+  var motionOK = !window.matchMedia ||
+    window.matchMedia('(prefers-reduced-motion: no-preference)').matches;
+
+  if (motionOK && 'IntersectionObserver' in window) {
+    var revealSel = '.section-head, .prose-card, .split-quote, .host-card, ' +
+      '.flywheel-card, .phase-card, .stream, .winning, .table-card, .goal-card, ' +
+      '.rhythm-card, .week-card, .owners-card, .checklist-card, .phase-note, ' +
+      '.compare-card, .footer-card';
+    var revs = Array.prototype.slice.call(document.querySelectorAll(revealSel));
+    revs.forEach(function (el) { el.classList.add('reveal'); });
+    // stagger siblings within the same container
+    revs.forEach(function (el) {
+      var sibs = Array.prototype.filter.call(el.parentNode.children, function (c) {
+        return c.classList && c.classList.contains('reveal');
+      });
+      var idx = sibs.indexOf(el);
+      if (idx > 0) el.style.transitionDelay = Math.min(idx, 5) * 70 + 'ms';
+    });
+    var revObs = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (e.isIntersecting) { e.target.classList.add('in'); revObs.unobserve(e.target); }
+      });
+    }, { rootMargin: '0px 0px -8% 0px', threshold: 0.05 });
+    revs.forEach(function (el) { revObs.observe(el); });
+
+    // Count-up: animate a leading integer (skip ranges / non-numeric)
+    function countUp(el) {
+      var raw = el.textContent.trim();
+      var m = raw.match(/^(\d+)(.*)$/);
+      if (!m || /[–-]/.test(m[2])) return;           // skip e.g. "25–30"
+      var end = parseInt(m[1], 10), suffix = m[2], start = null, dur = 900;
+      function step(ts) {
+        if (start === null) start = ts;
+        var p = Math.min((ts - start) / dur, 1);
+        var eased = 1 - Math.pow(1 - p, 3);
+        el.textContent = Math.round(eased * end) + suffix;
+        if (p < 1) requestAnimationFrame(step);
+        else el.textContent = end + suffix;
+      }
+      requestAnimationFrame(step);
+    }
+    var counters = Array.prototype.slice.call(
+      document.querySelectorAll('.hero .stat-pill .value, .phase-bubble')
+    );
+    var countObs = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (e.isIntersecting) { countUp(e.target); countObs.unobserve(e.target); }
+      });
+    }, { threshold: 0.6 });
+    counters.forEach(function (el) { countObs.observe(el); });
+  }
 })();
 </script>
 
