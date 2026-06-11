@@ -195,6 +195,12 @@
   .role-toggle button[data-view="both"] .dot { background: linear-gradient(90deg, var(--vc) 0 50%, var(--pm) 50% 100%); }
   .role-toggle button[aria-pressed="true"] { background: var(--primary); color: #fff; box-shadow: var(--shadow-sm); }
   .role-toggle button:not([aria-pressed="true"]):hover { color: var(--ink); }
+  /* per-role greeting that swaps with the toggle */
+  .role-greeting { margin-top: 14px; font-size: 0.95rem; line-height: 1.5; color: var(--ink-soft); max-width: 44ch; min-height: 1.5em; }
+  @media (prefers-reduced-motion: no-preference) {
+    .role-greeting.greet-in { animation: greetIn .32s cubic-bezier(.2,.7,.2,1); }
+    @keyframes greetIn { from { opacity: 0; transform: translateY(3px); } to { opacity: 1; transform: none; } }
+  }
   @media (max-width: 540px) {
     .role-toggle { display: flex; flex-direction: column; align-items: stretch; gap: 6px; width: 100%; border-radius: var(--radius); padding: 6px; }
     .role-toggle button { width: 100%; justify-content: flex-start; border-radius: var(--radius-sm); padding: 13px 16px; }
@@ -499,7 +505,7 @@
     <div class="hero-copy">
       <span class="eyebrow">The Vibe Curator Program</span>
       <h1>A shared <span class="ink-mark">alignment</span> guide.</h1>
-      <p class="hero-lede">One playbook for the two people who make it work — the <strong>Property Manager</strong> who hosts, and the <strong>Vibe Curator</strong> who brings the property to life. Read it together before the tenure begins.</p>
+      <p class="hero-lede">One playbook for the two people who make it work — the <strong>Property Manager</strong> who hosts, and the <strong>Vibe Curator</strong> who brings the place to life. Worth reading together before day one.</p>
 
       <div class="role-toggle-wrap">
         <span class="role-toggle-label">Reading as…</span>
@@ -508,6 +514,7 @@
           <button data-view="pm" aria-pressed="false"><span class="dot"></span>I'm a Property Manager</button>
           <button data-view="both" aria-pressed="true"><span class="dot"></span>Show both</button>
         </div>
+        <p class="role-greeting" id="roleGreeting">Two roles, one playbook. Tap your side and the guide talks to you.</p>
       </div>
     </div>
 
@@ -560,23 +567,23 @@
     </div>
     <div class="two-col">
       <div class="card">
-        <h3>A two-to-three month tenure</h3>
-        <p>The Vibe Curator (VC) Program places travellers with skills in community building, hosting, and content creation at Zostel properties for a 2–3 month tenure. In return for free stay, food, perks, and exposure, VCs bring properties to life — running daily activities, creating content, and turning individual travellers into a community.</p>
-        <p>This document is meant to be read by <strong>both</strong> the Property Manager and the Vibe Curator before the tenure begins. It lays out what each side commits to, what each side receives, how to handle the common friction points, and where to go when things need a third party.</p>
+        <h3>A two-to-three month stay</h3>
+        <p>For two to three months, a Vibe Curator moves into a Zostel — free bed, free food, and a front-row seat to hostel life. In return, they bring the place alive: running activities, making content, and turning a bunch of solo travellers into a crew.</p>
+        <p>It works best when the Property Manager and the Vibe Curator read this <strong>together</strong> before day one — so you both know what you're giving, what you're getting, and what to do if something feels off.</p>
       </div>
       <div class="card howto-card tint">
         <h3>How to use this guide</h3>
         <div class="check-row">
           <span class="tick"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
-          <p>Read it together in your <strong>first alignment call</strong> — don't skim.</p>
+          <p>Read it together on your <strong>first call</strong> — no skimming.</p>
         </div>
         <div class="check-row">
           <span class="tick"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
-          <p>Refer back to it when something feels off. The answer is <strong>probably already in here</strong>.</p>
+          <p>Come back to it whenever something feels off — the answer's <strong>probably already here</strong>.</p>
         </div>
         <div class="check-row">
           <span class="tick"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
-          <p>When in doubt, default to <strong>the big idea</strong> above.</p>
+          <p>When in doubt, go back to <strong>the big idea</strong> up top.</p>
         </div>
       </div>
     </div>
@@ -590,7 +597,7 @@
     <div class="section-head">
       <span class="eyebrow numbered"><span class="sec-no">02</span>The two roles</span>
       <h2>Two people, one playbook</h2>
-      <p>The roles mirror each other — each side commits, and each side receives. Use the <strong>“Reading as…”</strong> switch up top to focus on your side.</p>
+      <p>The two roles mirror each other — each of you gives something, and each of you gets something. Use the <strong>“Reading as…”</strong> switch up top to focus on your side.</p>
     </div>
 
     <div class="roles-grid">
@@ -600,7 +607,7 @@
           <div class="role-head-text">
             <div class="role-tag">Role 1</div>
             <h3>The Vibe Curator</h3>
-            <p class="role-intro">You are a guest first — one who's chosen to use your skills in community building, hosting, and storytelling to subsidise your travel and grow your craft. You're not staff. You're not a volunteer. You're a guest who contributes.</p>
+            <p class="role-intro">You're here to travel, create, and build community — and earn your stay doing it. You're not staff. You're not a volunteer. You're a guest who contributes.</p>
             <span class="focus-flag"><span style="width:8px;height:8px;border-radius:50%;background:var(--vc);display:inline-block;"></span>This is you</span>
           </div>
           <div class="role-art"><img src="assets/illustrations/groovy.svg" alt="An energetic person leaping" loading="lazy" /></div>
@@ -608,36 +615,36 @@
         <div class="role-body">
           <div class="role-block">
             <div class="block-label">What's expected from you<span class="lbl-line"></span></div>
-            <span class="sub-h">Daily &amp; weekly cadence</span>
+            <span class="sub-h">Your weekly rhythm</span>
             <ul class="role-list" style="margin-bottom:18px;">
-              <li><span class="ic"><svg class="ic-svg" aria-hidden="true"><use href="#i-check"/></svg></span><span>Run <strong>at least 1 activity per day</strong> — high-effort (trek, food walk, bonfire) or low-effort (card game, lakeside chill, storytelling).</span></li>
-              <li><span class="ic"><svg class="ic-svg" aria-hidden="true"><use href="#i-check"/></svg></span><span>Publish <strong>at least 3 social posts per week</strong> (reels, posts, or videos) covering life at the property.</span></li>
-              <li><span class="ic"><svg class="ic-svg" aria-hidden="true"><use href="#i-check"/></svg></span><span>Update the activity calendar on the Zostel website <strong>weekly</strong>.</span></li>
-              <li><span class="ic"><svg class="ic-svg" aria-hidden="true"><use href="#i-check"/></svg></span><span>Post a <strong>weekly community update</strong> to HQ on Slack.</span></li>
+              <li><span class="ic"><svg class="ic-svg" aria-hidden="true"><use href="#i-check"/></svg></span><span>Run <strong>one activity a day</strong> — big (a sunrise trek, a food walk, a bonfire) or small (a card game, a lakeside hang, a story circle). Both count.</span></li>
+              <li><span class="ic"><svg class="ic-svg" aria-hidden="true"><use href="#i-check"/></svg></span><span>Post <strong>3 times a week</strong> — reels, photos, videos, whatever captures the vibe.</span></li>
+              <li><span class="ic"><svg class="ic-svg" aria-hidden="true"><use href="#i-check"/></svg></span><span>Keep the activity calendar <strong>fresh each week</strong> on the Zostel site.</span></li>
+              <li><span class="ic"><svg class="ic-svg" aria-hidden="true"><use href="#i-check"/></svg></span><span>Drop a <strong>weekly update</strong> to HQ on Slack — wins, photos, what's buzzing.</span></li>
             </ul>
-            <span class="sub-h">Ongoing responsibilities</span>
+            <span class="sub-h">The everyday stuff</span>
             <ul class="role-list">
-              <li><span class="ic"><svg class="ic-svg" aria-hidden="true"><use href="#i-star"/></svg></span><span>Give every new guest a <strong>property tour</strong> on arrival.</span></li>
-              <li><span class="ic"><svg class="ic-svg" aria-hidden="true"><use href="#i-star"/></svg></span><span>Connect guests to each other — turn solo travellers into a community.</span></li>
-              <li><span class="ic"><svg class="ic-svg" aria-hidden="true"><use href="#i-star"/></svg></span><span>Drive <strong>review collection</strong> — every checkout is a chance for a review.</span></li>
-              <li><span class="ic"><svg class="ic-svg" aria-hidden="true"><use href="#i-star"/></svg></span><span>Be professional, follow property rules, and respect the team you live with.</span></li>
+              <li><span class="ic"><svg class="ic-svg" aria-hidden="true"><use href="#i-star"/></svg></span><span>Welcome every new guest with a <strong>quick tour</strong>.</span></li>
+              <li><span class="ic"><svg class="ic-svg" aria-hidden="true"><use href="#i-star"/></svg></span><span>Introduce guests to each other — turn solo travellers into a crew.</span></li>
+              <li><span class="ic"><svg class="ic-svg" aria-hidden="true"><use href="#i-star"/></svg></span><span>Nudge happy guests to <strong>leave a review</strong> — every checkout's a chance.</span></li>
+              <li><span class="ic"><svg class="ic-svg" aria-hidden="true"><use href="#i-star"/></svg></span><span>Be easy to live with — follow the house rules and respect the team.</span></li>
             </ul>
           </div>
           <div class="role-block">
             <div class="block-label">What you receive<span class="lbl-line"></span></div>
-            <span class="sub-h">During your tenure</span>
+            <span class="sub-h">While you're there</span>
             <ul class="role-list" style="margin-bottom:18px;">
-              <li><span class="ic"><svg class="ic-svg" aria-hidden="true"><use href="#i-check"/></svg></span><span>A bed in the <strong>guest dormitory</strong> (not the staff dorm).</span></li>
-              <li><span class="ic"><svg class="ic-svg" aria-hidden="true"><use href="#i-check"/></svg></span><span>All meals at the property, <strong>free</strong>.</span></li>
-              <li><span class="ic"><svg class="ic-svg" aria-hidden="true"><use href="#i-check"/></svg></span><span>A <strong>share of revenue</strong> from any paid activities you run.</span></li>
-              <li><span class="ic"><svg class="ic-svg" aria-hidden="true"><use href="#i-check"/></svg></span><span>Direct access to guests, community, and the wider Zostel network.</span></li>
+              <li><span class="ic"><svg class="ic-svg" aria-hidden="true"><use href="#i-check"/></svg></span><span>Your own bed in the <strong>guest dorm</strong> (not the staff dorm).</span></li>
+              <li><span class="ic"><svg class="ic-svg" aria-hidden="true"><use href="#i-check"/></svg></span><span>Every meal, <strong>on the house</strong>.</span></li>
+              <li><span class="ic"><svg class="ic-svg" aria-hidden="true"><use href="#i-check"/></svg></span><span>A <strong>cut of every paid activity</strong> you run.</span></li>
+              <li><span class="ic"><svg class="ic-svg" aria-hidden="true"><use href="#i-check"/></svg></span><span>A foot in the door across the <strong>whole Zostel network</strong>.</span></li>
             </ul>
-            <span class="sub-h">Beyond your tenure</span>
+            <span class="sub-h">After you leave</span>
             <ul class="role-list">
-              <li><span class="ic"><svg class="ic-svg" aria-hidden="true"><use href="#i-star"/></svg></span><span><strong>Zo Credits</strong> based on performance, redeemable for nights at any Zostel.</span></li>
-              <li><span class="ic"><svg class="ic-svg" aria-hidden="true"><use href="#i-star"/></svg></span><span>Performance-linked <strong>stipend</strong> (under finalisation — confirmed at offer).</span></li>
-              <li><span class="ic"><svg class="ic-svg" aria-hidden="true"><use href="#i-star"/></svg></span><span><strong>Certificate</strong> of completion from Zostel.</span></li>
-              <li><span class="ic"><svg class="ic-svg" aria-hidden="true"><use href="#i-star"/></svg></span><span>Portfolio content + <strong>priority consideration</strong> for future Zostel roles.</span></li>
+              <li><span class="ic"><svg class="ic-svg" aria-hidden="true"><use href="#i-star"/></svg></span><span><strong>Zo Credits</strong> to fund your next trip — good at any Zostel.</span></li>
+              <li><span class="ic"><svg class="ic-svg" aria-hidden="true"><use href="#i-star"/></svg></span><span>A performance-linked <strong>stipend</strong> (we're finalising the details — confirmed in your offer).</span></li>
+              <li><span class="ic"><svg class="ic-svg" aria-hidden="true"><use href="#i-star"/></svg></span><span>A <strong>certificate</strong> of completion from Zostel.</span></li>
+              <li><span class="ic"><svg class="ic-svg" aria-hidden="true"><use href="#i-star"/></svg></span><span>A portfolio of real work — and <strong>first dibs</strong> on future Zostel roles.</span></li>
             </ul>
           </div>
         </div>
@@ -649,7 +656,7 @@
           <div class="role-head-text">
             <div class="role-tag">Role 2</div>
             <h3>The Property Manager</h3>
-            <p class="role-intro">You are the host. The VC is not staff — they're a contributor you've agreed to support. Your job is to give them the environment, context, and respect they need to do the work well. When they succeed, your guest experience, reviews, and content all lift with them.</p>
+            <p class="role-intro">You're the host. The VC isn't staff — they're a contributor you've agreed to support. Give them a good setup and they make your job easier: better vibe, better reviews, better content. When they win, you win.</p>
             <span class="focus-flag"><span style="width:8px;height:8px;border-radius:50%;background:var(--pm);display:inline-block;"></span>This is you</span>
           </div>
           <div class="role-art"><img src="assets/illustrations/sitting.svg" alt="A person sitting calmly" loading="lazy" /></div>
@@ -659,34 +666,34 @@
             <div class="block-label">What's expected from you<span class="lbl-line"></span></div>
             <span class="sub-h">Hosting the VC</span>
             <ul class="role-list" style="margin-bottom:18px;">
-              <li><span class="ic"><svg class="ic-svg" aria-hidden="true"><use href="#i-check"/></svg></span><span>Provide a bed in the <strong>guest dormitory</strong> — not the staff dorm, no exceptions.</span></li>
+              <li><span class="ic"><svg class="ic-svg" aria-hidden="true"><use href="#i-check"/></svg></span><span>Give them a bed in the <strong>guest dorm</strong> — not the staff dorm, no exceptions.</span></li>
               <li><span class="ic"><svg class="ic-svg" aria-hidden="true"><use href="#i-check"/></svg></span><span>Provide <strong>all meals</strong> at the property, suitable for a guest.</span></li>
               <li><span class="ic"><svg class="ic-svg" aria-hidden="true"><use href="#i-check"/></svg></span><span>Treat the VC with the respect <strong>any guest deserves</strong>.</span></li>
-              <li><span class="ic"><svg class="ic-svg" aria-hidden="true"><use href="#i-check"/></svg></span><span>Introduce the VC to the team, the property, and the local context <strong>on day one</strong>.</span></li>
+              <li><span class="ic"><svg class="ic-svg" aria-hidden="true"><use href="#i-check"/></svg></span><span>Show them around <strong>on day one</strong> — the team, the property, the area.</span></li>
             </ul>
             <span class="sub-h">Supporting the work</span>
             <ul class="role-list">
-              <li><span class="ic"><svg class="ic-svg" aria-hidden="true"><use href="#i-star"/></svg></span><span>Have a brief <strong>weekly check-in</strong> with the VC to align on activities and content.</span></li>
-              <li><span class="ic"><svg class="ic-svg" aria-hidden="true"><use href="#i-star"/></svg></span><span>Share property handles and the activity calendar with the VC.</span></li>
-              <li><span class="ic"><svg class="ic-svg" aria-hidden="true"><use href="#i-star"/></svg></span><span>Back the VC up when they're new — they may need <strong>guidance, not criticism</strong>.</span></li>
-              <li><span class="ic"><svg class="ic-svg" aria-hidden="true"><use href="#i-star"/></svg></span><span>Flag concerns <strong>early</strong> to the VC directly, and to HQ if unresolved.</span></li>
+              <li><span class="ic"><svg class="ic-svg" aria-hidden="true"><use href="#i-star"/></svg></span><span>Grab <strong>15 minutes each week</strong> to plan activities and content together.</span></li>
+              <li><span class="ic"><svg class="ic-svg" aria-hidden="true"><use href="#i-star"/></svg></span><span>Hand over the property's <strong>social logins</strong> and the activity calendar.</span></li>
+              <li><span class="ic"><svg class="ic-svg" aria-hidden="true"><use href="#i-star"/></svg></span><span>Back them up when they're new — they may need <strong>guidance, not criticism</strong>.</span></li>
+              <li><span class="ic"><svg class="ic-svg" aria-hidden="true"><use href="#i-star"/></svg></span><span>Raise any concerns <strong>early</strong> — with the VC first, and HQ if it's not resolving.</span></li>
             </ul>
           </div>
           <div class="role-block">
             <div class="block-label">What you receive<span class="lbl-line"></span></div>
             <span class="sub-h">On the property</span>
             <ul class="role-list" style="margin-bottom:18px;">
-              <li><span class="ic"><svg class="ic-svg" aria-hidden="true"><use href="#i-check"/></svg></span><span>Stronger guest reviews driven by a <strong>more engaged community</strong>.</span></li>
-              <li><span class="ic"><svg class="ic-svg" aria-hidden="true"><use href="#i-check"/></svg></span><span>A steady stream of <strong>content</strong> for your property's social handles.</span></li>
-              <li><span class="ic"><svg class="ic-svg" aria-hidden="true"><use href="#i-check"/></svg></span><span><strong>Reduced personal workload</strong> on guest engagement and activities.</span></li>
-              <li><span class="ic"><svg class="ic-svg" aria-hidden="true"><use href="#i-check"/></svg></span><span>A more vibrant property feel that supports retention and word-of-mouth.</span></li>
+              <li><span class="ic"><svg class="ic-svg" aria-hidden="true"><use href="#i-check"/></svg></span><span>Better reviews, because the place <strong>actually feels alive</strong>.</span></li>
+              <li><span class="ic"><svg class="ic-svg" aria-hidden="true"><use href="#i-check"/></svg></span><span>A steady stream of <strong>content</strong> for your socials — without lifting a finger.</span></li>
+              <li><span class="ic"><svg class="ic-svg" aria-hidden="true"><use href="#i-check"/></svg></span><span><strong>Less on your plate</strong> — someone else owns the guest vibe.</span></li>
+              <li><span class="ic"><svg class="ic-svg" aria-hidden="true"><use href="#i-check"/></svg></span><span>A buzz that keeps people coming back and <strong>telling their friends</strong>.</span></li>
             </ul>
             <span class="sub-h">Within Zostel</span>
             <ul class="role-list">
-              <li><span class="ic"><svg class="ic-svg" aria-hidden="true"><use href="#i-star"/></svg></span><span>Recognition through the <strong>PM championship program</strong> for managers who run it well.</span></li>
-              <li><span class="ic"><svg class="ic-svg" aria-hidden="true"><use href="#i-star"/></svg></span><span><strong>Co-ownership of VC selection</strong> going forward — your input shapes who joins.</span></li>
-              <li><span class="ic"><svg class="ic-svg" aria-hidden="true"><use href="#i-star"/></svg></span><span>Visibility within the Zostel network as a property running the playbook right.</span></li>
-              <li><span class="ic"><svg class="ic-svg" aria-hidden="true"><use href="#i-star"/></svg></span><span>Direct partnership with HQ on the program's design and improvement.</span></li>
+              <li><span class="ic"><svg class="ic-svg" aria-hidden="true"><use href="#i-star"/></svg></span><span>A shout-out through the <strong>PM championship</strong> for managers who nail it.</span></li>
+              <li><span class="ic"><svg class="ic-svg" aria-hidden="true"><use href="#i-star"/></svg></span><span>A <strong>say in who joins next</strong> — your input shapes future VC picks.</span></li>
+              <li><span class="ic"><svg class="ic-svg" aria-hidden="true"><use href="#i-star"/></svg></span><span>A name across the Zostel network as a property that <strong>runs this right</strong>.</span></li>
+              <li><span class="ic"><svg class="ic-svg" aria-hidden="true"><use href="#i-star"/></svg></span><span>A <strong>direct line to HQ</strong> to shape how the program grows.</span></li>
             </ul>
           </div>
         </div>
@@ -699,7 +706,7 @@
     <div class="section-head">
       <span class="eyebrow numbered"><span class="sec-no">03</span>When it's tricky</span>
       <h2>When things get tricky</h2>
-      <p>Most VC tenures go smoothly. When they don't, it's almost always one of the three situations below. Each has a clear line and a clear first move.</p>
+      <p>Most stays go smoothly. When they don't, it's almost always one of these three. Each has a clear line — and a clear first move.</p>
     </div>
 
     <!-- Scenario 1 -->
@@ -734,7 +741,7 @@
     <div class="friction-card">
       <div class="friction-head">
         <span class="friction-num">2</span>
-        <h3>The VC is not delivering — missing activities or content</h3>
+        <h3>The VC has gone quiet — activities or content are slipping</h3>
       </div>
       <div class="compare">
         <div class="compare-col ok">
@@ -776,13 +783,13 @@
           <div class="col-h"><span class="badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></span>What's not okay</div>
           <ul>
             <li>VC is placed in the staff dorm to preserve a saleable bed.</li>
-            <li>Revenue protection is treated as a reason to downgrade VC accommodation.</li>
+            <li>Selling the bed becomes the reason to bump the VC out.</li>
           </ul>
         </div>
       </div>
       <div class="first-move">
         <span class="fm-tag">First move</span>
-        <p><strong>VC:</strong> Raise it with the PM on day one if the setup is wrong. &nbsp;<strong>PM:</strong> Plan VC bed allocation before the tenure starts.</p>
+        <p><strong>VC:</strong> Raise it with the PM on day one if the setup is wrong. &nbsp;<strong>PM:</strong> Sort the VC's bed before they arrive.</p>
       </div>
     </div>
   </section>
@@ -798,14 +805,14 @@
       <div class="ci-emoji"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 13c1.5 1.5 6.5 1.5 8 0"/><path d="m11 7 2-2 2 2"/><path d="M3 11a9 9 0 0 1 9-9 9 9 0 0 1 9 9v6a2 2 0 0 1-2 2h-3l-4 3v-3H5a2 2 0 0 1-2-2Z"/></svg></div>
       <div>
         <h3>Two-week mutual check-in</h3>
-        <p>Two weeks into the tenure, the PM and VC have a structured conversation. Either party can say “this is working” or “I have concerns.” Concerns get raised to the VC Ops Lead, who decides whether to mediate, adjust, or — in rare cases — end the tenure cleanly. This is a planned conversation, <strong>not a performance review</strong>.</p>
+        <p>Two weeks in, sit down for an honest chat. Either of you can say “this is working” or “something's off.” Anything unresolved goes to the VC Ops Lead, who'll mediate, adjust, or — rarely — end the stay cleanly. It's a planned check-in, <strong>not a performance review</strong>.</p>
       </div>
     </div>
 
     <div class="section-head" style="margin-top:64px;">
       <span class="eyebrow">Escalation path</span>
       <h2 style="font-size:clamp(1.5rem,2.6vw,2.1rem);">Same path for either party</h2>
-      <p>If something can't be resolved between PM and VC directly, here's the path.</p>
+      <p>If you can't sort something out between yourselves, here's the path.</p>
     </div>
 
     <div class="escalation" id="escalation">
@@ -814,29 +821,29 @@
         <div class="step">
           <div class="step-num">1</div>
           <h4>Talk it out</h4>
-          <p>Raise it directly with the other party first. Most things resolve here.</p>
+          <p>Raise it directly with the other person first. Most things resolve right here.</p>
         </div>
         <div class="step">
           <div class="step-num">2</div>
           <h4>Wait 24 hours</h4>
-          <p>Give space for response or action. Note what was discussed.</p>
+          <p>Give it a day to land. Jot down what you talked about.</p>
         </div>
         <div class="step">
           <div class="step-num">3</div>
           <h4>Loop in HQ</h4>
-          <p>If unresolved or unreachable, email the VC Ops Lead with context.</p>
+          <p>Still stuck? Email the VC Ops Lead with the details.</p>
         </div>
         <div class="step">
           <div class="step-num">4</div>
           <h4>HQ mediates</h4>
-          <p>The VC Ops Lead steps in within 48 hours to facilitate a resolution.</p>
+          <p>The VC Ops Lead steps in within 48 hours to help sort it out.</p>
         </div>
       </div>
     </div>
 
     <div class="ending-card">
-      <h3>Ending the tenure early</h3>
-      <p>We expect most VC tenures to run their full 2–3 months. If either party feels it's genuinely not working, the path is: raise it at the two-week check-in or with the VC Ops Lead. <strong>Neither party should end the tenure unilaterally</strong> — no walking out, no abrupt dismissals. HQ supports a clean exit when one is needed.</p>
+      <h3>Ending the stay early</h3>
+      <p>Most stays run their full 2–3 months. But if it's genuinely not working for either of you, raise it at the two-week check-in or with the VC Ops Lead. <strong>Don't ghost each other</strong> — no walking out, no sudden goodbyes. HQ will help with a clean exit if it comes to that.</p>
     </div>
 
     <div class="contact-card">
@@ -860,7 +867,7 @@
     <div class="closing-copy">
       <div class="smiley"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-4.5-9.5-9C1 9 2.5 5 6 5c2 0 3.2 1 4 2 .8-1 2-2 4-2 3.5 0 5 4 3.5 7-2.5 4.5-9.5 9-9.5 9Z"/></svg></div>
       <h3>Show up as partners.</h3>
-      <p>Property Managers and Vibe Curators aren't on different teams — you're running the same playbook for the same outcome: a property that feels alive, guests who become a community, and stories worth sharing. When friction comes up, return to this guide. When it doesn't, just keep doing the work.</p>
+      <p>Property Managers and Vibe Curators aren't on different teams — you're running the same playbook for the same thing: a property that feels alive, guests who become a community, and stories worth sharing. When friction comes up, come back to this guide. The rest of the time, just enjoy the work.</p>
       <div class="footer-meta">Zostel · Vibe Curator Program · Alignment Guide</div>
     </div>
     <div class="closing-art"><img src="assets/illustrations/loving.svg" alt="A person holding a heart to their chest" loading="lazy" /></div>
@@ -891,11 +898,21 @@
   var printBtn = document.getElementById('printBtn');
   if (printBtn) printBtn.addEventListener('click', function (e) { e.preventDefault(); window.print(); });
 
-  // ---- Role toggle: dim the other side ----
+  // ---- Role toggle: dim the other side + greet the reader ----
   var toggleBtns = Array.prototype.slice.call(document.querySelectorAll('.role-toggle button'));
+  var greetEl = document.getElementById('roleGreeting');
+  var GREETINGS = {
+    both: 'Two roles, one playbook. Tap your side and the guide talks to you.',
+    vc: "Welcome, curator 👋 Here's your half of the deal — and everything you get for showing up.",
+    pm: "Hey host 👋 Here's what you're signing up for — and what it gives back."
+  };
   function setView(view) {
     document.body.setAttribute('data-view', view);
     toggleBtns.forEach(function (b) { b.setAttribute('aria-pressed', String(b.getAttribute('data-view') === view)); });
+    if (greetEl && GREETINGS[view]) {
+      greetEl.textContent = GREETINGS[view];
+      greetEl.classList.remove('greet-in'); void greetEl.offsetWidth; greetEl.classList.add('greet-in');
+    }
   }
   toggleBtns.forEach(function (b) { b.addEventListener('click', function () { setView(b.getAttribute('data-view')); }); });
 
