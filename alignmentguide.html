@@ -380,8 +380,8 @@
   .email-pill:hover { background: #FF6E38; transform: translateY(-1px); }
 
   /* CLOSING + FOOTER */
-  footer { margin-top: 96px; padding: 0 24px 80px; }
-  .closing-card { max-width: 980px; margin: 0 auto; background: var(--panel); border-radius: var(--radius-xl); padding: 64px 56px; position: relative; overflow: hidden; display: grid; grid-template-columns: 1fr 0.8fr; gap: 32px; align-items: center; }
+  footer { margin-top: 96px; padding: 0 0 80px; }
+  .closing-card { background: var(--panel); border-radius: var(--radius-xl); padding: 64px 56px; position: relative; overflow: hidden; display: grid; grid-template-columns: 1fr 0.8fr; gap: 32px; align-items: center; }
   @media (max-width: 760px) { .closing-card { grid-template-columns: 1fr; text-align: center; padding: 48px 30px; } }
   .closing-card .smiley { width: 60px; height: 60px; background: var(--orange); border-radius: 50%; margin-bottom: 22px; display: flex; align-items: center; justify-content: center; color: #fff; }
   @media (max-width: 760px) { .closing-card .smiley { margin-left: auto; margin-right: auto; } }
@@ -649,7 +649,7 @@
           <div class="role-head-text">
             <div class="role-tag">Role 2</div>
             <h3>The Property Manager</h3>
-            <p class="role-intro">You are the host. The VC is not your hire — they're a contributor you've agreed to support. Your job is to give them the environment, context, and respect they need to do the work well. When they succeed, your guest experience, reviews, and content all lift with them.</p>
+            <p class="role-intro">You are the host. The VC is not staff — they're a contributor you've agreed to support. Your job is to give them the environment, context, and respect they need to do the work well. When they succeed, your guest experience, reviews, and content all lift with them.</p>
             <span class="focus-flag"><span style="width:8px;height:8px;border-radius:50%;background:var(--pm);display:inline-block;"></span>This is you</span>
           </div>
           <div class="role-art"><img src="assets/illustrations/sitting.svg" alt="A person sitting calmly" loading="lazy" /></div>
@@ -660,7 +660,7 @@
             <span class="sub-h">Hosting the VC</span>
             <ul class="role-list" style="margin-bottom:18px;">
               <li><span class="ic"><svg class="ic-svg" aria-hidden="true"><use href="#i-check"/></svg></span><span>Provide a bed in the <strong>guest dormitory</strong> — not the staff dorm, no exceptions.</span></li>
-              <li><span class="ic"><svg class="ic-svg" aria-hidden="true"><use href="#i-check"/></svg></span><span>Provide <strong>all meals</strong> at the property.</span></li>
+              <li><span class="ic"><svg class="ic-svg" aria-hidden="true"><use href="#i-check"/></svg></span><span>Provide <strong>all meals</strong> at the property, suitable for a guest.</span></li>
               <li><span class="ic"><svg class="ic-svg" aria-hidden="true"><use href="#i-check"/></svg></span><span>Treat the VC with the respect <strong>any guest deserves</strong>.</span></li>
               <li><span class="ic"><svg class="ic-svg" aria-hidden="true"><use href="#i-check"/></svg></span><span>Introduce the VC to the team, the property, and the local context <strong>on day one</strong>.</span></li>
             </ul>
@@ -855,6 +855,7 @@
 
 <!-- CLOSING -->
 <footer>
+  <div class="container">
   <div class="closing-card">
     <div class="closing-copy">
       <div class="smiley"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-4.5-9.5-9C1 9 2.5 5 6 5c2 0 3.2 1 4 2 .8-1 2-2 4-2 3.5 0 5 4 3.5 7-2.5 4.5-9.5 9-9.5 9Z"/></svg></div>
@@ -863,6 +864,7 @@
       <div class="footer-meta">Zostel · Vibe Curator Program · Alignment Guide</div>
     </div>
     <div class="closing-art"><img src="assets/illustrations/loving.svg" alt="A person holding a heart to their chest" loading="lazy" /></div>
+  </div>
   </div>
 </footer>
 
