@@ -88,19 +88,22 @@
     line-height: 1.06;
     letter-spacing: -0.03em;
   }
-  h1 { font-size: clamp(2.7rem, 6vw, 4.7rem); font-weight: 800; letter-spacing: -0.04em; }
-  h2 { font-size: clamp(1.9rem, 3.8vw, 2.9rem); font-weight: 800; letter-spacing: -0.035em; }
+  h1 { font-size: clamp(2.7rem, 6vw, 4.7rem); font-weight: 800; letter-spacing: -0.04em; text-wrap: balance; }
+  h2 { font-size: clamp(1.9rem, 3.8vw, 2.9rem); font-weight: 800; letter-spacing: -0.035em; text-wrap: balance; }
   h3 { font-size: clamp(1.25rem, 2vw, 1.6rem); }
   h4 { font-size: 1.02rem; font-weight: 700; }
   p { color: var(--ink-soft); }
 
   /* EYEBROW / KICKER — small orange uppercase (EdU "Chinese Proverb") */
   .eyebrow {
-    display: inline-flex; align-items: center; gap: 8px;
-    font-size: 0.82rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase;
+    display: inline-flex; align-items: center; gap: 9px;
+    font-size: 0.8rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
     color: var(--orange);
   }
   .eyebrow::before { content: ''; width: 7px; height: 7px; background: var(--orange); border-radius: 50%; }
+  /* Editorial section numbering */
+  .eyebrow.numbered::before { display: none; }
+  .eyebrow .sec-no { font-weight: 800; letter-spacing: 0.02em; font-variant-numeric: tabular-nums; padding-right: 11px; border-right: 1.5px solid currentColor; }
 
   /* NAV */
   nav.topbar { position: sticky; top: 16px; z-index: 50; margin: 16px 24px 0; }
@@ -163,7 +166,8 @@
     display: flex; align-items: center; justify-content: center;
     overflow: hidden;
   }
-  .hero-art img { width: 100%; height: 100%; object-fit: contain; position: relative; z-index: 1; }
+  .hero-art img { width: 100%; height: 100%; object-fit: contain; object-position: bottom; position: relative; z-index: 1; transition: transform .4s cubic-bezier(.2,.7,.2,1); }
+  .hero-art:hover img { transform: scale(1.025); }
   /* doodle accents in the hero panel (EdU plant + scribbles) */
   .hero-art .doodle { position: absolute; z-index: 0; }
   .hero-art .d-plant { left: 18px; bottom: 18px; width: 70px; opacity: .9; }
@@ -171,7 +175,7 @@
 
   /* ROLE TOGGLE — "Reading as…" */
   .role-toggle-wrap { margin-top: 34px; }
-  .role-toggle-label { font-size: 0.78rem; font-weight: 700; color: var(--ink-mute); margin-bottom: 10px; display: block; letter-spacing: .04em; text-transform: uppercase; }
+  .role-toggle-label { font-size: 0.76rem; font-weight: 700; color: var(--ink-mute); margin-bottom: 10px; display: block; letter-spacing: .12em; text-transform: uppercase; }
   .role-toggle {
     display: inline-flex; gap: 4px; padding: 5px;
     background: var(--panel);
@@ -191,7 +195,10 @@
   .role-toggle button[data-view="both"] .dot { background: linear-gradient(90deg, var(--vc) 0 50%, var(--pm) 50% 100%); }
   .role-toggle button[aria-pressed="true"] { background: var(--primary); color: #fff; box-shadow: var(--shadow-sm); }
   .role-toggle button:not([aria-pressed="true"]):hover { color: var(--ink); }
-  @media (max-width: 540px) { .role-toggle { flex-wrap: wrap; } }
+  @media (max-width: 540px) {
+    .role-toggle { display: flex; flex-direction: column; align-items: stretch; gap: 6px; width: 100%; border-radius: var(--radius); padding: 6px; }
+    .role-toggle button { width: 100%; justify-content: flex-start; border-radius: var(--radius-sm); padding: 13px 16px; }
+  }
 
   /* SECTION HEAD */
   .section-head { margin-top: 96px; margin-bottom: 40px; max-width: 760px; }
@@ -209,18 +216,19 @@
     position: relative; overflow: hidden;
     text-align: center;
   }
-  .bigidea .kicker { font-size: 0.82rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--orange); margin-bottom: 24px; }
+  .bigidea .kicker { font-size: 0.8rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--orange); margin-bottom: 24px; }
   .bigidea blockquote {
     font-family: 'Bricolage Grotesque', sans-serif;
     font-size: clamp(1.6rem, 3.6vw, 2.7rem);
     line-height: 1.22; letter-spacing: -0.03em; font-weight: 700;
-    color: var(--ink); max-width: 900px; margin: 0 auto;
+    color: var(--ink); max-width: 900px; margin: 0 auto; text-wrap: balance;
   }
   .hl { position: relative; white-space: nowrap; padding: 0 2px; }
   .hl::after { content: ''; position: absolute; left: -2px; right: -2px; bottom: 5px; height: 36%; border-radius: 4px; z-index: -1; transform: scaleX(0); transform-origin: left center; }
   .bigidea.in .hl::after { transform: scaleX(1); transition: transform .8s cubic-bezier(.2,.7,.2,1); }
   .hl.vc { color: var(--orange-ink); } .hl.vc::after { background: var(--vc-soft); transition-delay: .25s; }
-  .hl.pm { color: var(--ink); } .hl.pm::after { background: #E3E0DA; transition-delay: .55s; }
+  /* PM uses a deliberate ink underline (not a highlighter block) so it reads intentional, not selected */
+  .hl.pm { color: var(--ink); } .hl.pm::after { height: 4px; bottom: 1px; border-radius: 3px; background: var(--ink); transition-delay: .55s; }
 
   .connector { margin: 42px auto 6px; max-width: 540px; }
   .connector svg { width: 100%; height: auto; display: block; overflow: visible; }
@@ -269,23 +277,32 @@
   .role-card.vc .role-head { background: var(--vc-soft); }
   .role-card.pm .role-head { background: var(--pm-soft); }
   .role-head .role-head-text { flex: 1; min-width: 0; }
-  .role-art { flex: none; width: 116px; height: 100px; }
-  .role-art img { width: 100%; height: 100%; object-fit: contain; }
-  @media (max-width: 420px) { .role-art { width: 84px; height: 76px; } }
+  .role-art { flex: none; width: 120px; height: 104px; align-self: flex-end; }
+  .role-art img { width: 100%; height: 100%; object-fit: contain; object-position: bottom; transition: transform .35s cubic-bezier(.2,.7,.2,1); }
+  /* optically equalise the two figures (sitting reads smaller than the leaping figure) */
+  .role-card.pm .role-art img { transform: scale(1.12); transform-origin: bottom center; }
+  .role-card.vc:hover .role-art img { transform: scale(1.06) rotate(-2deg); }
+  .role-card.pm:hover .role-art img { transform: scale(1.18) rotate(-2deg); }
+  @media (max-width: 420px) { .role-art { width: 88px; height: 80px; } }
   .role-tag { display: inline-flex; align-items: center; gap: 8px; font-size: 0.72rem; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; margin-bottom: 10px; }
   .role-card.vc .role-tag { color: var(--orange-ink); }
   .role-card.pm .role-tag { color: var(--ink); }
   .role-head h3 { font-size: clamp(1.5rem, 2.4vw, 1.95rem); margin-bottom: 10px; }
-  .role-head .role-intro { color: var(--ink-soft); font-size: 0.95rem; }
+  .role-head .role-intro { color: var(--ink-soft); font-size: 1rem; line-height: 1.55; }
   .role-body { padding: 28px 32px 34px; }
   .role-block + .role-block { margin-top: 26px; padding-top: 26px; border-top: 1px solid var(--hairline); }
   .block-label { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; font-size: 0.74rem; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: var(--ink-mute); }
   .block-label .lbl-line { flex: 1; height: 1px; background: var(--hairline); }
   .role-list { list-style: none; display: flex; flex-direction: column; gap: 12px; }
-  .role-list li { display: flex; gap: 12px; align-items: flex-start; font-size: 0.96rem; color: var(--ink); }
-  .role-list li .ic { flex: none; width: 24px; height: 24px; border-radius: 7px; margin-top: 1px; display: flex; align-items: center; justify-content: center; font-size: .82rem; }
+  .role-list li { display: flex; gap: 12px; align-items: flex-start; font-size: 1rem; line-height: 1.5; color: var(--ink); }
+  .role-list li .ic { flex: none; width: 24px; height: 24px; border-radius: 7px; margin-top: 2px; display: flex; align-items: center; justify-content: center; transition: transform .18s ease, background .18s ease, color .18s ease; }
+  .role-list li .ic .ic-svg { width: 13px; height: 13px; }
   .role-card.vc .role-list li .ic { background: var(--vc-soft); color: var(--orange-ink); }
   .role-card.pm .role-list li .ic { background: var(--pm-soft); color: var(--ink); }
+  /* subtle: icon nudges + fills on row hover */
+  .role-list li:hover .ic { transform: translateX(3px); }
+  .role-card.vc .role-list li:hover .ic { background: var(--orange); color: #fff; }
+  .role-card.pm .role-list li:hover .ic { background: var(--ink); color: #fff; }
   .sub-h { font-weight: 700; color: var(--ink); font-size: 0.92rem; margin-bottom: 4px; display: block; }
 
   body[data-view="vc"] .role-card.pm,
@@ -309,7 +326,7 @@
   .compare-col { border-radius: var(--radius); padding: 22px 24px; }
   .compare-col.ok { background: var(--ok-bg); }
   .compare-col.no { background: var(--no-bg); }
-  .compare-col .col-h { display: flex; align-items: center; gap: 9px; font-weight: 800; font-size: 0.8rem; letter-spacing: .05em; text-transform: uppercase; margin-bottom: 14px; }
+  .compare-col .col-h { display: flex; align-items: center; gap: 9px; font-weight: 800; font-size: 0.78rem; letter-spacing: .1em; text-transform: uppercase; margin-bottom: 14px; }
   .compare-col.ok .col-h { color: var(--ok); }
   .compare-col.no .col-h { color: var(--no); }
   .compare-col .badge { width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; }
@@ -317,7 +334,7 @@
   .compare-col.no .badge { background: var(--no); }
   .compare-col .badge svg { width: 12px; height: 12px; }
   .compare-col ul { list-style: none; display: flex; flex-direction: column; gap: 11px; }
-  .compare-col li { display: flex; gap: 10px; font-size: 0.94rem; color: var(--ink); align-items: flex-start; }
+  .compare-col li { display: flex; gap: 10px; font-size: 0.96rem; line-height: 1.5; color: var(--ink); align-items: flex-start; }
   .compare-col li::before { content: ''; flex: none; width: 6px; height: 6px; border-radius: 50%; margin-top: 8px; }
   .compare-col.ok li::before { background: var(--ok); }
   .compare-col.no li::before { background: var(--no); }
@@ -389,6 +406,37 @@
   .to-top.show { opacity: 1; visibility: visible; transform: translateY(0); }
   .to-top:hover { background: var(--primary-hover); transform: translateY(-2px); }
 
+  /* SUBTLE INTERACTIONS */
+  /* nav: animated orange underline on hover + active */
+  .nav-links a:not(.nav-cta) { position: relative; }
+  .nav-links a:not(.nav-cta)::after {
+    content: ''; position: absolute; left: 14px; right: 14px; bottom: 5px; height: 2px;
+    background: var(--orange); border-radius: 2px;
+    transform: scaleX(0); transform-origin: left center; transition: transform .22s ease;
+  }
+  .nav-links a:not(.nav-cta):hover::after,
+  .nav-links a.active:not(.nav-cta)::after { transform: scaleX(1); }
+  .nav-cta { transition: background .2s ease, transform .2s ease; }
+  .nav-cta:hover { transform: translateY(-1px); }
+  /* escalation steps: lift + number pop */
+  .step { transition: transform .2s ease, box-shadow .2s ease; }
+  .step:hover { transform: translateY(-3px); box-shadow: var(--shadow); }
+  .step .step-num { transition: transform .2s ease; }
+  .step:hover .step-num { transform: scale(1.08); }
+  /* friction number: a playful tilt when its card is hovered */
+  .friction-num { transition: transform .2s ease; }
+  .friction-card:hover .friction-num { transform: rotate(-5deg); }
+  /* check-row tick + email icon nudges */
+  .check-row .tick { transition: transform .2s ease; }
+  .check-row:hover .tick { transform: scale(1.1) rotate(-5deg); }
+  .email-pill svg { transition: transform .2s ease; }
+  .email-pill:hover svg { transform: translateX(-2px) scale(1.06); }
+  /* accessible focus rings */
+  .nav-links a:focus-visible, .nav-cta:focus-visible, .role-toggle button:focus-visible,
+  .email-pill:focus-visible, .to-top:focus-visible {
+    outline: 2px solid var(--orange); outline-offset: 3px;
+  }
+
   /* MOTION */
   .reveal { opacity: 0; transform: translateY(16px); transition: opacity .6s cubic-bezier(.2,.6,.2,1), transform .6s cubic-bezier(.2,.6,.2,1); will-change: opacity, transform; }
   .reveal.in { opacity: 1; transform: none; }
@@ -419,6 +467,12 @@
 </style>
 </head>
 <body data-view="both">
+
+<!-- Icon sprite (line icons matching the page's stroke language) -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <symbol id="i-check" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-star" viewBox="0 0 24 24"><path d="M12 3.4l2.05 5.3 5.65.32-4.4 3.55 1.5 5.43L12 20.2l-4.85 1.8 1.5-5.43-4.4-3.55 5.65-.32z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+</svg>
 
 <div class="progress-bar" id="progressBar"></div>
 
@@ -501,7 +555,7 @@
   <!-- WHAT THIS IS + HOW TO USE -->
   <section>
     <div class="section-head">
-      <span class="eyebrow">Orientation</span>
+      <span class="eyebrow numbered"><span class="sec-no">01</span>Orientation</span>
       <h2>What this program is</h2>
     </div>
     <div class="two-col">
@@ -534,7 +588,7 @@
       <path class="ink-line" d="M50 10 C 20 12, 10 34, 12 50 C 30 50, 50 38, 50 10 Z M14 48 C 24 38, 34 28, 46 16" />
     </svg>
     <div class="section-head">
-      <span class="eyebrow">The two roles</span>
+      <span class="eyebrow numbered"><span class="sec-no">02</span>The two roles</span>
       <h2>Two people, one playbook</h2>
       <p>The roles mirror each other — each side commits, and each side receives. Use the <strong>“Reading as…”</strong> switch up top to focus on your side.</p>
     </div>
@@ -556,34 +610,34 @@
             <div class="block-label">What's expected from you<span class="lbl-line"></span></div>
             <span class="sub-h">Daily &amp; weekly cadence</span>
             <ul class="role-list" style="margin-bottom:18px;">
-              <li><span class="ic">●</span><span>Run <strong>at least 1 activity per day</strong> — high-effort (trek, food walk, bonfire) or low-effort (card game, lakeside chill, storytelling).</span></li>
-              <li><span class="ic">●</span><span>Publish <strong>at least 3 social posts per week</strong> (reels, posts, or videos) covering life at the property.</span></li>
-              <li><span class="ic">●</span><span>Update the activity calendar on the Zostel website <strong>weekly</strong>.</span></li>
-              <li><span class="ic">●</span><span>Post a <strong>weekly community update</strong> to HQ on Slack.</span></li>
+              <li><span class="ic"><svg class="ic-svg" aria-hidden="true"><use href="#i-check"/></svg></span><span>Run <strong>at least 1 activity per day</strong> — high-effort (trek, food walk, bonfire) or low-effort (card game, lakeside chill, storytelling).</span></li>
+              <li><span class="ic"><svg class="ic-svg" aria-hidden="true"><use href="#i-check"/></svg></span><span>Publish <strong>at least 3 social posts per week</strong> (reels, posts, or videos) covering life at the property.</span></li>
+              <li><span class="ic"><svg class="ic-svg" aria-hidden="true"><use href="#i-check"/></svg></span><span>Update the activity calendar on the Zostel website <strong>weekly</strong>.</span></li>
+              <li><span class="ic"><svg class="ic-svg" aria-hidden="true"><use href="#i-check"/></svg></span><span>Post a <strong>weekly community update</strong> to HQ on Slack.</span></li>
             </ul>
             <span class="sub-h">Ongoing responsibilities</span>
             <ul class="role-list">
-              <li><span class="ic">★</span><span>Give every new guest a <strong>property tour</strong> on arrival.</span></li>
-              <li><span class="ic">★</span><span>Connect guests to each other — turn solo travellers into a community.</span></li>
-              <li><span class="ic">★</span><span>Drive <strong>review collection</strong> — every checkout is a chance for a review.</span></li>
-              <li><span class="ic">★</span><span>Be professional, follow property rules, and respect the team you live with.</span></li>
+              <li><span class="ic"><svg class="ic-svg" aria-hidden="true"><use href="#i-star"/></svg></span><span>Give every new guest a <strong>property tour</strong> on arrival.</span></li>
+              <li><span class="ic"><svg class="ic-svg" aria-hidden="true"><use href="#i-star"/></svg></span><span>Connect guests to each other — turn solo travellers into a community.</span></li>
+              <li><span class="ic"><svg class="ic-svg" aria-hidden="true"><use href="#i-star"/></svg></span><span>Drive <strong>review collection</strong> — every checkout is a chance for a review.</span></li>
+              <li><span class="ic"><svg class="ic-svg" aria-hidden="true"><use href="#i-star"/></svg></span><span>Be professional, follow property rules, and respect the team you live with.</span></li>
             </ul>
           </div>
           <div class="role-block">
             <div class="block-label">What you receive<span class="lbl-line"></span></div>
             <span class="sub-h">During your tenure</span>
             <ul class="role-list" style="margin-bottom:18px;">
-              <li><span class="ic">●</span><span>A bed in the <strong>guest dormitory</strong> (not the staff dorm).</span></li>
-              <li><span class="ic">●</span><span>All meals at the property, <strong>free</strong>.</span></li>
-              <li><span class="ic">●</span><span>A <strong>share of revenue</strong> from any paid activities you run.</span></li>
-              <li><span class="ic">●</span><span>Direct access to guests, community, and the wider Zostel network.</span></li>
+              <li><span class="ic"><svg class="ic-svg" aria-hidden="true"><use href="#i-check"/></svg></span><span>A bed in the <strong>guest dormitory</strong> (not the staff dorm).</span></li>
+              <li><span class="ic"><svg class="ic-svg" aria-hidden="true"><use href="#i-check"/></svg></span><span>All meals at the property, <strong>free</strong>.</span></li>
+              <li><span class="ic"><svg class="ic-svg" aria-hidden="true"><use href="#i-check"/></svg></span><span>A <strong>share of revenue</strong> from any paid activities you run.</span></li>
+              <li><span class="ic"><svg class="ic-svg" aria-hidden="true"><use href="#i-check"/></svg></span><span>Direct access to guests, community, and the wider Zostel network.</span></li>
             </ul>
             <span class="sub-h">Beyond your tenure</span>
             <ul class="role-list">
-              <li><span class="ic">★</span><span><strong>Zo Credits</strong> based on performance, redeemable for nights at any Zostel.</span></li>
-              <li><span class="ic">★</span><span>Performance-linked <strong>stipend</strong> (under finalisation — confirmed at offer).</span></li>
-              <li><span class="ic">★</span><span><strong>Certificate</strong> of completion from Zostel.</span></li>
-              <li><span class="ic">★</span><span>Portfolio content + <strong>priority consideration</strong> for future Zostel roles.</span></li>
+              <li><span class="ic"><svg class="ic-svg" aria-hidden="true"><use href="#i-star"/></svg></span><span><strong>Zo Credits</strong> based on performance, redeemable for nights at any Zostel.</span></li>
+              <li><span class="ic"><svg class="ic-svg" aria-hidden="true"><use href="#i-star"/></svg></span><span>Performance-linked <strong>stipend</strong> (under finalisation — confirmed at offer).</span></li>
+              <li><span class="ic"><svg class="ic-svg" aria-hidden="true"><use href="#i-star"/></svg></span><span><strong>Certificate</strong> of completion from Zostel.</span></li>
+              <li><span class="ic"><svg class="ic-svg" aria-hidden="true"><use href="#i-star"/></svg></span><span>Portfolio content + <strong>priority consideration</strong> for future Zostel roles.</span></li>
             </ul>
           </div>
         </div>
@@ -605,34 +659,34 @@
             <div class="block-label">What's expected from you<span class="lbl-line"></span></div>
             <span class="sub-h">Hosting the VC</span>
             <ul class="role-list" style="margin-bottom:18px;">
-              <li><span class="ic">●</span><span>Provide a bed in the <strong>guest dormitory</strong> — not the staff dorm, no exceptions.</span></li>
-              <li><span class="ic">●</span><span>Provide <strong>all meals</strong> at the property.</span></li>
-              <li><span class="ic">●</span><span>Treat the VC with the respect <strong>any guest deserves</strong>.</span></li>
-              <li><span class="ic">●</span><span>Introduce the VC to the team, the property, and the local context <strong>on day one</strong>.</span></li>
+              <li><span class="ic"><svg class="ic-svg" aria-hidden="true"><use href="#i-check"/></svg></span><span>Provide a bed in the <strong>guest dormitory</strong> — not the staff dorm, no exceptions.</span></li>
+              <li><span class="ic"><svg class="ic-svg" aria-hidden="true"><use href="#i-check"/></svg></span><span>Provide <strong>all meals</strong> at the property.</span></li>
+              <li><span class="ic"><svg class="ic-svg" aria-hidden="true"><use href="#i-check"/></svg></span><span>Treat the VC with the respect <strong>any guest deserves</strong>.</span></li>
+              <li><span class="ic"><svg class="ic-svg" aria-hidden="true"><use href="#i-check"/></svg></span><span>Introduce the VC to the team, the property, and the local context <strong>on day one</strong>.</span></li>
             </ul>
             <span class="sub-h">Supporting the work</span>
             <ul class="role-list">
-              <li><span class="ic">★</span><span>Have a brief <strong>weekly check-in</strong> with the VC to align on activities and content.</span></li>
-              <li><span class="ic">★</span><span>Share property handles and the activity calendar with the VC.</span></li>
-              <li><span class="ic">★</span><span>Back the VC up when they're new — they may need <strong>guidance, not criticism</strong>.</span></li>
-              <li><span class="ic">★</span><span>Flag concerns <strong>early</strong> to the VC directly, and to HQ if unresolved.</span></li>
+              <li><span class="ic"><svg class="ic-svg" aria-hidden="true"><use href="#i-star"/></svg></span><span>Have a brief <strong>weekly check-in</strong> with the VC to align on activities and content.</span></li>
+              <li><span class="ic"><svg class="ic-svg" aria-hidden="true"><use href="#i-star"/></svg></span><span>Share property handles and the activity calendar with the VC.</span></li>
+              <li><span class="ic"><svg class="ic-svg" aria-hidden="true"><use href="#i-star"/></svg></span><span>Back the VC up when they're new — they may need <strong>guidance, not criticism</strong>.</span></li>
+              <li><span class="ic"><svg class="ic-svg" aria-hidden="true"><use href="#i-star"/></svg></span><span>Flag concerns <strong>early</strong> to the VC directly, and to HQ if unresolved.</span></li>
             </ul>
           </div>
           <div class="role-block">
             <div class="block-label">What you receive<span class="lbl-line"></span></div>
             <span class="sub-h">On the property</span>
             <ul class="role-list" style="margin-bottom:18px;">
-              <li><span class="ic">●</span><span>Stronger guest reviews driven by a <strong>more engaged community</strong>.</span></li>
-              <li><span class="ic">●</span><span>A steady stream of <strong>content</strong> for your property's social handles.</span></li>
-              <li><span class="ic">●</span><span><strong>Reduced personal workload</strong> on guest engagement and activities.</span></li>
-              <li><span class="ic">●</span><span>A more vibrant property feel that supports retention and word-of-mouth.</span></li>
+              <li><span class="ic"><svg class="ic-svg" aria-hidden="true"><use href="#i-check"/></svg></span><span>Stronger guest reviews driven by a <strong>more engaged community</strong>.</span></li>
+              <li><span class="ic"><svg class="ic-svg" aria-hidden="true"><use href="#i-check"/></svg></span><span>A steady stream of <strong>content</strong> for your property's social handles.</span></li>
+              <li><span class="ic"><svg class="ic-svg" aria-hidden="true"><use href="#i-check"/></svg></span><span><strong>Reduced personal workload</strong> on guest engagement and activities.</span></li>
+              <li><span class="ic"><svg class="ic-svg" aria-hidden="true"><use href="#i-check"/></svg></span><span>A more vibrant property feel that supports retention and word-of-mouth.</span></li>
             </ul>
             <span class="sub-h">Within Zostel</span>
             <ul class="role-list">
-              <li><span class="ic">★</span><span>Recognition through the <strong>PM championship program</strong> for managers who run it well.</span></li>
-              <li><span class="ic">★</span><span><strong>Co-ownership of VC selection</strong> going forward — your input shapes who joins.</span></li>
-              <li><span class="ic">★</span><span>Visibility within the Zostel network as a property running the playbook right.</span></li>
-              <li><span class="ic">★</span><span>Direct partnership with HQ on the program's design and improvement.</span></li>
+              <li><span class="ic"><svg class="ic-svg" aria-hidden="true"><use href="#i-star"/></svg></span><span>Recognition through the <strong>PM championship program</strong> for managers who run it well.</span></li>
+              <li><span class="ic"><svg class="ic-svg" aria-hidden="true"><use href="#i-star"/></svg></span><span><strong>Co-ownership of VC selection</strong> going forward — your input shapes who joins.</span></li>
+              <li><span class="ic"><svg class="ic-svg" aria-hidden="true"><use href="#i-star"/></svg></span><span>Visibility within the Zostel network as a property running the playbook right.</span></li>
+              <li><span class="ic"><svg class="ic-svg" aria-hidden="true"><use href="#i-star"/></svg></span><span>Direct partnership with HQ on the program's design and improvement.</span></li>
             </ul>
           </div>
         </div>
@@ -643,7 +697,7 @@
   <!-- WHEN THINGS GET TRICKY -->
   <section id="tricky">
     <div class="section-head">
-      <span class="eyebrow">Section 3</span>
+      <span class="eyebrow numbered"><span class="sec-no">03</span>When it's tricky</span>
       <h2>When things get tricky</h2>
       <p>Most VC tenures go smoothly. When they don't, it's almost always one of the three situations below. Each has a clear line and a clear first move.</p>
     </div>
@@ -736,7 +790,7 @@
   <!-- CHECK-INS, ESCALATION & CONTACT -->
   <section id="check-ins">
     <div class="section-head">
-      <span class="eyebrow">Section 4</span>
+      <span class="eyebrow numbered"><span class="sec-no">04</span>Check-ins</span>
       <h2>Check-ins, escalation &amp; contact</h2>
     </div>
 
