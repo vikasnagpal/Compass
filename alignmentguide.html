@@ -1,0 +1,889 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Alignment Guide — Zostel Vibe Curator Program</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%2316130F'/><path d='M16,6L18.65,12.36L25.51,12.91L20.28,17.39L21.88,24.09L16,20.5L10.12,24.09L11.72,17.39L6.49,12.91L13.35,12.36Z' fill='%23F2602A'/></svg>">
+<meta name="theme-color" content="#16130F">
+<meta name="description" content="A shared alignment guide for Property Managers and Vibe Curators in the Zostel Vibe Curator Program." />
+<!-- Human illustrations: Open Doodles by Pablo Stanley (CC0, public domain), recoloured to brand orange. -->
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    /* Surfaces — clean white with warm-grey panels (EdU) */
+    --bg: #FFFFFF;
+    --card: #FFFFFF;
+    --panel: #F6F5F2;
+    --card-2: #F6F5F2;
+
+    /* Ink — confident near-black */
+    --ink: #16130F;
+    --ink-soft: #4A453E;
+    --ink-mute: #8A847A;
+    --ink-faint: #C2BDB4;
+
+    /* Brand — a single decisive orange */
+    --orange: #F2602A;
+    --orange-ink: #C7491A;
+    --orange-soft: #FCEBE2;
+
+    /* Dark blocks (buttons, contact) */
+    --primary: #16130F;
+    --primary-hover: #322C24;
+
+    /* Role coding: VC = orange, PM = ink (the two EdU "colours") */
+    --vc: #F2602A;
+    --vc-soft: #FCEBE2;
+    --pm: #16130F;
+    --pm-soft: #ECEAE5;
+
+    /* Semantic OK / not-OK (kept for the comparison clarity) */
+    --ok: #2F8A4E;
+    --ok-bg: #EAF3EA;
+    --no: #D14A33;
+    --no-bg: #FBEAE2;
+
+    /* Aliases kept so component rules stay terse */
+    --sun: #F2602A;
+
+    /* Layout */
+    --radius-xs: 10px;
+    --radius-sm: 14px;
+    --radius: 20px;
+    --radius-lg: 28px;
+    --radius-xl: 40px;
+    --radius-pill: 999px;
+
+    --hairline: rgba(22, 19, 15, 0.08);
+
+    --shadow-sm: 0 1px 2px rgba(22, 19, 15, 0.03), 0 2px 8px rgba(22, 19, 15, 0.04);
+    --shadow: 0 4px 16px rgba(22, 19, 15, 0.05), 0 16px 40px rgba(22, 19, 15, 0.05);
+    --shadow-lg: 0 8px 30px rgba(22, 19, 15, 0.07), 0 24px 60px rgba(22, 19, 15, 0.06);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+    font-weight: 400;
+    -webkit-font-smoothing: antialiased;
+    letter-spacing: -0.005em;
+    overflow-x: hidden;
+  }
+
+  /* TYPOGRAPHY — heavy, geometric display (EdU) */
+  h1, h2, h3, h4 {
+    font-family: 'Bricolage Grotesque', 'Plus Jakarta Sans', sans-serif;
+    font-weight: 700;
+    color: var(--ink);
+    line-height: 1.06;
+    letter-spacing: -0.03em;
+  }
+  h1 { font-size: clamp(2.7rem, 6vw, 4.7rem); font-weight: 800; letter-spacing: -0.04em; }
+  h2 { font-size: clamp(1.9rem, 3.8vw, 2.9rem); font-weight: 800; letter-spacing: -0.035em; }
+  h3 { font-size: clamp(1.25rem, 2vw, 1.6rem); }
+  h4 { font-size: 1.02rem; font-weight: 700; }
+  p { color: var(--ink-soft); }
+
+  /* EYEBROW / KICKER — small orange uppercase (EdU "Chinese Proverb") */
+  .eyebrow {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-size: 0.82rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase;
+    color: var(--orange);
+  }
+  .eyebrow::before { content: ''; width: 7px; height: 7px; background: var(--orange); border-radius: 50%; }
+
+  /* NAV */
+  nav.topbar { position: sticky; top: 16px; z-index: 50; margin: 16px 24px 0; }
+  .nav-inner {
+    max-width: 1200px; margin: 0 auto;
+    padding: 11px 12px 11px 22px;
+    background: rgba(255, 255, 255, 0.88);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--hairline);
+    border-radius: var(--radius-pill);
+    display: flex; align-items: center; justify-content: space-between; gap: 24px;
+    box-shadow: var(--shadow-sm);
+  }
+  .brand {
+    font-family: 'Bricolage Grotesque', sans-serif; font-weight: 800;
+    font-size: 1.05rem; letter-spacing: -0.03em; white-space: nowrap;
+    display: flex; align-items: center; gap: 10px; text-decoration: none; color: inherit;
+  }
+  .brand-mark {
+    width: 28px; height: 28px; background: var(--primary); border-radius: 8px;
+    display: inline-flex; align-items: center; justify-content: center;
+    color: var(--orange); font-size: 0.95rem;
+  }
+  @media (max-width: 480px) { .brand .brand-prefix { display: none; } }
+  .nav-links { display: flex; gap: 2px; align-items: center; }
+  .nav-links a {
+    font-size: 0.88rem; font-weight: 600; text-decoration: none; color: var(--ink-soft);
+    padding: 8px 14px; border-radius: var(--radius-pill); transition: all .2s ease; white-space: nowrap;
+  }
+  .nav-links a:hover { color: var(--ink); }
+  .nav-links a.active:not(.nav-cta) { color: var(--orange); }
+  .nav-cta { background: var(--primary); color: white !important; padding: 11px 20px !important; margin-left: 8px; font-weight: 700; }
+  .nav-cta:hover { background: var(--primary-hover) !important; }
+  @media (max-width: 880px) { .nav-links a:not(.nav-cta) { display: none; } }
+
+  /* CONTAINER */
+  .container { max-width: 1120px; margin: 0 auto; padding: 0 24px; }
+
+  /* HERO — split: bold headline left, illustration on a warm panel right */
+  .hero { padding: 40px 24px 8px; }
+  .hero-grid {
+    max-width: 1120px; margin: 0 auto;
+    display: grid; grid-template-columns: 1.05fr 0.95fr; gap: 28px; align-items: center;
+  }
+  @media (max-width: 900px) { .hero-grid { grid-template-columns: 1fr; gap: 8px; } }
+  .hero-copy { padding: 24px 8px; }
+  .hero-copy .eyebrow { margin-bottom: 18px; }
+  .hero h1 { margin: 0 0 22px; max-width: 16ch; }
+  .hero h1 .ink-mark { color: var(--orange); }
+  .hero-lede { font-size: clamp(1.05rem, 1.4vw, 1.22rem); color: var(--ink-soft); max-width: 46ch; line-height: 1.55; }
+  .hero-lede strong { color: var(--ink); font-weight: 700; }
+
+  .hero-art {
+    position: relative;
+    background: var(--panel);
+    border-radius: var(--radius-xl);
+    padding: 28px;
+    aspect-ratio: 1 / 0.84;
+    display: flex; align-items: center; justify-content: center;
+    overflow: hidden;
+  }
+  .hero-art img { width: 100%; height: 100%; object-fit: contain; position: relative; z-index: 1; }
+  /* doodle accents in the hero panel (EdU plant + scribbles) */
+  .hero-art .doodle { position: absolute; z-index: 0; }
+  .hero-art .d-plant { left: 18px; bottom: 18px; width: 70px; opacity: .9; }
+  .hero-art .d-spark { right: 26px; top: 26px; width: 54px; }
+
+  /* ROLE TOGGLE — "Reading as…" */
+  .role-toggle-wrap { margin-top: 34px; }
+  .role-toggle-label { font-size: 0.78rem; font-weight: 700; color: var(--ink-mute); margin-bottom: 10px; display: block; letter-spacing: .04em; text-transform: uppercase; }
+  .role-toggle {
+    display: inline-flex; gap: 4px; padding: 5px;
+    background: var(--panel);
+    border: 1px solid var(--hairline);
+    border-radius: var(--radius-pill);
+  }
+  .role-toggle button {
+    font-family: inherit; font-size: 0.86rem; font-weight: 700; color: var(--ink-soft);
+    background: transparent; border: none; cursor: pointer;
+    padding: 9px 18px; border-radius: var(--radius-pill);
+    display: inline-flex; align-items: center; gap: 7px;
+    transition: background .25s ease, color .25s ease, box-shadow .25s ease;
+  }
+  .role-toggle button .dot { width: 8px; height: 8px; border-radius: 50%; }
+  .role-toggle button[data-view="vc"] .dot { background: var(--vc); }
+  .role-toggle button[data-view="pm"] .dot { background: var(--pm); }
+  .role-toggle button[data-view="both"] .dot { background: linear-gradient(90deg, var(--vc) 0 50%, var(--pm) 50% 100%); }
+  .role-toggle button[aria-pressed="true"] { background: var(--primary); color: #fff; box-shadow: var(--shadow-sm); }
+  .role-toggle button:not([aria-pressed="true"]):hover { color: var(--ink); }
+  @media (max-width: 540px) { .role-toggle { flex-wrap: wrap; } }
+
+  /* SECTION HEAD */
+  .section-head { margin-top: 96px; margin-bottom: 40px; max-width: 760px; }
+  .section-head .eyebrow { margin-bottom: 16px; }
+  .section-head h2 { margin-bottom: 14px; }
+  .section-head p { font-size: 1.08rem; color: var(--ink-soft); }
+  [id] { scroll-margin-top: 96px; }
+
+  /* BIG IDEA */
+  .bigidea {
+    background: var(--panel);
+    border-radius: var(--radius-xl);
+    padding: 72px 56px;
+    margin-top: 40px;
+    position: relative; overflow: hidden;
+    text-align: center;
+  }
+  .bigidea .kicker { font-size: 0.82rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--orange); margin-bottom: 24px; }
+  .bigidea blockquote {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-size: clamp(1.6rem, 3.6vw, 2.7rem);
+    line-height: 1.22; letter-spacing: -0.03em; font-weight: 700;
+    color: var(--ink); max-width: 900px; margin: 0 auto;
+  }
+  .hl { position: relative; white-space: nowrap; padding: 0 2px; }
+  .hl::after { content: ''; position: absolute; left: -2px; right: -2px; bottom: 5px; height: 36%; border-radius: 4px; z-index: -1; transform: scaleX(0); transform-origin: left center; }
+  .bigidea.in .hl::after { transform: scaleX(1); transition: transform .8s cubic-bezier(.2,.7,.2,1); }
+  .hl.vc { color: var(--orange-ink); } .hl.vc::after { background: var(--vc-soft); transition-delay: .25s; }
+  .hl.pm { color: var(--ink); } .hl.pm::after { background: #E3E0DA; transition-delay: .55s; }
+
+  .connector { margin: 42px auto 6px; max-width: 540px; }
+  .connector svg { width: 100%; height: auto; display: block; overflow: visible; }
+  .connector .wire { fill: none; stroke: var(--ink-faint); stroke-width: 2.5; stroke-linecap: round; }
+  .connector .wire.draw { stroke-dasharray: 1; stroke-dashoffset: 1; }
+  .bigidea.in .connector .wire.draw { stroke-dashoffset: 0; transition: stroke-dashoffset 1.5s ease .4s; }
+  .connector .node-label { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 12.5px; font-weight: 700; }
+  .connector .heart { opacity: 0; transform-box: fill-box; transform-origin: center; }
+  .bigidea.in .connector .heart { animation: pop-in .5s cubic-bezier(.2,1.3,.4,1) 1.5s forwards; }
+  @keyframes pop-in { 0% { opacity: 0; transform: scale(.4); } 60% { opacity: 1; transform: scale(1.18); } 100% { opacity: 1; transform: scale(1); } }
+  .bigidea .flow-note { margin-top: 30px; font-size: 1.05rem; color: var(--ink-soft); max-width: 620px; margin-left: auto; margin-right: auto; }
+  @media (max-width: 640px) { .bigidea { padding: 48px 26px; } }
+
+  /* CARDS */
+  .two-col { display: grid; grid-template-columns: 1.15fr 1fr; gap: 24px; align-items: stretch; }
+  @media (max-width: 820px) { .two-col { grid-template-columns: 1fr; } }
+  .card {
+    background: var(--card); border-radius: var(--radius-lg); padding: 38px;
+    border: 1px solid var(--hairline); box-shadow: var(--shadow-sm);
+    transition: box-shadow .25s ease, transform .25s ease;
+  }
+  .card:hover { box-shadow: var(--shadow); transform: translateY(-2px); }
+  .card.tint { background: var(--panel); border-color: transparent; box-shadow: none; }
+  .card h3 { margin-bottom: 14px; }
+  .card p + p { margin-top: 14px; }
+  .howto-card h3 { margin-bottom: 18px; }
+  .check-row { display: flex; gap: 14px; align-items: flex-start; padding: 14px 0; border-top: 1px solid var(--hairline); }
+  .check-row:first-of-type { border-top: none; padding-top: 0; }
+  .check-row .tick { flex: none; width: 26px; height: 26px; border-radius: 50%; background: var(--orange-soft); color: var(--orange-ink); display: flex; align-items: center; justify-content: center; margin-top: 1px; }
+  .check-row .tick svg { width: 14px; height: 14px; }
+  .check-row p { color: var(--ink); font-size: 0.98rem; }
+  .check-row p strong { font-weight: 700; }
+
+  /* ROLE GRID */
+  .roles-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: start; }
+  @media (max-width: 900px) { .roles-grid { grid-template-columns: 1fr; } }
+
+  .role-card {
+    border-radius: var(--radius-lg); overflow: hidden;
+    border: 1px solid var(--hairline); background: var(--card);
+    box-shadow: var(--shadow-sm);
+    transition: opacity .45s ease, filter .45s ease, transform .25s ease, box-shadow .25s ease;
+  }
+  .role-card:hover { box-shadow: var(--shadow); transform: translateY(-2px); }
+  .role-head { padding: 30px 32px 26px; position: relative; overflow: hidden; display: flex; gap: 16px; align-items: flex-start; }
+  .role-card.vc .role-head { background: var(--vc-soft); }
+  .role-card.pm .role-head { background: var(--pm-soft); }
+  .role-head .role-head-text { flex: 1; min-width: 0; }
+  .role-art { flex: none; width: 116px; height: 100px; }
+  .role-art img { width: 100%; height: 100%; object-fit: contain; }
+  @media (max-width: 420px) { .role-art { width: 84px; height: 76px; } }
+  .role-tag { display: inline-flex; align-items: center; gap: 8px; font-size: 0.72rem; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; margin-bottom: 10px; }
+  .role-card.vc .role-tag { color: var(--orange-ink); }
+  .role-card.pm .role-tag { color: var(--ink); }
+  .role-head h3 { font-size: clamp(1.5rem, 2.4vw, 1.95rem); margin-bottom: 10px; }
+  .role-head .role-intro { color: var(--ink-soft); font-size: 0.95rem; }
+  .role-body { padding: 28px 32px 34px; }
+  .role-block + .role-block { margin-top: 26px; padding-top: 26px; border-top: 1px solid var(--hairline); }
+  .block-label { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; font-size: 0.74rem; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: var(--ink-mute); }
+  .block-label .lbl-line { flex: 1; height: 1px; background: var(--hairline); }
+  .role-list { list-style: none; display: flex; flex-direction: column; gap: 12px; }
+  .role-list li { display: flex; gap: 12px; align-items: flex-start; font-size: 0.96rem; color: var(--ink); }
+  .role-list li .ic { flex: none; width: 24px; height: 24px; border-radius: 7px; margin-top: 1px; display: flex; align-items: center; justify-content: center; font-size: .82rem; }
+  .role-card.vc .role-list li .ic { background: var(--vc-soft); color: var(--orange-ink); }
+  .role-card.pm .role-list li .ic { background: var(--pm-soft); color: var(--ink); }
+  .sub-h { font-weight: 700; color: var(--ink); font-size: 0.92rem; margin-bottom: 4px; display: block; }
+
+  body[data-view="vc"] .role-card.pm,
+  body[data-view="pm"] .role-card.vc { opacity: .32; filter: grayscale(.5); }
+  body[data-view="vc"] .role-card.pm:hover,
+  body[data-view="pm"] .role-card.vc:hover { opacity: .6; filter: grayscale(.2); transform: none; }
+  .role-card .focus-flag { display: none; margin-top: 12px; font-size: 0.74rem; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; }
+  .role-card.vc .focus-flag { color: var(--orange-ink); }
+  .role-card.pm .focus-flag { color: var(--ink); }
+  body[data-view="vc"] .role-card.vc .focus-flag,
+  body[data-view="pm"] .role-card.pm .focus-flag { display: inline-flex; align-items: center; gap: 7px; }
+
+  /* FRICTION */
+  .friction-card { background: var(--card); border-radius: var(--radius-lg); padding: 36px; border: 1px solid var(--hairline); box-shadow: var(--shadow-sm); margin-bottom: 22px; transition: box-shadow .25s ease, transform .25s ease; }
+  .friction-card:hover { box-shadow: var(--shadow); transform: translateY(-2px); }
+  .friction-head { display: flex; align-items: center; gap: 16px; margin-bottom: 24px; }
+  .friction-num { flex: none; width: 44px; height: 44px; border-radius: 13px; background: var(--primary); color: var(--orange); font-family: 'Bricolage Grotesque', sans-serif; font-weight: 800; font-size: 1.2rem; display: flex; align-items: center; justify-content: center; }
+  .friction-head h3 { font-size: clamp(1.15rem, 1.9vw, 1.45rem); }
+  .compare { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+  @media (max-width: 680px) { .compare { grid-template-columns: 1fr; } }
+  .compare-col { border-radius: var(--radius); padding: 22px 24px; }
+  .compare-col.ok { background: var(--ok-bg); }
+  .compare-col.no { background: var(--no-bg); }
+  .compare-col .col-h { display: flex; align-items: center; gap: 9px; font-weight: 800; font-size: 0.8rem; letter-spacing: .05em; text-transform: uppercase; margin-bottom: 14px; }
+  .compare-col.ok .col-h { color: var(--ok); }
+  .compare-col.no .col-h { color: var(--no); }
+  .compare-col .badge { width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; }
+  .compare-col.ok .badge { background: var(--ok); }
+  .compare-col.no .badge { background: var(--no); }
+  .compare-col .badge svg { width: 12px; height: 12px; }
+  .compare-col ul { list-style: none; display: flex; flex-direction: column; gap: 11px; }
+  .compare-col li { display: flex; gap: 10px; font-size: 0.94rem; color: var(--ink); align-items: flex-start; }
+  .compare-col li::before { content: ''; flex: none; width: 6px; height: 6px; border-radius: 50%; margin-top: 8px; }
+  .compare-col.ok li::before { background: var(--ok); }
+  .compare-col.no li::before { background: var(--no); }
+  .first-move { margin-top: 20px; display: flex; gap: 14px; align-items: flex-start; background: var(--orange-soft); border-radius: var(--radius); padding: 18px 22px; }
+  .first-move .fm-tag { flex: none; font-size: 0.72rem; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: #fff; background: var(--orange); padding: 6px 12px; border-radius: var(--radius-pill); margin-top: 1px; }
+  .first-move p { color: var(--ink); font-size: 0.95rem; }
+  .first-move p strong { font-weight: 700; }
+  @media (max-width: 540px) { .first-move { flex-direction: column; gap: 10px; } .first-move .fm-tag { align-self: flex-start; } }
+
+  /* CHECK-IN CALLOUT */
+  .checkin-card { background: var(--panel); border-radius: var(--radius-lg); padding: 44px; position: relative; overflow: hidden; margin-top: 40px; display: flex; gap: 28px; align-items: flex-start; }
+  .checkin-card .ci-emoji { flex: none; width: 56px; height: 56px; border-radius: 16px; background: var(--orange); color: #fff; display: flex; align-items: center; justify-content: center; }
+  .checkin-card .ci-emoji svg { width: 28px; height: 28px; }
+  .checkin-card h3 { margin-bottom: 12px; }
+  .checkin-card p { color: var(--ink-soft); max-width: 70ch; }
+  @media (max-width: 560px) { .checkin-card { flex-direction: column; gap: 18px; padding: 32px 26px; } }
+
+  /* ESCALATION STEPPER */
+  .escalation { margin-top: 34px; position: relative; }
+  .steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; position: relative; }
+  @media (max-width: 820px) { .steps { grid-template-columns: 1fr 1fr; gap: 16px; } }
+  @media (max-width: 460px) { .steps { grid-template-columns: 1fr; } }
+  .step-rail { position: absolute; top: 32px; left: 6%; right: 6%; height: 3px; z-index: 0; border-radius: 2px; }
+  .step-rail .rail-bg { position: absolute; inset: 0; background: var(--hairline); border-radius: 2px; }
+  .step-rail .rail-fill { position: absolute; inset: 0; transform-origin: left center; transform: scaleX(0); background: var(--orange); border-radius: 2px; }
+  .escalation.in .step-rail .rail-fill { transform: scaleX(1); transition: transform 1.6s cubic-bezier(.3,.6,.2,1) .2s; }
+  @media (max-width: 820px) { .step-rail { display: none; } }
+  .step { position: relative; z-index: 1; background: var(--card); border: 1px solid var(--hairline); border-radius: var(--radius); padding: 26px 22px; box-shadow: var(--shadow-sm); }
+  .step .step-num { width: 50px; height: 50px; border-radius: 50%; background: var(--primary); color: var(--orange); font-family: 'Bricolage Grotesque', sans-serif; font-weight: 800; font-size: 1.25rem; display: flex; align-items: center; justify-content: center; margin: 0 auto 18px; border: 4px solid var(--bg); }
+  .step h4 { text-align: center; margin-bottom: 8px; font-size: 1.05rem; }
+  .step p { text-align: center; font-size: 0.9rem; }
+
+  /* ENDING + CONTACT */
+  .ending-card { background: var(--panel); border-radius: var(--radius-lg); padding: 36px; margin-top: 24px; }
+  .ending-card h3 { margin-bottom: 10px; }
+  .ending-card p { color: var(--ink-soft); max-width: 75ch; }
+
+  .contact-card { margin-top: 24px; background: var(--primary); color: #fff; border-radius: var(--radius-lg); padding: 44px; position: relative; overflow: hidden; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 24px; }
+  .contact-card .ct-tag { font-size: 0.74rem; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; color: var(--orange); margin-bottom: 8px; }
+  .contact-card h3 { color: #fff; font-size: 1.5rem; }
+  .contact-card p { color: rgba(255,255,255,0.7); margin-top: 6px; font-size: 0.92rem; }
+  .email-pill { display: inline-flex; align-items: center; gap: 10px; background: var(--orange); border: none; color: #fff; text-decoration: none; font-weight: 700; font-size: 0.98rem; padding: 15px 24px; border-radius: var(--radius-pill); transition: background .2s ease, transform .2s ease; }
+  .email-pill:hover { background: #FF6E38; transform: translateY(-1px); }
+
+  /* CLOSING + FOOTER */
+  footer { margin-top: 96px; padding: 0 24px 80px; }
+  .closing-card { max-width: 980px; margin: 0 auto; background: var(--panel); border-radius: var(--radius-xl); padding: 64px 56px; position: relative; overflow: hidden; display: grid; grid-template-columns: 1fr 0.8fr; gap: 32px; align-items: center; }
+  @media (max-width: 760px) { .closing-card { grid-template-columns: 1fr; text-align: center; padding: 48px 30px; } }
+  .closing-card .smiley { width: 60px; height: 60px; background: var(--orange); border-radius: 50%; margin-bottom: 22px; display: flex; align-items: center; justify-content: center; color: #fff; }
+  @media (max-width: 760px) { .closing-card .smiley { margin-left: auto; margin-right: auto; } }
+  .closing-card .smiley svg { width: 30px; height: 30px; }
+  .closing-card h3 { font-size: clamp(1.6rem, 2.8vw, 2.2rem); margin-bottom: 16px; }
+  .closing-card p { color: var(--ink-soft); font-size: 1.05rem; }
+  .closing-art img { width: 100%; max-width: 280px; height: auto; }
+  @media (max-width: 760px) { .closing-art { display: none; } }
+  .footer-meta { margin-top: 28px; font-size: 0.82rem; color: var(--ink-mute); }
+
+  /* DOODLES — orange line accents */
+  .doodle { pointer-events: none; }
+  .ink-line { fill: none; stroke: var(--orange); stroke-width: 3.4; stroke-linecap: round; stroke-linejoin: round; }
+  .ink-line.dark { stroke: var(--ink); }
+  .leaf-accent, .hero-doodle, .float-doodle { position: absolute; }
+
+  /* READING PROGRESS BAR */
+  .progress-bar { position: fixed; top: 0; left: 0; height: 3px; width: 0%; background: var(--orange); z-index: 100; transition: width .1s linear; }
+
+  /* BACK TO TOP */
+  .to-top { position: fixed; bottom: 28px; right: 28px; width: 48px; height: 48px; border-radius: 50%; background: var(--primary); color: var(--orange); border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: var(--shadow); opacity: 0; visibility: hidden; transform: translateY(8px); transition: all .25s ease; z-index: 60; font-size: 1.1rem; }
+  .to-top.show { opacity: 1; visibility: visible; transform: translateY(0); }
+  .to-top:hover { background: var(--primary-hover); transform: translateY(-2px); }
+
+  /* MOTION */
+  .reveal { opacity: 0; transform: translateY(16px); transition: opacity .6s cubic-bezier(.2,.6,.2,1), transform .6s cubic-bezier(.2,.6,.2,1); will-change: opacity, transform; }
+  .reveal.in { opacity: 1; transform: none; }
+  @media (prefers-reduced-motion: no-preference) {
+    .bob { animation: bob 5s ease-in-out infinite; }
+    .bob.slow { animation-duration: 7s; }
+    @keyframes bob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after { animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important; scroll-behavior: auto !important; }
+    .reveal { opacity: 1 !important; transform: none !important; }
+    .hl::after { transform: scaleX(1) !important; }
+    .connector .wire.draw { stroke-dashoffset: 0 !important; }
+    .step-rail .rail-fill { transform: scaleX(1) !important; }
+    .connector .heart { opacity: 1 !important; }
+  }
+
+  /* PRINT */
+  @media print {
+    nav.topbar, .progress-bar, .to-top, .role-toggle-wrap, .hero-doodle, .leaf-accent, .float-doodle { display: none !important; }
+    body { background: #fff; }
+    .hero-art, .bigidea, .role-head, .checkin-card, .contact-card, .first-move, .compare-col, .closing-card { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .friction-card, .role-card, .card, .step, .closing-card { break-inside: avoid; box-shadow: none; }
+    .section-head { margin-top: 28px; }
+    body[data-view] .role-card { opacity: 1 !important; filter: none !important; }
+  }
+</style>
+</head>
+<body data-view="both">
+
+<div class="progress-bar" id="progressBar"></div>
+
+<nav class="topbar">
+  <div class="nav-inner">
+    <a href="#top" class="brand">
+      <span class="brand-mark">★</span>
+      <span><span class="brand-prefix">Zostel · </span>Alignment Guide</span>
+    </a>
+    <div class="nav-links">
+      <a href="#big-idea">Big Idea</a>
+      <a href="#vibe-curator">The VC</a>
+      <a href="#property-manager">The PM</a>
+      <a href="#tricky">When it's tricky</a>
+      <a href="#check-ins">Check-ins</a>
+      <a href="#" class="nav-cta" id="printBtn">Save as PDF</a>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<header class="hero" id="top">
+  <div class="hero-grid">
+    <div class="hero-copy">
+      <span class="eyebrow">The Vibe Curator Program</span>
+      <h1>A shared <span class="ink-mark">alignment</span> guide.</h1>
+      <p class="hero-lede">One playbook for the two people who make it work — the <strong>Property Manager</strong> who hosts, and the <strong>Vibe Curator</strong> who brings the property to life. Read it together before the tenure begins.</p>
+
+      <div class="role-toggle-wrap">
+        <span class="role-toggle-label">Reading as…</span>
+        <div class="role-toggle" role="group" aria-label="Choose your role">
+          <button data-view="vc" aria-pressed="false"><span class="dot"></span>I'm a Vibe Curator</button>
+          <button data-view="pm" aria-pressed="false"><span class="dot"></span>I'm a Property Manager</button>
+          <button data-view="both" aria-pressed="true"><span class="dot"></span>Show both</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="hero-art">
+      <!-- plant doodle -->
+      <svg class="doodle d-plant bob slow" viewBox="0 0 60 80" aria-hidden="true">
+        <path class="ink-line dark" d="M30 78 L30 40 M30 52 C 16 50, 10 36, 14 26 C 26 28, 32 40, 30 52 M30 46 C 44 44, 50 30, 46 20 C 34 22, 28 34, 30 46" />
+        <path class="ink-line dark" d="M20 78 L40 78 L37 64 L23 64 Z" />
+      </svg>
+      <!-- spark doodle -->
+      <svg class="doodle d-spark bob" viewBox="0 0 54 54" aria-hidden="true">
+        <path class="ink-line" d="M27 6 L27 20 M27 34 L27 48 M6 27 L20 27 M34 27 L48 27" />
+      </svg>
+      <img src="assets/illustrations/sitting-reading.svg" alt="A person relaxing in a chair, reading a book with a stack of books beside them" loading="eager" />
+    </div>
+  </div>
+</header>
+
+<main class="container">
+
+  <!-- BIG IDEA -->
+  <section id="big-idea">
+    <div class="bigidea" id="bigIdea">
+      <div class="kicker">The big idea</div>
+      <blockquote>
+        A <span class="hl vc">Vibe Curator</span> is a guest who has chosen to contribute.
+        A <span class="hl pm">Property Manager</span> is a host who has chosen to support them.
+      </blockquote>
+
+      <div class="connector" aria-hidden="true">
+        <svg viewBox="0 0 520 96">
+          <circle cx="70" cy="48" r="13" fill="#F2602A"></circle>
+          <text class="node-label" x="70" y="86" text-anchor="middle" fill="#C7491A">Guest who contributes</text>
+          <circle cx="450" cy="48" r="13" fill="#16130F"></circle>
+          <text class="node-label" x="450" y="86" text-anchor="middle" fill="#16130F">Host who supports</text>
+          <path class="wire draw" pathLength="1" d="M86 48 C 170 12, 350 12, 434 48"></path>
+          <path class="heart" d="M260 40 c -7 -12 -26 -4 -26 8 c 0 9 14 16 26 26 c 12 -10 26 -17 26 -26 c 0 -12 -19 -20 -26 -8 z" fill="#F2602A"></path>
+        </svg>
+      </div>
+
+      <p class="flow-note">Everything in this guide flows from that one line. The program works when both sides hold it. It breaks when either side forgets it.</p>
+    </div>
+  </section>
+
+  <!-- WHAT THIS IS + HOW TO USE -->
+  <section>
+    <div class="section-head">
+      <span class="eyebrow">Orientation</span>
+      <h2>What this program is</h2>
+    </div>
+    <div class="two-col">
+      <div class="card">
+        <h3>A two-to-three month tenure</h3>
+        <p>The Vibe Curator (VC) Program places travellers with skills in community building, hosting, and content creation at Zostel properties for a 2–3 month tenure. In return for free stay, food, perks, and exposure, VCs bring properties to life — running daily activities, creating content, and turning individual travellers into a community.</p>
+        <p>This document is meant to be read by <strong>both</strong> the Property Manager and the Vibe Curator before the tenure begins. It lays out what each side commits to, what each side receives, how to handle the common friction points, and where to go when things need a third party.</p>
+      </div>
+      <div class="card howto-card tint">
+        <h3>How to use this guide</h3>
+        <div class="check-row">
+          <span class="tick"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+          <p>Read it together in your <strong>first alignment call</strong> — don't skim.</p>
+        </div>
+        <div class="check-row">
+          <span class="tick"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+          <p>Refer back to it when something feels off. The answer is <strong>probably already in here</strong>.</p>
+        </div>
+        <div class="check-row">
+          <span class="tick"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+          <p>When in doubt, default to <strong>the big idea</strong> above.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- THE TWO ROLES -->
+  <section style="position:relative;">
+    <svg class="leaf-accent doodle bob slow" style="right:-4px; top:78px; width:60px;" viewBox="0 0 60 60" aria-hidden="true">
+      <path class="ink-line" d="M50 10 C 20 12, 10 34, 12 50 C 30 50, 50 38, 50 10 Z M14 48 C 24 38, 34 28, 46 16" />
+    </svg>
+    <div class="section-head">
+      <span class="eyebrow">The two roles</span>
+      <h2>Two people, one playbook</h2>
+      <p>The roles mirror each other — each side commits, and each side receives. Use the <strong>“Reading as…”</strong> switch up top to focus on your side.</p>
+    </div>
+
+    <div class="roles-grid">
+      <!-- ROLE 1: VIBE CURATOR -->
+      <article class="role-card vc" data-role="vc" id="vibe-curator">
+        <div class="role-head">
+          <div class="role-head-text">
+            <div class="role-tag">Role 1</div>
+            <h3>The Vibe Curator</h3>
+            <p class="role-intro">You are a guest first — one who's chosen to use your skills in community building, hosting, and storytelling to subsidise your travel and grow your craft. You're not staff. You're not a volunteer. You're a guest who contributes.</p>
+            <span class="focus-flag"><span style="width:8px;height:8px;border-radius:50%;background:var(--vc);display:inline-block;"></span>This is you</span>
+          </div>
+          <div class="role-art"><img src="assets/illustrations/groovy.svg" alt="An energetic person leaping" loading="lazy" /></div>
+        </div>
+        <div class="role-body">
+          <div class="role-block">
+            <div class="block-label">What's expected from you<span class="lbl-line"></span></div>
+            <span class="sub-h">Daily &amp; weekly cadence</span>
+            <ul class="role-list" style="margin-bottom:18px;">
+              <li><span class="ic">●</span><span>Run <strong>at least 1 activity per day</strong> — high-effort (trek, food walk, bonfire) or low-effort (card game, lakeside chill, storytelling).</span></li>
+              <li><span class="ic">●</span><span>Publish <strong>at least 3 social posts per week</strong> (reels, posts, or videos) covering life at the property.</span></li>
+              <li><span class="ic">●</span><span>Update the activity calendar on the Zostel website <strong>weekly</strong>.</span></li>
+              <li><span class="ic">●</span><span>Post a <strong>weekly community update</strong> to HQ on Slack.</span></li>
+            </ul>
+            <span class="sub-h">Ongoing responsibilities</span>
+            <ul class="role-list">
+              <li><span class="ic">★</span><span>Give every new guest a <strong>property tour</strong> on arrival.</span></li>
+              <li><span class="ic">★</span><span>Connect guests to each other — turn solo travellers into a community.</span></li>
+              <li><span class="ic">★</span><span>Drive <strong>review collection</strong> — every checkout is a chance for a review.</span></li>
+              <li><span class="ic">★</span><span>Be professional, follow property rules, and respect the team you live with.</span></li>
+            </ul>
+          </div>
+          <div class="role-block">
+            <div class="block-label">What you receive<span class="lbl-line"></span></div>
+            <span class="sub-h">During your tenure</span>
+            <ul class="role-list" style="margin-bottom:18px;">
+              <li><span class="ic">●</span><span>A bed in the <strong>guest dormitory</strong> (not the staff dorm).</span></li>
+              <li><span class="ic">●</span><span>All meals at the property, <strong>free</strong>.</span></li>
+              <li><span class="ic">●</span><span>A <strong>share of revenue</strong> from any paid activities you run.</span></li>
+              <li><span class="ic">●</span><span>Direct access to guests, community, and the wider Zostel network.</span></li>
+            </ul>
+            <span class="sub-h">Beyond your tenure</span>
+            <ul class="role-list">
+              <li><span class="ic">★</span><span><strong>Zo Credits</strong> based on performance, redeemable for nights at any Zostel.</span></li>
+              <li><span class="ic">★</span><span>Performance-linked <strong>stipend</strong> (under finalisation — confirmed at offer).</span></li>
+              <li><span class="ic">★</span><span><strong>Certificate</strong> of completion from Zostel.</span></li>
+              <li><span class="ic">★</span><span>Portfolio content + <strong>priority consideration</strong> for future Zostel roles.</span></li>
+            </ul>
+          </div>
+        </div>
+      </article>
+
+      <!-- ROLE 2: PROPERTY MANAGER -->
+      <article class="role-card pm" data-role="pm" id="property-manager">
+        <div class="role-head">
+          <div class="role-head-text">
+            <div class="role-tag">Role 2</div>
+            <h3>The Property Manager</h3>
+            <p class="role-intro">You are the host. The VC is not your hire — they're a contributor you've agreed to support. Your job is to give them the environment, context, and respect they need to do the work well. When they succeed, your guest experience, reviews, and content all lift with them.</p>
+            <span class="focus-flag"><span style="width:8px;height:8px;border-radius:50%;background:var(--pm);display:inline-block;"></span>This is you</span>
+          </div>
+          <div class="role-art"><img src="assets/illustrations/sitting.svg" alt="A person sitting calmly" loading="lazy" /></div>
+        </div>
+        <div class="role-body">
+          <div class="role-block">
+            <div class="block-label">What's expected from you<span class="lbl-line"></span></div>
+            <span class="sub-h">Hosting the VC</span>
+            <ul class="role-list" style="margin-bottom:18px;">
+              <li><span class="ic">●</span><span>Provide a bed in the <strong>guest dormitory</strong> — not the staff dorm, no exceptions.</span></li>
+              <li><span class="ic">●</span><span>Provide <strong>all meals</strong> at the property.</span></li>
+              <li><span class="ic">●</span><span>Treat the VC with the respect <strong>any guest deserves</strong>.</span></li>
+              <li><span class="ic">●</span><span>Introduce the VC to the team, the property, and the local context <strong>on day one</strong>.</span></li>
+            </ul>
+            <span class="sub-h">Supporting the work</span>
+            <ul class="role-list">
+              <li><span class="ic">★</span><span>Have a brief <strong>weekly check-in</strong> with the VC to align on activities and content.</span></li>
+              <li><span class="ic">★</span><span>Share property handles and the activity calendar with the VC.</span></li>
+              <li><span class="ic">★</span><span>Back the VC up when they're new — they may need <strong>guidance, not criticism</strong>.</span></li>
+              <li><span class="ic">★</span><span>Flag concerns <strong>early</strong> to the VC directly, and to HQ if unresolved.</span></li>
+            </ul>
+          </div>
+          <div class="role-block">
+            <div class="block-label">What you receive<span class="lbl-line"></span></div>
+            <span class="sub-h">On the property</span>
+            <ul class="role-list" style="margin-bottom:18px;">
+              <li><span class="ic">●</span><span>Stronger guest reviews driven by a <strong>more engaged community</strong>.</span></li>
+              <li><span class="ic">●</span><span>A steady stream of <strong>content</strong> for your property's social handles.</span></li>
+              <li><span class="ic">●</span><span><strong>Reduced personal workload</strong> on guest engagement and activities.</span></li>
+              <li><span class="ic">●</span><span>A more vibrant property feel that supports retention and word-of-mouth.</span></li>
+            </ul>
+            <span class="sub-h">Within Zostel</span>
+            <ul class="role-list">
+              <li><span class="ic">★</span><span>Recognition through the <strong>PM championship program</strong> for managers who run it well.</span></li>
+              <li><span class="ic">★</span><span><strong>Co-ownership of VC selection</strong> going forward — your input shapes who joins.</span></li>
+              <li><span class="ic">★</span><span>Visibility within the Zostel network as a property running the playbook right.</span></li>
+              <li><span class="ic">★</span><span>Direct partnership with HQ on the program's design and improvement.</span></li>
+            </ul>
+          </div>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <!-- WHEN THINGS GET TRICKY -->
+  <section id="tricky">
+    <div class="section-head">
+      <span class="eyebrow">Section 3</span>
+      <h2>When things get tricky</h2>
+      <p>Most VC tenures go smoothly. When they don't, it's almost always one of the three situations below. Each has a clear line and a clear first move.</p>
+    </div>
+
+    <!-- Scenario 1 -->
+    <div class="friction-card">
+      <div class="friction-head">
+        <span class="friction-num">1</span>
+        <h3>The VC is being treated as housekeeping or ops staff</h3>
+      </div>
+      <div class="compare">
+        <div class="compare-col ok">
+          <div class="col-h"><span class="badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>What's okay</div>
+          <ul>
+            <li>VC offers small, optional help as a gesture (e.g., reception during a brief gap).</li>
+            <li>VC pitches in during a one-off crunch by choice.</li>
+          </ul>
+        </div>
+        <div class="compare-col no">
+          <div class="col-h"><span class="badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></span>What's not okay</div>
+          <ul>
+            <li>VC is assigned housekeeping, reception, or kitchen shifts.</li>
+            <li>Helping becomes the default expectation, not an occasional gesture.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="first-move">
+        <span class="fm-tag">First move</span>
+        <p><strong>VC:</strong> Name the line politely to the PM. &nbsp;<strong>PM:</strong> If unsure where the line is, ask the VC Ops Lead before assigning.</p>
+      </div>
+    </div>
+
+    <!-- Scenario 2 -->
+    <div class="friction-card">
+      <div class="friction-head">
+        <span class="friction-num">2</span>
+        <h3>The VC is not delivering — missing activities or content</h3>
+      </div>
+      <div class="compare">
+        <div class="compare-col ok">
+          <div class="col-h"><span class="badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>What's okay</div>
+          <ul>
+            <li>VC misses a day occasionally and communicates it.</li>
+            <li>VC proactively flags blockers (low guest count, no budget, etc.).</li>
+          </ul>
+        </div>
+        <div class="compare-col no">
+          <div class="col-h"><span class="badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></span>What's not okay</div>
+          <ul>
+            <li>VC misses multiple activities in a week without communicating.</li>
+            <li>VC goes unreachable for stretches with no heads-up.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="first-move">
+        <span class="fm-tag">First move</span>
+        <p><strong>PM:</strong> Speak to the VC directly within 24 hours. If unreachable for 24 hours, escalate to the VC Ops Lead.</p>
+      </div>
+    </div>
+
+    <!-- Scenario 3 -->
+    <div class="friction-card">
+      <div class="friction-head">
+        <span class="friction-num">3</span>
+        <h3>The VC isn't given a guest dorm bed</h3>
+      </div>
+      <div class="compare">
+        <div class="compare-col ok">
+          <div class="col-h"><span class="badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>What's okay</div>
+          <ul>
+            <li>VC is in the guest dorm from day one.</li>
+            <li>If the guest dorm is genuinely full on a peak night, the VC is informed in advance and given an upgrade.</li>
+          </ul>
+        </div>
+        <div class="compare-col no">
+          <div class="col-h"><span class="badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></span>What's not okay</div>
+          <ul>
+            <li>VC is placed in the staff dorm to preserve a saleable bed.</li>
+            <li>Revenue protection is treated as a reason to downgrade VC accommodation.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="first-move">
+        <span class="fm-tag">First move</span>
+        <p><strong>VC:</strong> Raise it with the PM on day one if the setup is wrong. &nbsp;<strong>PM:</strong> Plan VC bed allocation before the tenure starts.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- CHECK-INS, ESCALATION & CONTACT -->
+  <section id="check-ins">
+    <div class="section-head">
+      <span class="eyebrow">Section 4</span>
+      <h2>Check-ins, escalation &amp; contact</h2>
+    </div>
+
+    <div class="checkin-card">
+      <div class="ci-emoji"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 13c1.5 1.5 6.5 1.5 8 0"/><path d="m11 7 2-2 2 2"/><path d="M3 11a9 9 0 0 1 9-9 9 9 0 0 1 9 9v6a2 2 0 0 1-2 2h-3l-4 3v-3H5a2 2 0 0 1-2-2Z"/></svg></div>
+      <div>
+        <h3>Two-week mutual check-in</h3>
+        <p>Two weeks into the tenure, the PM and VC have a structured conversation. Either party can say “this is working” or “I have concerns.” Concerns get raised to the VC Ops Lead, who decides whether to mediate, adjust, or — in rare cases — end the tenure cleanly. This is a planned conversation, <strong>not a performance review</strong>.</p>
+      </div>
+    </div>
+
+    <div class="section-head" style="margin-top:64px;">
+      <span class="eyebrow">Escalation path</span>
+      <h2 style="font-size:clamp(1.5rem,2.6vw,2.1rem);">Same path for either party</h2>
+      <p>If something can't be resolved between PM and VC directly, here's the path.</p>
+    </div>
+
+    <div class="escalation" id="escalation">
+      <div class="steps">
+        <div class="step-rail" aria-hidden="true"><span class="rail-bg"></span><span class="rail-fill"></span></div>
+        <div class="step">
+          <div class="step-num">1</div>
+          <h4>Talk it out</h4>
+          <p>Raise it directly with the other party first. Most things resolve here.</p>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <h4>Wait 24 hours</h4>
+          <p>Give space for response or action. Note what was discussed.</p>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <h4>Loop in HQ</h4>
+          <p>If unresolved or unreachable, email the VC Ops Lead with context.</p>
+        </div>
+        <div class="step">
+          <div class="step-num">4</div>
+          <h4>HQ mediates</h4>
+          <p>The VC Ops Lead steps in within 48 hours to facilitate a resolution.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="ending-card">
+      <h3>Ending the tenure early</h3>
+      <p>We expect most VC tenures to run their full 2–3 months. If either party feels it's genuinely not working, the path is: raise it at the two-week check-in or with the VC Ops Lead. <strong>Neither party should end the tenure unilaterally</strong> — no walking out, no abrupt dismissals. HQ supports a clean exit when one is needed.</p>
+    </div>
+
+    <div class="contact-card">
+      <div>
+        <div class="ct-tag">Your HQ contact</div>
+        <h3>VC Ops Lead</h3>
+        <p>Replace the placeholder below with the live address before sharing.</p>
+      </div>
+      <a class="email-pill" href="mailto:vc-ops@zostel.com">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>
+        vc-ops@zostel.com
+      </a>
+    </div>
+  </section>
+</main>
+
+<!-- CLOSING -->
+<footer>
+  <div class="closing-card">
+    <div class="closing-copy">
+      <div class="smiley"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-4.5-9.5-9C1 9 2.5 5 6 5c2 0 3.2 1 4 2 .8-1 2-2 4-2 3.5 0 5 4 3.5 7-2.5 4.5-9.5 9-9.5 9Z"/></svg></div>
+      <h3>Show up as partners.</h3>
+      <p>Property Managers and Vibe Curators aren't on different teams — you're running the same playbook for the same outcome: a property that feels alive, guests who become a community, and stories worth sharing. When friction comes up, return to this guide. When it doesn't, just keep doing the work.</p>
+      <div class="footer-meta">Zostel · Vibe Curator Program · Alignment Guide</div>
+    </div>
+    <div class="closing-art"><img src="assets/illustrations/loving.svg" alt="A person holding a heart to their chest" loading="lazy" /></div>
+  </div>
+</footer>
+
+<button class="to-top" id="toTop" aria-label="Back to top">↑</button>
+
+<script>
+(function () {
+  // ---- Reading progress bar + back-to-top ----
+  var bar = document.getElementById('progressBar');
+  var toTop = document.getElementById('toTop');
+  function onScroll() {
+    var h = document.documentElement;
+    var scrolled = h.scrollTop;
+    var max = h.scrollHeight - h.clientHeight;
+    var pct = max > 0 ? (scrolled / max) * 100 : 0;
+    bar.style.width = pct + '%';
+    if (scrolled > 600) { toTop.classList.add('show'); } else { toTop.classList.remove('show'); }
+  }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+  toTop.addEventListener('click', function () { window.scrollTo({ top: 0, behavior: 'smooth' }); });
+
+  // ---- "Save as PDF" → print ----
+  var printBtn = document.getElementById('printBtn');
+  if (printBtn) printBtn.addEventListener('click', function (e) { e.preventDefault(); window.print(); });
+
+  // ---- Role toggle: dim the other side ----
+  var toggleBtns = Array.prototype.slice.call(document.querySelectorAll('.role-toggle button'));
+  function setView(view) {
+    document.body.setAttribute('data-view', view);
+    toggleBtns.forEach(function (b) { b.setAttribute('aria-pressed', String(b.getAttribute('data-view') === view)); });
+  }
+  toggleBtns.forEach(function (b) { b.addEventListener('click', function () { setView(b.getAttribute('data-view')); }); });
+
+  // ---- Active nav state via IntersectionObserver ----
+  var navLinks = Array.prototype.slice.call(document.querySelectorAll('.nav-links a:not(.nav-cta)'));
+  var sections = navLinks
+    .map(function (a) { return a.getAttribute('href'); })
+    .filter(function (h) { return h && h.indexOf('#') === 0; })
+    .map(function (id) { return document.querySelector(id); })
+    .filter(Boolean);
+  function setActive(id) { navLinks.forEach(function (a) { a.classList.toggle('active', a.getAttribute('href') === id); }); }
+  if ('IntersectionObserver' in window && sections.length) {
+    var visible = {};
+    var obs = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) { visible[e.target.id] = e.isIntersecting ? e.intersectionRatio : 0; });
+      var best = null, bestRatio = 0;
+      Object.keys(visible).forEach(function (id) { if (visible[id] > bestRatio) { bestRatio = visible[id]; best = id; } });
+      if (best) setActive('#' + best);
+    }, { rootMargin: '-100px 0px -55% 0px', threshold: [0, 0.25, 0.5, 1] });
+    sections.forEach(function (s) { obs.observe(s); });
+  }
+
+  // ---- Motion: scroll-reveal + draw-on triggers ----
+  var motionOK = !window.matchMedia || window.matchMedia('(prefers-reduced-motion: no-preference)').matches;
+  if (motionOK && 'IntersectionObserver' in window) {
+    var revealSel = '.section-head, .bigidea, .card, .role-card, .friction-card, ' +
+      '.checkin-card, .escalation, .step, .ending-card, .contact-card, .closing-card';
+    var revs = Array.prototype.slice.call(document.querySelectorAll(revealSel));
+    revs.forEach(function (el) { el.classList.add('reveal'); });
+    revs.forEach(function (el) {
+      var sibs = Array.prototype.filter.call(el.parentNode.children, function (c) { return c.classList && c.classList.contains('reveal'); });
+      var idx = sibs.indexOf(el);
+      if (idx > 0) el.style.transitionDelay = Math.min(idx, 5) * 70 + 'ms';
+    });
+    var revObs = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add('in'); revObs.unobserve(e.target); } });
+    }, { rootMargin: '0px 0px -8% 0px', threshold: 0.05 });
+    revs.forEach(function (el) { revObs.observe(el); });
+  } else {
+    var bi = document.getElementById('bigIdea'); if (bi) bi.classList.add('in');
+    var esc = document.getElementById('escalation'); if (esc) esc.classList.add('in');
+  }
+})();
+</script>
+
+</body>
+</html>
