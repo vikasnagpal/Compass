@@ -449,6 +449,70 @@
       .study-map-head span:last-child { display: none; }
     }
 
+    /* ── CATCH-UP DIGEST ── */
+    .dg-summary {
+      display: flex; flex-wrap: wrap; gap: 8px 16px;
+      padding: 14px 18px; margin-bottom: 18px;
+      background: var(--bg-soft); border: 1px solid var(--border);
+      border-radius: 12px;
+    }
+    .dg-stat { font-size: 13.5px; color: var(--text-muted); }
+    .dg-stat b { color: var(--text); font-weight: 700; font-size: 15px; }
+    .dg-section { margin-bottom: 22px; }
+    .dg-section-head {
+      font-size: 12px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: .6px; color: var(--text); margin-bottom: 10px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .dg-section-muted { color: var(--text-muted); }
+    .dg-count {
+      font-size: 11px; font-weight: 700; background: var(--neutral);
+      color: var(--text-muted); border-radius: 9px; padding: 1px 8px;
+    }
+    .dg-count-new { background: var(--primary); color: var(--text-on-primary); }
+    .dg-item {
+      display: flex; gap: 12px; align-items: flex-start;
+      padding: 12px 14px; border: 1px solid var(--border);
+      border-radius: 10px; margin-bottom: 8px; background: var(--surface);
+      transition: background .12s, border-color .12s;
+    }
+    .dg-item.is-clickable { cursor: pointer; }
+    .dg-item.is-clickable:hover { background: var(--bg-soft); border-color: var(--primary); }
+    .dg-item.is-new {
+      border-left: 3px solid var(--primary);
+      background: var(--primary-light);
+    }
+    .dg-item.is-new .dg-title { font-weight: 600; }
+    /* Earlier (seen) group reads quieter. :has scopes the dim to the section
+       whose header is muted; a fallback class keeps it sane without :has. */
+    .dg-section:has(.dg-section-muted) .dg-item { opacity: .72; }
+    .dg-ico { font-size: 18px; line-height: 1.4; flex-shrink: 0; width: 22px; text-align: center; }
+    .dg-body { flex: 1; min-width: 0; }
+    .dg-title { font-size: 14px; color: var(--text); line-height: 1.4; }
+    .dg-detail {
+      font-size: 13px; color: var(--text-muted); line-height: 1.45;
+      margin-top: 2px; overflow-wrap: anywhere;
+    }
+    .dg-meta { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
+    .dg-side { flex-shrink: 0; }
+    .dg-more {
+      font-size: 13px; color: var(--text-muted); text-align: center;
+      padding: 10px; font-style: italic;
+    }
+    .dg-horizon { margin-top: 28px; }
+    .dg-horizon-head {
+      font-family: 'Poppins', sans-serif; font-weight: 700; font-size: 17px;
+      margin-bottom: 14px; padding-top: 18px; border-top: 1px solid var(--border);
+    }
+    .dg-horizon-group { margin-bottom: 18px; }
+    .dg-horizon-title {
+      font-size: 13px; font-weight: 700; color: var(--text);
+      margin-bottom: 8px; display: flex; align-items: center; gap: 8px;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .dg-item { transition: none; }
+    }
+
     /* ── IDEAS PAGE ── */
     .idea-capture {
       background: var(--surface); border: 1.5px solid var(--border);
@@ -2306,6 +2370,12 @@
 
     <div class="sidebar-divider"></div>
 
+    <button class="nav-ideas-btn" id="navDigestBtn" type="button" onclick="goToDigest()">
+      <svg class="icon icon-lg" viewBox="0 0 24 24" aria-hidden="true"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+      <span>Catch-up</span>
+      <span class="nav-ideas-count" id="navDigestCount">0</span>
+    </button>
+
     <button class="nav-ideas-btn" id="navMyWorkBtn" type="button" onclick="goToMyWork()">
       <svg class="icon icon-lg" viewBox="0 0 24 24" aria-hidden="true"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
       <span>My work</span>
@@ -2524,6 +2594,25 @@ const db = {
     return data;
   },
 
+  // ─── Catch-up markers (Catch-up digest) ───
+  // Both write the user's own profile row (allowed by the profiles_update
+  // RLS policy) and mirror into S.profile. Fire-and-forget — a failed write
+  // just means the marker doesn't advance this session; no user-facing error.
+  async markSeen() {
+    const uid = S.session?.user?.id; if (!uid) return;
+    const now = new Date().toISOString();
+    if (S.profile) S.profile.last_seen_at = now;
+    const { error } = await sb.from('profiles').update({ last_seen_at: now }).eq('id', uid);
+    if (error) console.warn('markSeen failed:', error);
+  },
+  async markCaughtUp() {
+    const uid = S.session?.user?.id; if (!uid) return;
+    const now = new Date().toISOString();
+    if (S.profile) { S.profile.last_caught_up_at = now; S.profile.last_seen_at = now; }
+    const { error } = await sb.from('profiles').update({ last_caught_up_at: now, last_seen_at: now }).eq('id', uid);
+    if (error) console.warn('markCaughtUp failed:', error);
+  },
+
   // ─── Goals ───
   async createGoal(f) {
     const insertRow = {
@@ -2704,6 +2793,10 @@ function dbInitToState(i) {
 function dbHistoryToState(h) {
   return {
     id: h.id, type: h.type, date: h.event_date,
+    // Full insert timestamp (not just the day) so the Catch-up digest can
+    // filter activity by a precise "since last visit" boundary. event_date
+    // alone is day-granular and would re-surface a whole day's events.
+    createdAt: h.created_at || undefined,
     note: h.note || undefined, text: h.text || undefined,
     from: h.from_status || undefined, to: h.to_status || undefined,
     author_id: h.author_id || undefined,
@@ -3386,6 +3479,15 @@ function deleteCurrentInit() {
 }
 
 function renderSidebar() {
+  const digestBtn = document.getElementById('navDigestBtn');
+  const digestCount = document.getElementById('navDigestCount');
+  if (digestBtn) digestBtn.classList.toggle('active', S.view === 'digest');
+  if (digestCount) {
+    const n = countNewSinceSeen();
+    digestCount.textContent = n > 99 ? '99+' : n;
+    // Hide the badge entirely at zero so it reads as "nothing new".
+    digestCount.style.display = n > 0 ? '' : 'none';
+  }
   const ideasBtn = document.getElementById('navIdeasBtn');
   const ideasCount = document.getElementById('navIdeasCount');
   if (ideasBtn) ideasBtn.classList.toggle('active', S.view === 'ideas');
@@ -3430,6 +3532,7 @@ function renderMain() {
   if(S.view === 'settings') { renderSettingsPage(el); return; }
   if(S.view === 'ideas')    { renderIdeasPage(el);    return; }
   if(S.view === 'mywork')   { renderMyWorkPage(el);   return; }
+  if(S.view === 'digest')   { renderDigestPage(el);   return; }
   if(S.view === 'archive')  { renderArchivePage(el);  return; }
   if(S.activeGoalId) {
     const g = findGoal(S.activeGoalId);
@@ -3601,6 +3704,277 @@ function renderMyWorkPage(el) {
          ${paused.length ? section('Paused', paused, '') : ''}
          ${completed.length ? section('Recently done', completed.slice(0,10), '') : ''}`}
   </div>`;
+}
+
+// ═══════════════════════════════════════════
+//  CATCH-UP DIGEST  (since-last-visit view)
+// ═══════════════════════════════════════════
+
+// Compact relative time: "just now", "3h ago", "2d ago", else a date.
+function fmtRelative(iso) {
+  if (!iso) return '';
+  const t = new Date(iso).getTime();
+  if (!t) return '';
+  const mins = Math.floor((Date.now() - t) / 60000);
+  if (mins < 1)   return 'just now';
+  if (mins < 60)  return `${mins}m ago`;
+  const hrs = Math.floor(mins / 60);
+  if (hrs < 24)   return `${hrs}h ago`;
+  const days = Math.floor(hrs / 24);
+  if (days < 7)   return `${days}d ago`;
+  return fmtDate(iso.slice(0, 10));
+}
+
+const MS_DAY = 86400000;
+
+// Pure: assemble the team-wide activity pile + forward agenda from S.
+// `prevSeenISO`    — the "new vs already-glanced" line (ISO string or null).
+// `caughtUpISO`    — floor of the visible pile (ISO string or null).
+// First-ever use (null caughtUp) falls back to a 7-day window.
+function buildDigest(prevSeenISO, caughtUpISO) {
+  const nowMs    = Date.now();
+  const floorMs  = caughtUpISO ? new Date(caughtUpISO).getTime() : (nowMs - 7 * MS_DAY);
+  const seenMs   = prevSeenISO ? new Date(prevSeenISO).getTime() : floorMs;
+  const todayStr = new Date().toISOString().slice(0, 10);
+
+  const events = [];
+  const push = (ts, ev) => {
+    const ms = new Date(ts).getTime();
+    if (!ms || ms <= floorMs) return;
+    events.push({ ...ev, ts, ms, isNew: ms > seenMs });
+  };
+
+  const counts = { completed: 0, status: 0, comments: 0, measures: 0, goalsClosed: 0, ideas: 0, created: 0 };
+
+  for (const g of S.goals) {
+    // Goal close-outs
+    if (g.status === 'closed' && g.closedAt) {
+      push(g.closedAt, {
+        kind: 'goal_closed', icon: '🏁',
+        title: `Goal closed — ${g.title}`,
+        detail: (g.score != null ? `Scored ${Math.round(g.score * 100)}%` : 'Wrapped up'),
+        goalTitle: g.title,
+      });
+      const ms = new Date(g.closedAt).getTime();
+      if (ms && ms > floorMs) counts.goalsClosed++;
+    }
+    for (const kr of g.keyResults) {
+      // Measure movements (skip the very first baseline snapshot)
+      const hist = kr.history || [];
+      for (let i = 1; i < hist.length; i++) {
+        const prev = hist[i - 1], cur = hist[i];
+        if (cur.current === prev.current) continue;
+        push(cur.at, {
+          kind: 'measure', icon: '📈',
+          title: `${kr.title}`,
+          detail: `${fmtNum(prev.current)} → ${fmtNum(cur.current)}${kr.unit === '%' ? '%' : (kr.unit ? ' ' + kr.unit : '')}`,
+          goalTitle: g.title, krTitle: kr.title,
+        });
+        const ms = new Date(cur.at).getTime();
+        if (ms && ms > floorMs) counts.measures++;
+      }
+      // Initiative history
+      for (const init of kr.initiatives) {
+        for (const h of (init.history || [])) {
+          const ts = h.createdAt || (h.date ? h.date + 'T12:00:00' : null);
+          if (!ts) continue;
+          const ms = new Date(ts).getTime();
+          if (!ms || ms <= floorMs) continue;
+
+          let kind = h.type, ic = '•', title = init.title, detail = '';
+          if (h.type === 'created') {
+            ic = '✨'; detail = 'New initiative'; counts.created++;
+          } else if (h.type === 'status_change') {
+            ic = h.to === 'completed' ? '✅' : (h.to === 'at_risk' || h.to === 'blocked' ? '⚠️' : '🔄');
+            detail = `${h.from ? slabel(h.from) + ' → ' : ''}${slabel(h.to)}`;
+            if (h.note) detail += ` · "${h.note}"`;
+            if (h.to === 'completed') counts.completed++; else counts.status++;
+          } else if (h.type === 'comment') {
+            ic = '💬'; detail = h.text || ''; counts.comments++;
+          } else if (h.type === 'edited') {
+            ic = '✏️'; detail = h.note || 'Edited';
+          }
+          push(ts, {
+            kind: 'init_' + h.type, icon: ic, title, detail,
+            who: h.author_name || '', goalTitle: g.title, krTitle: kr.title,
+            gid: g.id, krid: kr.id, iid: init.id,
+          });
+        }
+      }
+    }
+  }
+
+  // Ideas captured (day-granular)
+  for (const idea of S.ideas) {
+    if ((idea.status || 'captured') !== 'captured') continue;
+    const ts = idea.createdAt ? idea.createdAt + 'T12:00:00' : null;
+    if (!ts) continue;
+    const ms = new Date(ts).getTime();
+    if (!ms || ms <= floorMs) continue;
+    counts.ideas++;
+    push(ts, {
+      kind: 'idea', icon: '💡', title: 'New idea captured',
+      detail: idea.text,
+    });
+  }
+
+  events.sort((a, b) => b.ms - a.ms);
+
+  // ── Forward agenda (independent of markers) ──
+  const dueSoon = [], overdue = [], needsAttention = [], stalled = [];
+  const soonCutoff = new Date(nowMs + 7 * MS_DAY).toISOString().slice(0, 10);
+  for (const g of S.goals) {
+    if (g.status === 'closed') continue;
+    for (const kr of g.keyResults) {
+      for (const init of kr.initiatives) {
+        if (init.status === 'completed' || init.status === 'on_hold') continue;
+        const ref = { gid: g.id, krid: kr.id, iid: init.id, title: init.title, owner: init.owner, status: init.status, dueDate: init.dueDate, goalTitle: g.title, krTitle: kr.title };
+        const isOverdue = init.dueDate && init.dueDate < todayStr;
+        if (isOverdue) overdue.push(ref);
+        else if (init.dueDate && init.dueDate <= soonCutoff) dueSoon.push(ref);
+        if (init.status === 'at_risk' || init.status === 'blocked') needsAttention.push(ref);
+        const sd = daysSinceLastActivity(init);
+        if (!isOverdue && sd != null && sd >= 14) stalled.push({ ...ref, staleDays: sd });
+      }
+    }
+  }
+
+  return { events, counts, floorMs, seenMs, dueSoon, overdue, needsAttention, stalled };
+}
+
+function renderDigestPage(el) {
+  // Snapshot the "previously seen" line for THIS render, then advance it so
+  // these items read as "earlier" next visit. Same suppress-then-write trick
+  // as the deep-link router.
+  const prevSeen = _digestPrevSeen;
+  const caughtUp = S.profile?.last_caught_up_at || null;
+  const d = buildDigest(prevSeen, caughtUp);
+
+  const newEvents  = d.events.filter(e => e.isNew);
+  const seenEvents = d.events.filter(e => !e.isNew);
+  const CAP = 60;
+  const capped = d.events.length > CAP;
+
+  const c = d.counts;
+  const summaryBits = [
+    c.completed   ? `<span class="dg-stat"><b>${c.completed}</b> completed</span>` : '',
+    c.created     ? `<span class="dg-stat"><b>${c.created}</b> new</span>` : '',
+    c.status      ? `<span class="dg-stat"><b>${c.status}</b> status change${c.status>1?'s':''}</span>` : '',
+    c.comments    ? `<span class="dg-stat"><b>${c.comments}</b> update${c.comments>1?'s':''}</span>` : '',
+    c.measures    ? `<span class="dg-stat"><b>${c.measures}</b> measure move${c.measures>1?'s':''}</span>` : '',
+    c.goalsClosed ? `<span class="dg-stat"><b>${c.goalsClosed}</b> goal${c.goalsClosed>1?'s':''} closed</span>` : '',
+    c.ideas       ? `<span class="dg-stat"><b>${c.ideas}</b> idea${c.ideas>1?'s':''}</span>` : '',
+  ].filter(Boolean).join('');
+
+  const eventRow = (e) => {
+    const ctx = e.krTitle ? `${esc(e.goalTitle)} › ${esc(e.krTitle)}` : (e.goalTitle ? esc(e.goalTitle) : '');
+    const who = e.who ? `${esc(e.who)} · ` : '';
+    const clickable = e.iid ? ` onclick="openDrawer('${e.gid}','${e.krid}','${e.iid}')" role="button" tabindex="0"` : '';
+    return `<div class="dg-item${e.isNew?' is-new':''}${e.iid?' is-clickable':''}"${clickable}>
+      <div class="dg-ico">${e.icon}</div>
+      <div class="dg-body">
+        <div class="dg-title">${esc(e.title)}</div>
+        ${e.detail ? `<div class="dg-detail">${esc(e.detail)}</div>` : ''}
+        <div class="dg-meta">${who}${fmtRelative(e.ts)}${ctx?` · ${ctx}`:''}</div>
+      </div>
+    </div>`;
+  };
+
+  const horizonRow = (r, extra = '') => `<div class="dg-item is-clickable" onclick="openDrawer('${r.gid}','${r.krid}','${r.iid}')" role="button" tabindex="0">
+    <div class="init-dot dot-${r.status}"></div>
+    <div class="dg-body">
+      <div class="dg-title">${esc(r.title)}</div>
+      <div class="dg-meta">${esc(r.goalTitle)} › ${esc(r.krTitle)}${r.owner?` · ${esc(r.owner)}`:''}${extra}</div>
+    </div>
+    <div class="dg-side"><span class="badge badge-${r.status}">${slabel(r.status)}</span></div>
+  </div>`;
+
+  const horizonSection = (title, list, icon, rowFn) => list.length ? `
+    <div class="dg-horizon-group">
+      <div class="dg-horizon-title">${icon} ${title} <span class="dg-count">${list.length}</span></div>
+      ${list.map(rowFn).join('')}
+    </div>` : '';
+
+  const pileEmpty = d.events.length === 0;
+
+  el.innerHTML = `<div class="fade-up">
+    <div class="banner" style="--banner-icon: '🧭'">
+      <h2>Since you were last here</h2>
+      <p>Everything the team moved since you last caught up — plus what's coming up next.</p>
+      ${!pileEmpty ? `<button class="btn btn-primary banner-cta" type="button" onclick="markCaughtUp()">✓ Mark all caught up</button>` : ''}
+    </div>
+
+    ${pileEmpty
+      ? `<div class="empty"><div class="empty-icon">🎉</div><h3>You're all caught up</h3><p>No new team activity since your last check-in. Scroll down for what's on the horizon.</p></div>`
+      : `<div class="dg-summary">${summaryBits || '<span class="dg-stat">Activity since your last catch-up</span>'}</div>
+         ${newEvents.length ? `<div class="dg-section">
+            <div class="dg-section-head">New since your last visit <span class="dg-count dg-count-new">${newEvents.length}</span></div>
+            ${newEvents.slice(0, CAP).map(eventRow).join('')}
+          </div>` : ''}
+         ${seenEvents.length ? `<div class="dg-section">
+            <div class="dg-section-head dg-section-muted">Earlier — seen, not yet cleared <span class="dg-count">${seenEvents.length}</span></div>
+            ${seenEvents.slice(0, Math.max(0, CAP - newEvents.length)).map(eventRow).join('')}
+          </div>` : ''}
+         ${capped ? `<div class="dg-more">+ ${d.events.length - CAP} earlier change${d.events.length - CAP > 1?'s':''} not shown · clear the pile to reset</div>` : ''}`
+    }
+
+    ${(d.overdue.length || d.dueSoon.length || d.needsAttention.length || d.stalled.length) ? `
+      <div class="dg-horizon">
+        <div class="dg-horizon-head">🔭 On the horizon</div>
+        ${horizonSection('Overdue', d.overdue, '🔴', r => horizonRow(r, r.dueDate?` · due ${fmtDate(r.dueDate)}`:''))}
+        ${horizonSection('Due this week', d.dueSoon, '🟡', r => horizonRow(r, r.dueDate?` · due ${fmtDate(r.dueDate)}`:''))}
+        ${horizonSection('Needs a hand', d.needsAttention, '⚠️', r => horizonRow(r))}
+        ${horizonSection('Gone quiet (14d+)', d.stalled, '🌙', r => horizonRow(r, ` · quiet ${r.staleDays}d`))}
+      </div>` : ''}
+  </div>`;
+
+  // Advance the seen marker exactly ONCE per visit — not on every render.
+  // Re-renders happen while viewing (e.g. realtime activity arriving, or the
+  // markSeen write echoing back through onProfileChange); calling markSeen on
+  // each would (a) loop writes and (b) destabilise the new/earlier split. The
+  // guard resets in goToDigest / the deep-link branch on each fresh open.
+  if (!_digestSeenMarked) {
+    _digestSeenMarked = true;
+    db.markSeen();
+    const dc = document.getElementById('navDigestCount');
+    if (dc) dc.style.display = 'none';
+  }
+}
+
+// Module-level snapshot of last_seen_at captured at navigation time, before
+// markSeen() advances it — so renderDigestPage can still tell new from seen.
+// _digestSeenMarked ensures the seen marker advances once per visit, not on
+// every re-render (which would loop writes via the realtime echo).
+let _digestPrevSeen = null;
+let _digestSeenMarked = false;
+
+function goToDigest() {
+  _digestPrevSeen = S.profile?.last_seen_at || null;
+  _digestSeenMarked = false;
+  S.view = 'digest';
+  S.activeGoalId = null;
+  render();
+  closeSidebar();
+  document.getElementById('mainContent')?.scrollTo({ top: 0, behavior: 'instant' });
+  writeHashFromState();
+}
+
+async function markCaughtUp() {
+  await db.markCaughtUp();
+  _digestPrevSeen = S.profile?.last_seen_at || null;
+  render();
+  showToast('All caught up — pile cleared. 🧭');
+}
+
+// Count of activity newer than the user's last_seen_at — drives the sidebar
+// "new" badge. Cheap reuse of buildDigest against the seen line as the floor.
+function countNewSinceSeen() {
+  const seen = S.profile?.last_seen_at || null;
+  if (!seen) {
+    // Never visited: surface the 7-day pile size as the nudge.
+    return buildDigest(null, null).events.length;
+  }
+  return buildDigest(seen, seen).events.length;
 }
 
 // T3.9 — radial ring around the score percentage. Three colour bands match
@@ -4713,7 +5087,10 @@ function applyHashState() {
       }
       return;
     }
-    if (p.view && ['mywork','ideas','archive','settings','help','about'].includes(p.view)) {
+    if (p.view && ['mywork','ideas','archive','settings','help','about','digest'].includes(p.view)) {
+      // Capture the seen-line before the digest render advances it (deep-link
+      // / refresh path bypasses goToDigest where this is normally snapshotted).
+      if (p.view === 'digest') { _digestPrevSeen = S.profile?.last_seen_at || null; _digestSeenMarked = false; }
       S.view = p.view;
       S.activeGoalId = null;
       if (DX) closeDrawer();

@@ -8,11 +8,14 @@
 -- ─── Tables ─────────────────────────────────────────────────
 
 create table public.profiles (
-  id            uuid primary key references auth.users on delete cascade,
-  display_name  text,
-  email         text,
-  avatar_url    text,
-  created_at    timestamptz default now()
+  id                uuid primary key references auth.users on delete cascade,
+  display_name      text,
+  email             text,
+  avatar_url        text,
+  created_at        timestamptz default now(),
+  -- Catch-up digest markers (migration-005). See that file for semantics.
+  last_seen_at      timestamptz,
+  last_caught_up_at timestamptz
 );
 
 create table public.members (
