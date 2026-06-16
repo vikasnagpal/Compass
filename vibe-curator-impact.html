@@ -135,10 +135,12 @@
   .hero { padding: 40px 24px 8px; }
   .hero-grid {
     max-width: 1120px; margin: 0 auto;
-    display: grid; grid-template-columns: 1.05fr 0.95fr; gap: 28px; align-items: center;
+    display: grid; grid-template-columns: 1.05fr 0.95fr; gap: 28px; align-items: stretch;
   }
   @media (max-width: 900px) { .hero-grid { grid-template-columns: 1fr; gap: 8px; } }
-  .hero-copy { padding: 24px 8px; }
+  .hero-copy { padding: 24px 8px 0; }
+  /* on desktop the art panel matches the copy column so its base lines up with the stat strip */
+  @media (min-width: 901px) { .hero-art { aspect-ratio: auto; height: 100%; } }
   .hero-copy .eyebrow { margin-bottom: 18px; }
   .hero h1 { margin: 0 0 22px; max-width: 15ch; }
   .hero h1 .ink-mark { color: var(--orange); }
@@ -305,45 +307,6 @@
   .mo-cap .mo-tag { display: inline-flex; align-items: center; gap: 7px; margin-top: 6px; font-size: 0.82rem; font-weight: 600; color: rgba(255,255,255,.88); }
   @media (max-width: 900px) { .show { --show-h: 408px; } .show-track { inset: 20px; } }
 
-  /* BUSINESS CASE — calendar callout */
-  .case-card {
-    background: var(--panel); border-radius: var(--radius-xl); padding: 56px;
-    margin-top: 40px; display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: center;
-  }
-  @media (max-width: 820px) { .case-card { grid-template-columns: 1fr; gap: 32px; padding: 40px 30px; } }
-  .case-card .case-num {
-    font-family: 'Bricolage Grotesque', sans-serif; font-weight: 800;
-    font-size: clamp(2.8rem, 6vw, 4.2rem); letter-spacing: -0.04em; color: var(--orange-ink); line-height: 1;
-  }
-  .case-card h3 { margin: 14px 0 12px; font-size: clamp(1.4rem, 2.4vw, 1.9rem); }
-  .case-card p { color: var(--ink-soft); max-width: 48ch; }
-  /* mock listing row */
-  .listing-mock {
-    background: var(--card); border-radius: var(--radius-lg); border: 1px solid var(--hairline);
-    box-shadow: var(--shadow); overflow: hidden;
-  }
-  .listing-mock .lm-img {
-    height: 120px; background: linear-gradient(135deg, #F2602A 0%, #FF8A5B 100%);
-    position: relative;
-  }
-  .listing-mock .lm-badge {
-    position: absolute; left: 16px; bottom: 14px;
-    background: rgba(22,19,15,.82); color: #fff; backdrop-filter: blur(6px);
-    font-size: 0.78rem; font-weight: 700; padding: 8px 14px; border-radius: var(--radius-pill);
-    display: inline-flex; align-items: center; gap: 8px;
-  }
-  .listing-mock .lm-badge .lm-dot { width: 7px; height: 7px; border-radius: 50%; background: #4ADE80; box-shadow: 0 0 0 0 rgba(74,222,128,.7); }
-  @media (prefers-reduced-motion: no-preference) { .listing-mock .lm-badge .lm-dot { animation: pulse 2s infinite; } }
-  @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(74,222,128,.6); } 70% { box-shadow: 0 0 0 7px rgba(74,222,128,0); } 100% { box-shadow: 0 0 0 0 rgba(74,222,128,0); } }
-  .listing-mock .lm-body { padding: 18px 20px 20px; }
-  .listing-mock .lm-title { font-family: 'Bricolage Grotesque', sans-serif; font-weight: 800; font-size: 1.1rem; margin-bottom: 4px; }
-  .listing-mock .lm-meta { font-size: 0.84rem; color: var(--ink-mute); display: flex; align-items: center; gap: 6px; }
-  .listing-mock .lm-meta .lm-star { color: var(--orange); }
-  .listing-mock .lm-acts { margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--hairline); }
-  .listing-mock .lm-acts .lm-h { font-size: 0.72rem; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: var(--orange-ink); margin-bottom: 10px; }
-  .listing-mock .lm-chips { display: flex; flex-wrap: wrap; gap: 7px; }
-  .listing-mock .lm-chip { font-size: 0.78rem; font-weight: 600; color: var(--ink); background: var(--orange-soft); padding: 6px 11px; border-radius: var(--radius-pill); }
-
   /* RETURN — what the property gets */
   .return-list { list-style: none; display: grid; grid-template-columns: 1fr 1fr; gap: 14px 28px; }
   @media (max-width: 700px) { .return-list { grid-template-columns: 1fr; } }
@@ -442,8 +405,8 @@
   @media print {
     nav.topbar, .progress-bar, .to-top { display: none !important; }
     body { background: #fff; }
-    .hero-art, .bigidea, .case-card, .deal-card, .closing-card, .win-ic { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-    .win, .card, .case-card, .closing-card { break-inside: avoid; box-shadow: none; }
+    .hero-art, .bigidea, .deal-card, .closing-card, .win-ic { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .win, .card, .closing-card { break-inside: avoid; box-shadow: none; }
     .section-head { margin-top: 28px; }
   }
 </style>
@@ -471,9 +434,8 @@
     </a>
     <div class="nav-links">
       <a href="#big-idea">Why it works</a>
-      <a href="#wins">The four wins</a>
-      <a href="#numbers">The numbers</a>
-      <a href="alignmentguide.html">Alignment Guide</a>
+      <a href="#wins">How you win</a>
+      <a href="#ready">Get started</a>
       <a href="#" class="nav-cta" id="printBtn">Save as PDF</a>
     </div>
   </div>
@@ -485,7 +447,7 @@
     <div class="hero-copy">
       <span class="eyebrow">The Vibe Curator Program</span>
       <h1>Give your property a <span class="ink-mark">pulse</span>.</h1>
-      <p class="hero-lede">A Vibe Curator moves in for a couple of months and does the one thing a property can't fake — <strong>they make it feel alive</strong>. Activities every day, a calendar that sells on your listing, reviews that climb, and a feed full of content. Here's what that's worth to you.</p>
+      <p class="hero-lede">A Vibe Curator moves in for a couple of months and does the one thing a property can't fake — <strong>they make it feel alive</strong>. Activities every day, a calendar that sells on your listing, reviews that climb, and a feed full of content. Here's what it's already doing for properties like yours.</p>
 
       <div class="stat-strip">
         <div class="stat">
@@ -532,9 +494,9 @@
   <!-- THE FOUR WINS -->
   <section id="wins">
     <div class="section-head">
-      <span class="eyebrow numbered"><span class="sec-no">01</span>The four wins</span>
-      <h2>Four jobs they own. Four ways you win.</h2>
-      <p>A Vibe Curator carries four things for your property — and each one shows up directly in your numbers. Here's what each looks like in the wild.</p>
+      <span class="eyebrow numbered"><span class="sec-no">01</span>How you win</span>
+      <h2>Four ways it pays you back</h2>
+      <p>A Vibe Curator does plenty day to day — but these four are where it shows up in your numbers. Here's each one, the way it's already playing out at properties running the program.</p>
     </div>
 
     <div class="wins-rows">
@@ -578,7 +540,7 @@
         <article class="win">
           <div class="win-ic"><svg aria-hidden="true"><use href="#i-star"/></svg></div>
           <div class="does">They own · guest reviews</div>
-          <h3>More reviews <span class="arrow">→</span> higher rank &amp; trust</h3>
+          <h3>More reviews <span class="arrow">→</span> you rank higher</h3>
           <p>They nudge happy guests to leave a review at exactly the right moment — after an activity, at checkout. More reviews, mentioning real experiences and often the curator by name, lift your rating and push your property up the rankings.</p>
           <div class="win-stat"><strong><span class="stat-ph">[X] of [Y]</span></strong> recent 5★ reviews mention the activities or the curator by name.</div>
         </article>
@@ -633,7 +595,7 @@
           <div class="does">They own · daily activities</div>
           <h3>Real community <span class="arrow">→</span> longer, repeat stays</h3>
           <p>Activities every single day, plus a daily Zo introduction that turns a corridor of strangers into a crew. Guests who feel part of something extend their stay, come back next trip, and tell their friends where to go.</p>
-          <div class="win-stat">Average stay runs <strong><span class="stat-ph">[+X nights]</span></strong> longer when there's a daily activity rhythm to stick around for.</div>
+          <div class="win-stat">Guests stay <strong><span class="stat-ph">[+X nights]</span></strong> longer when there's something on every day.</div>
         </article>
         <div class="show" data-show role="group" aria-roledescription="carousel" aria-label="Activity moments">
           <div class="show-window">
@@ -673,7 +635,7 @@
         <article class="win">
           <div class="win-ic"><svg aria-hidden="true"><use href="#i-camera"/></svg></div>
           <div class="does">They own · social presence</div>
-          <h3>Content engine <span class="arrow">→</span> reach, free</h3>
+          <h3>A content machine <span class="arrow">→</span> free reach</h3>
           <p>Reels, photos and stories <span class="stat-ph">[X]</span> times a week, all from your property — without you lifting a finger. Your socials stay alive, your reach grows, and the property looks like the kind of place people screenshot and share.</p>
           <div class="win-stat"><strong><span class="stat-ph">[X]</span> posts/week</strong> of fresh, on-the-ground content — roughly <strong><span class="stat-ph">[X]</span></strong> pieces over a full stay.</div>
         </article>
@@ -705,47 +667,12 @@
     </div>
   </section>
 
-  <!-- THE NUMBERS — calendar business case -->
-  <section id="numbers">
-    <div class="section-head">
-      <span class="eyebrow numbered"><span class="sec-no">02</span>The numbers</span>
-      <h2>Your calendar, working while you sleep</h2>
-      <p>The activity calendar isn't just a nice-to-have — it's a live selling tool sitting right on your Zostel listing, 24/7.</p>
-    </div>
-
-    <div class="case-card">
-      <div class="case-copy">
-        <div class="case-num"><span class="stat-ph">[+X%]</span></div>
-        <h3>more bookings when activities show on your listing</h3>
-        <p>When a traveller compares two properties, the one with a packed, up-to-date activity calendar wins. Your Vibe Curator keeps it fresh every week and <span class="stat-ph">[X]</span> weeks ahead — so your listing is always the more tempting one. <em style="color:var(--ink-mute);">(Replace with your real figure.)</em></p>
-      </div>
-      <div class="listing-mock" aria-label="Example of a Zostel listing with a live activity calendar">
-        <div class="lm-img">
-          <span class="lm-badge"><span class="lm-dot"></span>This week's activities</span>
-        </div>
-        <div class="lm-body">
-          <div class="lm-title">Zostel [City]</div>
-          <div class="lm-meta"><span class="lm-star">★</span> <span class="stat-ph">[4.X]</span> · <span class="stat-ph">[XXX]</span> reviews · Dorms &amp; private rooms</div>
-          <div class="lm-acts">
-            <div class="lm-h">On this week</div>
-            <div class="lm-chips">
-              <span class="lm-chip">🌄 Sunrise trek</span>
-              <span class="lm-chip">🔥 Bonfire jam</span>
-              <span class="lm-chip">🍜 Food walk</span>
-              <span class="lm-chip">🎲 Game night</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
   <!-- WHAT YOU GET BACK -->
   <section id="return">
     <div class="section-head">
-      <span class="eyebrow numbered"><span class="sec-no">03</span>Your return</span>
+      <span class="eyebrow numbered"><span class="sec-no">02</span>Your return</span>
       <h2>What lands on your side</h2>
-      <p>Add it up, and one contributor quietly moves several of your most important numbers at once.</p>
+      <p>Put it together and one guest who contributes moves the numbers that matter most — all at once.</p>
     </div>
     <div class="card">
       <ul class="return-list">
@@ -776,13 +703,13 @@
 </main>
 
 <!-- CLOSING -->
-<footer>
+<footer id="ready">
   <div class="container">
   <div class="closing-card">
     <div class="closing-copy">
       <div class="smiley"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-4.5-9.5-9C1 9 2.5 5 6 5c2 0 3.2 1 4 2 .8-1 2-2 4-2 3.5 0 5 4 3.5 7-2.5 4.5-9.5 9-9.5 9Z"/></svg></div>
       <h3>Ready to bring your property to life?</h3>
-      <p>One contributor, a couple of months, and a property that feels alive — with the reviews, content and bookings to show for it. Here's everything that makes it work.</p>
+      <p>The properties that lean in are already seeing it — livelier stays, better reviews, fuller calendars. One contributor, a couple of months, and the same is on the table for you. Here's how to start.</p>
       <div class="closing-cta">
         <a class="btn primary" href="https://zopu.ai/link/XPLUAHNjz2aTz2dbmDXH7" target="_blank" rel="noopener">
           <svg aria-hidden="true"><use href="#i-book"/></svg>
@@ -845,7 +772,7 @@
   // ---- Motion: scroll-reveal ----
   var motionOK = !window.matchMedia || window.matchMedia('(prefers-reduced-motion: no-preference)').matches;
   if (motionOK && 'IntersectionObserver' in window) {
-    var revealSel = '.section-head, .bigidea, .card, .win-row, .case-card, .deal-card, .closing-card';
+    var revealSel = '.section-head, .bigidea, .card, .win-row, .deal-card, .closing-card';
     var revs = Array.prototype.slice.call(document.querySelectorAll(revealSel));
     revs.forEach(function (el) { el.classList.add('reveal'); });
     revs.forEach(function (el) {
