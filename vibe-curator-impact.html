@@ -131,16 +131,14 @@
   /* CONTAINER */
   .container { max-width: 1120px; margin: 0 auto; padding: 0 24px; }
 
-  /* HERO */
-  .hero { padding: 40px 24px 8px; }
+  /* HERO — same 1120 content width as the rest of the page (.container) */
+  .hero { padding: 40px 0 8px; }
   .hero-grid {
-    max-width: 1120px; margin: 0 auto;
-    display: grid; grid-template-columns: 1.05fr 0.95fr; gap: 28px; align-items: stretch;
+    max-width: 1120px; margin: 0 auto; padding: 0 24px;
+    display: grid; grid-template-columns: 1.05fr 0.95fr; gap: 36px; align-items: center;
   }
   @media (max-width: 900px) { .hero-grid { grid-template-columns: 1fr; gap: 8px; } }
-  .hero-copy { padding: 24px 8px 0; }
-  /* on desktop the art panel matches the copy column so its base lines up with the stat strip */
-  @media (min-width: 901px) { .hero-art { aspect-ratio: auto; height: 100%; } }
+  .hero-copy { padding: 8px 0; }
   .hero-copy .eyebrow { margin-bottom: 18px; }
   .hero h1 { margin: 0 0 22px; max-width: 15ch; }
   .hero h1 .ink-mark { color: var(--orange); }
