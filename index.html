@@ -608,10 +608,13 @@
       padding: 0 10px; min-height: 24px;
       border-radius: 12px;
       font-size: 12px; color: var(--text-muted); font-weight: 500;
-      max-width: 100%; overflow: hidden;
-      text-overflow: ellipsis; white-space: nowrap;
-      line-height: 1;
+      max-width: 100%; min-width: 0; overflow: hidden;
+      white-space: nowrap; line-height: 1;
     }
+    .idea-link-chip > .icon { flex-shrink: 0; }
+    /* The text run truncates with an ellipsis; ellipsis must live on a real
+       block child, not the inline-flex chip itself. */
+    .idea-link-chip .ilc-text { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
     .idea-loose-chip {
       display: inline-flex; align-items: center; gap: 5px;
       font-size: 12px; color: var(--text-muted); font-style: italic;
@@ -619,10 +622,17 @@
     }
     .idea-date { font-size: 12px; color: var(--text-muted); flex-shrink: 0; }
     .idea-actions {
-      display: flex; gap: 6px; align-items: center; flex-wrap: wrap;
+      display: flex; gap: 8px; align-items: center; flex-wrap: wrap;
       padding-top: 10px; border-top: 1px solid var(--border);
     }
-    .idea-actions > .btn { flex: 1; justify-content: center; min-width: 100px; }
+    /* Primary action ("Turn into initiative" / "Open initiative →") gets its
+       own full-width row so its nowrap label can never overflow the border on
+       narrow cards. min-width:0 lets it size correctly inside the flex row. */
+    .idea-actions > .btn { flex: 1 1 100%; justify-content: center; min-width: 0; }
+    /* Secondary text actions sit on the next row; the destructive ✕ is pushed
+       to the far right so Park/Reject read as a left-aligned pair. */
+    .idea-actions > .btn-link { padding: 6px 10px; }
+    .idea-actions > .btn-icon-only { margin-left: auto; }
     .btn-link {
       background: transparent; border: none; cursor: pointer;
       color: var(--text-muted); font-size: 12.5px;
@@ -4493,7 +4503,7 @@ function renderIdeaCard(idea) {
     <div class="idea-meta">
       ${stChip}
       ${g
-        ? `<span class="idea-link-chip" title="${esc(g.title)}${kr?' › '+esc(kr.title):''}">${icon('goal')} ${esc(g.title)}${kr?` › ${esc(kr.title)}`:''}</span>`
+        ? `<span class="idea-link-chip" title="${esc(g.title)}${kr?' › '+esc(kr.title):''}">${icon('goal')}<span class="ilc-text">${esc(g.title)}${kr?` › ${esc(kr.title)}`:''}</span></span>`
         : `<span class="idea-loose-chip">💭 Loose idea</span>`
       }
       <span class="idea-date">${fmtDate(idea.createdAt)}</span>
